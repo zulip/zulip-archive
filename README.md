@@ -1,11 +1,15 @@
 # zulip_archive
 A tool for archiving and displaying Zulip chat channels.
 
+Author: [Robert Y. Lewis](https://robertylewis.com/) ([@robertylewis](https://github.com/robertylewis))
+
 The script `archive.py` has two functions:
 * It builds a json archive of messages from a Zulip chat room.
 * It generates static markdown/html to display these messages.
 
 This is particularly useful when used in combination with Jekyll, to compile the html/markdown to a functional website. An example of this can be seen at the [leanprover-community Zulip chat archive](https://leanprover-community.github.io/archive/).
+
+This script is provided as-is. Contributions to make it more robust or more general are very welcome.
 
 ## Directions for use
 
