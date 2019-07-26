@@ -213,6 +213,16 @@ def safe_request(cmd, *args, **kwargs):
         rsp = cmd(*args, **kwargs)
     return rsp
 
+def get_streams():
+    # In the future, we may want to change this to
+    # include_web_public=True, for organizations that might want to
+    # use the upcoming web_public flag; but at the very least we
+    # should only include public streams.
+    response = safe_request(client.get_streams,
+                            include_public=True,
+                            include_subscribed=False)
+    return response['streams']
+
 # Safely open dir/filename, creating dir if it doesn't exist
 def open_outfile(dir, filename, mode):
     if not dir.exists():
@@ -250,7 +260,7 @@ def test_valid(s):
 # Retrieves only new messages from Zulip, based on timestamps from the last update.
 # Raises an exception if there is no index at json_root/stream_index.json
 def populate_incremental():
-    streams = safe_request(client.get_streams)['streams']
+    streams = get_streams()
     stream_index = json_root / Path('stream_index.json')
     if not stream_index.exists():
         raise Exception('stream index does not exist at {}\nCannot update incrementally without an index.'.format(stream_index))
@@ -290,7 +300,7 @@ def populate_incremental():
 
 # Retrieves all messages from Zulip and builds a cache at json_root.
 def populate_all():
-    streams = safe_request(client.get_streams)['streams']
+    streams = get_streams()
     ind = {}
     for s in (s for s in streams if test_valid(s)):
         print(s['name'])
