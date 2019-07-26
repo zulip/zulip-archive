@@ -1,4 +1,4 @@
-# requires python 3
+#!/usr/bin/env/python3
 #
 # The workflow (timing for the leanprover Zulip chat, on my slow laptop):
 # - populate_all() builds a json file in `json_root` for each topic, containing message data,
