@@ -203,13 +203,14 @@ def escape_pipes(s):
 
 ## retrieve information from Zulip
 
-# runs client.cmd(args). If the response is a rate limit error, waits the requested time and tries again.
-def safe_request(cmd, args):
-    rsp = cmd(*args)
+# runs client.cmd(args). If the response is a rate limit error, waits
+# the requested time and then retries the request.
+def safe_request(cmd, *args, **kwargs):
+    rsp = cmd(*args, **kwargs)
     while rsp['result'] == 'error':
         print("timeout hit: {}".format(rsp['retry-after']))
         time.sleep(float(rsp['retry-after']) + 1)
-        rsp = cmd(*args)
+        rsp = cmd(*args, **kwargs)
     return rsp
 
 # Safely open dir/filename, creating dir if it doesn't exist
@@ -225,11 +226,11 @@ def request_all(request, anchor=0):
     request['anchor'] = anchor
     request['num_before'] = 0
     request['num_after'] = 1000
-    response = safe_request(client.get_messages, [request])
+    response = safe_request(client.get_messages, request)
     msgs = response['messages']
     while not response['found_newest']:
         request['anchor'] = response['messages'][-1]['id'] + 1
-        response = safe_request(client.get_messages, [request])
+        response = safe_request(client.get_messages, request)
         msgs = msgs + response['messages']
     return msgs
 
@@ -249,7 +250,7 @@ def test_valid(s):
 # Retrieves only new messages from Zulip, based on timestamps from the last update.
 # Raises an exception if there is no index at json_root/stream_index.json
 def populate_incremental():
-    streams = safe_request(client.get_streams, [])['streams']
+    streams = safe_request(client.get_streams)['streams']
     stream_index = json_root / Path('stream_index.json')
     if not stream_index.exists():
         raise Exception('stream index does not exist at {}\nCannot update incrementally without an index.'.format(stream_index))
@@ -289,11 +290,11 @@ def populate_incremental():
 
 # Retrieves all messages from Zulip and builds a cache at json_root.
 def populate_all():
-    streams = safe_request(client.get_streams, [])['streams']
+    streams = safe_request(client.get_streams)['streams']
     ind = {}
     for s in (s for s in streams if test_valid(s)):
         print(s['name'])
-        topics = safe_request(client.get_stream_topics, [s['stream_id']])['topics']
+        topics = safe_request(client.get_stream_topics, s['stream_id'])['topics']
         nind = {'id': s['stream_id'], 'latest_id':0}
         tpmap = {}
         for t in topics:
