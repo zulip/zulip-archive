@@ -35,7 +35,7 @@ md_index = Path("index.md") # name for the index files
 html_root = Path("") # user-facing path for the index
 last_updated = ''
 
-site_url = "https://rust-zulip-archive.s3.amazonaws.com/" # user-facing root url. Only needed for md/html generation.
+site_url = "https://zulip-archive.rust-lang.org/" # user-facing root url. Only needed for md/html generation.
 zulip_url = "https://rust-lang.zulipchat.com/" # Zulip chat url. Only needed for md/html generation
 
 # Streams in stream_blacklist are ignored.
