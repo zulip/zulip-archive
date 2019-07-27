@@ -29,7 +29,6 @@ from zlib import adler32
 import configparser
 import zulip, string, os, time, json, urllib, argparse, subprocess
 
-## Configuration options
 # config_file should point to a Zulip api config
 client = zulip.Client(config_file="./zuliprc")
 
@@ -73,7 +72,6 @@ last_updated_dir = Path("_includes") # directory to store update timestamp
 last_updated_file = Path("archive_update.html") # filename for update timestamp
 
 
-
 ## Customizable display functions.
 
 # When generating displayable md/html, we create the following structure inside md_root:
@@ -91,9 +89,7 @@ last_updated_file = Path("archive_update.html") # filename for update timestamp
 
 # writes the Jekyll header info for the index page listing all streams.
 def write_stream_index_header(outfile):
-    outfile.writelines(['---\n', 'layout: archive\n', 'title: Lean Prover Zulip Chat Archive\n'])
-    outfile.write('permalink: {}/index.html\n'.format(html_root))
-    outfile.writelines(['---\n\n','---\n\n','## Streams:\n\n'])
+    outfile.write('# Streams:\n\n\n')
 
 # writes the index page listing all streams.
 # `streams`: a dict mapping stream names to stream json objects as described in the header.
@@ -107,19 +103,15 @@ def write_stream_index(streams):
             sanitize_stream(s, streams[s]['id']),
             num_topics,
             '' if num_topics == 1 else 's'))
-    outfile.write('\n{% include ' + str(last_updated_file) + ' %}')
+    outfile.write('\n' + last_updated)
     outfile.close()
 
 # writes the Jekyll header info for the index page for a given stream.
 def write_topic_index_header(outfile, stream_name, stream):
-    permalink = 'permalink: {1}/{0}/index.html'.format(
-        sanitize_stream(stream_name, stream['id']), html_root
-    )
-    strm = '## Stream: [{0}]({1}/index.html)'.format(
+    outfile.write('## Stream: [{0}]({1}/index.html)\n'.format(
         stream_name, format_stream_url(stream['id'], stream_name)
-    )
-    outfile.writelines(['---\n', 'layout: archive\n', 'title: Lean Prover Zulip Chat Archive\n',
-                        permalink, '\n---\n\n', strm, '\n---\n\n', '### Topics:\n\n'])
+    ))
+    outfile.write('### Topics:\n')
 
 # writes an index page for a given stream, printing a list of the topics in that stream.
 # `stream_name`: the name of the stream.
@@ -137,7 +129,7 @@ def write_topic_index(stream_name, stream):
             datetime.utcfromtimestamp(t['latest_date']).strftime('%b %d %Y at %H:%M'),
             '' if t['size'] == 1 else 's'
         ))
-    outfile.write('\n{% include ' + str(last_updated_file) + ' %}')
+    outfile.write('\n' + last_updated)
     outfile.close()
 
 # formats the header for a topic page.
@@ -156,17 +148,16 @@ def write_topic_header(outfile, stream_name, stream_id, topic_name):
         sanitize_topic(topic_name),
         format_stream_url(stream_id, stream_name)
     )
-    outfile.writelines(['---\n', 'layout: archive\n', 'title: Lean Prover Zulip Chat Archive\n',
-                        permalink, '\n---\n\n', strm, '\n', tpc, '\n\n<hr>\n\n', '<base href="https://leanprover.zulipchat.com">\n'])
+    outfile.writelines([strm, '\n', tpc, '\n\n<hr>\n\n',
+                        '<base href="https://rust-lang.zulipchat.com">\n'])
+    outfile.write('<style>.msg { margin-left: 2em; }</style>')
 
 # formats a single post in a topic
-# Note: the default expects the Zulip "Z" icon at site_url+'assets/img/zulip2.png'
 def format_message(user_name, date, msg, link, anchor_name, anchor_url):
     anchor = '<a name="{0}"></a>'.format(anchor_name)
-    zulip_link = '<a href="{0}" class="zl"><img src="{1}" alt="view this post on Zulip"></a>'.format(link, site_url+'assets/img/zulip2.png')
-    local_link = '<a href="{0}">{1} ({2})</a>'.format(anchor_url, user_name, date)
-    return '{0}\n<h4>{1} {2}:</h4>\n{3}'.format(anchor, zulip_link, local_link, msg)
-
+    zulip_link = '<a href="{0}" class="zl">on Zulip</a>'.format(link)
+    local_link = '{1} (<a href="{0}">{2}</a>, {3})'.format(anchor_url, user_name, date, zulip_link)
+    return '{}\n<div>{}:</div>\n<div class="msg">{}</div>'.format(anchor, local_link, msg)
 
 # writes the body of a topic page (ie, a list of messages)
 # `messages`: a list of message json objects, as defined in the Zulip API
@@ -195,10 +186,8 @@ def write_topic(stream_name, stream, topic_name):
     f.close()
     o = open_outfile(md_root / Path(sanitize_stream(stream_name, stream['id'])), Path(sanitize_topic(topic_name) + '.html'), 'w+')
     write_topic_header(o, stream_name, stream['id'], topic_name)
-    o.write('\n{% raw %}\n')
     write_topic_body(messages, stream_name, stream['id'], topic_name, o)
-    o.write('\n{% endraw %}\n')
-    o.write('\n{% include ' + str(last_updated_file) + ' %}')
+    o.write('\n' + last_updated)
     o.close()
 
 
@@ -367,27 +356,20 @@ def structure_link(stream_id, stream_name, topic_name, post_id):
 def format_stream_url(stream_id, stream_name):
     return os.path.join(site_url, str(html_root), sanitize_stream(stream_name, stream_id))
 
-# updates the "last updated" footer message to time `t`.
-def write_last_updated(t):
-    f = open_outfile(last_updated_dir, last_updated_file, 'w+')
-    f.write('<hr><p>Last updated: {} UTC</p>'.format(t))
-    f.close()
-
 # writes all markdown files to md_root, based on the archive at json_root.
 def write_markdown():
     f = (json_root / Path('stream_index.json')).open('r', encoding='utf-8')
     stream_info = json.load(f, encoding='utf-8')
     f.close()
     streams = stream_info['streams']
-    write_last_updated(str(stream_info['time']))
+    global last_updated
+    last_updated = 'Last update: ' + str(stream_info['time']) + 'UTC'
     write_stream_index(streams)
     for s in streams:
-        print('building: ', s)
+        print("Building: {}".format(s))
         write_topic_index(s, streams[s])
         for t in streams[s]['topic_data']:
             write_topic(s, streams[s], t)
-
-
 
 # resets the current repository to match origin/master
 def github_pull():
