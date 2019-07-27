@@ -109,6 +109,7 @@ def write_topic_index(stream_name, stream):
 
 # formats the header for a topic page.
 def write_topic_header(outfile, stream_name, stream_id, topic_name):
+    outfile.write('<head><link href="/style.css" rel="stylesheet"></head>')
     permalink = 'permalink: {0}/{1}/{2}.html'.format(
         html_root,
         sanitize_stream(stream_name, stream_id),
@@ -125,7 +126,6 @@ def write_topic_header(outfile, stream_name, stream_id, topic_name):
     )
     outfile.writelines([strm, '\n', tpc, '\n\n<hr>\n\n',
                         '<base href="https://rust-lang.zulipchat.com">\n'])
-    outfile.write('<style>.msg { margin-left: 2em; }</style>')
 
 # formats a single post in a topic
 def format_message(user_name, date, msg, link, anchor_name, anchor_url):
@@ -331,6 +331,11 @@ def structure_link(stream_id, stream_name, topic_name, post_id):
 def format_stream_url(stream_id, stream_name):
     return site_url + str(html_root) + '/' + sanitize_stream(stream_name, stream_id)
 
+def write_css():
+    outfile = open_outfile(md_root, 'style.css', 'w+')
+    outfile.write(".msg { margin-left: 2em; }\n")
+    outfile.close()
+
 # writes all markdown files to md_root, based on the archive at json_root.
 def write_markdown():
     f = (json_root / Path('stream_index.json')).open('r', encoding='utf-8')
@@ -339,6 +344,7 @@ def write_markdown():
     streams = stream_info['streams']
     global last_updated
     last_updated = 'Last update: ' + str(stream_info['time']) + 'UTC'
+    write_css()
     write_stream_index(streams)
     for s in streams:
         write_topic_index(s, streams[s])
