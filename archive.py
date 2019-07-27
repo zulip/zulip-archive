@@ -338,7 +338,7 @@ def write_markdown():
     f.close()
     streams = stream_info['streams']
     global last_updated
-    last_updated = 'Last update: ' + str(stream_info['time'])
+    last_updated = 'Last update: ' + str(stream_info['time']) + 'UTC'
     write_stream_index(streams)
     for s in streams:
         write_topic_index(s, streams[s])
