@@ -257,7 +257,6 @@ def populate_incremental():
     stream_index = json.load(f, encoding='utf-8')
     f.close()
     for s in (s for s in streams if test_valid(s)):
-        print(s['name'])
         if s['name'] not in stream_index['streams']:
             stream_index['streams'][s['name']] = {'id':s['stream_id'], 'latest_id':0, 'topic_data':{}}
         request = {'narrow':[{'operator':'stream', 'operand':s['name']}], 'client_gravatar': True,
@@ -342,29 +341,14 @@ def write_markdown():
     last_updated = 'Last update: ' + str(stream_info['time'])
     write_stream_index(streams)
     for s in streams:
-        print("Building: {}".format(s))
         write_topic_index(s, streams[s])
         for t in streams[s]['topic_data']:
             write_topic(s, streams[s], t)
 
-# resets the current repository to match origin/master
-def github_pull():
-    print(subprocess.check_output(['git','fetch','origin','master']))
-    print(subprocess.check_output(['git','reset','--hard','origin/master']))
-
-# commits changes in archive/ and pushes the current repository to origin/master
-def github_push():
-    print(subprocess.check_output(['git','add','archive/*']))
-    print(subprocess.check_output(['git','add','_includes/archive_update.html']))
-    print(subprocess.check_output(['git','commit','-m','auto update: {}'.format(datetime.utcfromtimestamp(time.time()).strftime('%b %d %Y at %H:%M UTC'))]))
-    print(subprocess.check_output(['git','push']))
-
-parser = argparse.ArgumentParser(description='Build an html archive of the leanprover Zulip chat.')
+parser = argparse.ArgumentParser(description='Build an html archive of the rust-lang Zulip chat.')
 parser.add_argument('-b', action='store_true', default=False, help='Build .md files')
 parser.add_argument('-t', action='store_true', default=False, help='Make a clean json archive')
 parser.add_argument('-i', action='store_true', default=False, help='Incrementally update the json archive')
-parser.add_argument('-f', action='store_true', default=False, help='Pull from GitHub before updating. (Warning: could overwrite this script.)')
-parser.add_argument('-p', action='store_true', default=False, help='Push results to GitHub.')
 
 results = parser.parse_args()
 
@@ -375,9 +359,5 @@ if results.t:
     populate_all()
 elif results.i:
     populate_incremental()
-if results.f:
-    github_pull()
 if results.b:
     write_markdown()
-if results.p:
-    github_push()
