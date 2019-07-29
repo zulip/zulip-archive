@@ -87,18 +87,14 @@ last_updated_file = Path("archive_update.html") # filename for update timestamp
 # The index pages are generated in markdown by default, but this can be changed to html.
 # The default settings are designed for a Jekyll build.
 
-# writes the Jekyll header info for the index page listing all streams.
-def write_stream_index_header(outfile):
-    outfile.write('# Streams:\n\n\n')
-
 # writes the index page listing all streams.
 # `streams`: a dict mapping stream names to stream json objects as described in the header.
 def write_stream_index(streams):
     outfile = open_outfile(md_root, md_index, 'w+')
-    write_stream_index_header(outfile)
-    for s in sorted(streams, key=lambda s: len(streams[s]['topic_data']), reverse=True):
+    outfile.write('## Streams:\n\n')
+    for s in sorted(streams, key=lambda s: s):
         num_topics = len(streams[s]['topic_data'])
-        outfile.write("* [{0}]({1}/index.html) ({2} topic{3})\n\n".format(
+        outfile.write("* [{0}]({1}/index.html) ({2} topic{3})\n".format(
             s,
             sanitize_stream(s, streams[s]['id']),
             num_topics,
