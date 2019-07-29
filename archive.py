@@ -118,7 +118,7 @@ def write_topic_index(stream_name, stream):
     write_topic_index_header(outfile, stream_name, stream)
     for topic_name in sorted(stream['topic_data'], key=lambda tn: stream['topic_data'][tn]['latest_date'], reverse=True):
         t = stream['topic_data'][topic_name]
-        outfile.write("* [{0}]({1}.html) ({2} message{4}, latest: {3})\n\n".format(
+        outfile.write("* [{0}]({1}.html) ({2} message{4}, latest: {3})\n".format(
             escape_pipes(topic_name),
             sanitize_topic(topic_name),
             t['size'],
