@@ -24,7 +24,9 @@
 
 from datetime import date, datetime
 from pathlib import Path
+from typing import Any, Optional
 from zlib import adler32
+import configparser
 import zulip, string, os, time, json, urllib, argparse, subprocess
 
 ## Configuration options
@@ -36,17 +38,36 @@ html_root = Path("archive") # user-facing path for the index
 last_updated_dir = Path("_includes")# directory to store update timestamp
 last_updated_file = Path("archive_update.html") # filename for update timestamp
 
-site_url = "https://leanprover-community.github.io/" # user-facing root url. Only needed for md/html generation.
-zulip_url = "https://leanprover.zulipchat.com/" # Zulip chat url. Only needed for md/html generation
+# config_file should point to a Zulip api config
+client = zulip.Client(config_file="./zuliprc")
+
+# With additional options supported for the below.
+config_file = configparser.RawConfigParser()
+config_file.read("./zuliprc")
+def get_config(section: str, key: str, default_value: Optional[Any]=None) -> Optional[Any]:
+    if config_file.has_option(section, key):
+        return config_file.get(section, key)
+    return default_value
+
+# The Zulip server's public URL is required in zuliprc already
+zulip_url = get_config("api", "site")
+# The user-facing root url. Only needed for md/html generation.
+site_url = get_config("archive", "root_url", "")
 
 # Streams in stream_blacklist are ignored.
 # If stream_whitelist is nonempty, only streams that appear there and not in
 # stream_blacklist will be archived.
-stream_blacklist = ['rss', 'travis', 'announce']
-stream_whitelist = []
+stream_blacklist_str = get_config("archive", "stream_blacklist", "")
+stream_whitelist_str = get_config("archive", "stream_whitelist", "")
+if stream_whitelist_str != "":
+    stream_whitelist = stream_whitelist_str.split(",")
+else:
+    stream_whitelist = []
+if stream_blacklist_str != "":
+    stream_blacklist = stream_blacklist_str.split(",")
+else:
+    stream_blacklist = []
 
-# config_file should point to a Zulip api config
-client = zulip.Client(config_file="./zuliprc")
 
 
 ## Customizable display functions.

@@ -24,6 +24,15 @@ more general are very welcome.
   and download its
   [zuliprc](https://zulipchat.com/api/configuring-python-bindings)
   file to `zulip_archive/zuliprc` within this project.
+* Extend the `zuliprc` file with an `archive` section like this:
+    ```
+    [archive]
+    root_url=file:///home/tabbott/zulip_archive
+    # A whitelist of streams; if specified, only these streams will be included.
+    stream_whitelist=announce
+    # A blacklist of streams; these streams will never be included.
+    stream_blacklist=hidden, other hidden
+    ```
 * Optionally, modify the display generation code to fit your needs. The
   defaults are based on the [leanprover-community Jekyll
   setup](https://github.com/leanprover-community/leanprover-community.github.io).
