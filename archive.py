@@ -30,14 +30,6 @@ import configparser
 import zulip, string, os, time, json, urllib, argparse, subprocess
 
 ## Configuration options
-
-json_root = Path("./_json") # directory to store the generated .json files
-md_root = Path("archive") # directory to store the generated .md and .html files
-md_index = Path("index.md") # name for the index files
-html_root = Path("archive") # user-facing path for the index
-last_updated_dir = Path("_includes")# directory to store update timestamp
-last_updated_file = Path("archive_update.html") # filename for update timestamp
-
 # config_file should point to a Zulip api config
 client = zulip.Client(config_file="./zuliprc")
 
@@ -67,6 +59,18 @@ if stream_blacklist_str != "":
     stream_blacklist = stream_blacklist_str.split(",")
 else:
     stream_blacklist = []
+
+# directory to store the generated .json files
+json_root = Path(get_config("archive", "json_root", "./_json"))
+# directory to store the generated .md and .html files
+md_root = Path(get_config("archive", "md_root", "./archive"))
+# user-facing path for the index
+html_root = Path(get_config("archive", "html_root", "archive"))
+
+# These options these should be little reason to need to update.
+md_index = Path("index.md") # name for the index files
+last_updated_dir = Path("_includes") # directory to store update timestamp
+last_updated_file = Path("archive_update.html") # filename for update timestamp
 
 
 
@@ -173,12 +177,11 @@ def write_topic_body(messages, stream_name, stream_id, topic_name, outfile):
         msg = c['content']
         link = structure_link(stream_id, stream_name, topic_name, c['id'])
         anchor_name = str(c['id'])
-        anchor_link = '{0}{4}/{1}/{2}.html#{3}'.format(
-            site_url,
+        anchor_link = '{0}/{1}/{2}.html#{3}'.format(
+            os.path.join(site_url, html_root),
             sanitize_stream(stream_name, stream_id),
             sanitize_topic(topic_name),
-            anchor_name,
-            html_root)
+            anchor_name)
         outfile.write(format_message(name, date, msg, link, anchor_name, anchor_link))
         outfile.write('\n\n')
 
@@ -362,7 +365,7 @@ def structure_link(stream_id, stream_name, topic_name, post_id):
 
 # absolute url of a stream directory
 def format_stream_url(stream_id, stream_name):
-    return site_url + str(html_root) + '/' + sanitize_stream(stream_name, stream_id)
+    return os.path.join(site_url, str(html_root), sanitize_stream(stream_name, stream_id))
 
 # updates the "last updated" footer message to time `t`.
 def write_last_updated(t):
