@@ -44,7 +44,7 @@ def get_config(section: str, key: str, default_value: Optional[Any]=None) -> Opt
 # The Zulip server's public URL is required in zuliprc already
 zulip_url = get_config("api", "site")
 # The user-facing root url. Only needed for md/html generation.
-site_url = get_config("archive", "root_url", "")
+site_url = get_config("archive", "root_url", "file://" + os.path.abspath(os.path.dirname(__file__)))
 
 # Streams in stream_blacklist are ignored.
 # If stream_whitelist is nonempty, only streams that appear there and not in
