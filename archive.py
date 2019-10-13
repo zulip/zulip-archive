@@ -45,6 +45,9 @@ def get_config(section: str, key: str, default_value: Optional[Any]=None) -> Opt
 zulip_url = get_config("api", "site")
 # The user-facing root url. Only needed for md/html generation.
 site_url = get_config("archive", "root_url", "file://" + os.path.abspath(os.path.dirname(__file__)))
+# Flag to determine whether the archive is a Lean archive or not,
+# used in determining the header.
+is_lean_archive = False
 
 # Streams in stream_blacklist are ignored.
 # If stream_whitelist is nonempty, only streams that appear there and not in
@@ -91,9 +94,12 @@ last_updated_file = Path("archive_update.html") # filename for update timestamp
 
 # writes the Jekyll header info for the index page listing all streams.
 def write_stream_index_header(outfile):
-    outfile.writelines(['---\n', 'layout: archive\n', 'title: Lean Prover Zulip Chat Archive\n'])
-    outfile.write('permalink: {}/index.html\n'.format(html_root))
-    outfile.writelines(['---\n\n','---\n\n','## Streams:\n\n'])
+    if is_lean_archive:
+        outfile.writelines(['---\n', 'layout: archive\n', 'title: Lean Prover Zulip Chat Archive\n'])
+        outfile.write('permalink: {}/index.html\n'.format(html_root))
+        outfile.writelines(['---\n\n', '---\n\n', '## Streams:\n\n'])
+    else:
+        outfile.write('# Streams:\n\n\n')
 
 # writes the index page listing all streams.
 # `streams`: a dict mapping stream names to stream json objects as described in the header.
