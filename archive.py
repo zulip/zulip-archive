@@ -22,12 +22,12 @@
 # This json file is a list of message objects, as desribed at https://zulipchat.com/api/get-messages
 #
 
-from datetime import date, datetime
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
 from zlib import adler32
 import configparser
-import zulip, string, os, time, json, urllib, argparse, subprocess
+import zulip, os, time, json, urllib, argparse, subprocess
 
 ## Configuration options
 # config_file should point to a Zulip api config
