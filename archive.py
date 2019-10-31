@@ -60,6 +60,9 @@ if stream_blacklist_str != "":
 else:
     stream_blacklist = []
 
+# The title of the archive
+archive_title = get_config("archive", "title", "Zulip Chat Archive")
+
 # directory to store the generated .json files
 json_root = Path(get_config("archive", "json_root", "./_json"))
 # directory to store the generated .md and .html files
@@ -91,9 +94,9 @@ last_updated_file = Path("archive_update.html") # filename for update timestamp
 
 # writes the Jekyll header info for the index page listing all streams.
 def write_stream_index_header(outfile):
-    outfile.writelines(['---\n', 'layout: archive\n', 'title: Lean Prover Zulip Chat Archive\n'])
+    outfile.writelines(['---\n', 'layout: archive\n', 'title: {}\n'.format(archive_title)])
     outfile.write('permalink: {}/index.html\n'.format(html_root))
-    outfile.writelines(['---\n\n','---\n\n','## Streams:\n\n'])
+    outfile.writelines(['---\n\n', '---\n\n', '## Streams:\n\n'])
 
 # writes the index page listing all streams.
 # `streams`: a dict mapping stream names to stream json objects as described in the header.
