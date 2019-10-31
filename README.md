@@ -32,6 +32,8 @@ more general are very welcome.
     stream_whitelist=announce
     # A blacklist of streams; these streams will never be included.
     stream_blacklist=hidden, other hidden
+    # The title of the archive
+    title=Lean Prover Zulip Chat Archive
     ```
 * Optionally, modify the display generation code to fit your needs. The
   defaults are based on the [leanprover-community Jekyll
