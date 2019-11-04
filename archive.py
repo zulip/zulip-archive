@@ -121,7 +121,7 @@ def write_topic_index_header(outfile, stream_name, stream):
     strm = '## Stream: [{0}]({1}/index.html)'.format(
         stream_name, format_stream_url(stream['id'], stream_name)
     )
-    outfile.writelines(['---\n', 'layout: archive\n', 'title: Lean Prover Zulip Chat Archive\n',
+    outfile.writelines(['---\n', 'layout: archive\n', 'title: {}\n'.format(archive_title),
                         permalink, '\n---\n\n', strm, '\n---\n\n', '### Topics:\n\n'])
 
 # writes an index page for a given stream, printing a list of the topics in that stream.
@@ -159,8 +159,8 @@ def write_topic_header(outfile, stream_name, stream_id, topic_name):
         sanitize_topic(topic_name),
         format_stream_url(stream_id, stream_name)
     )
-    outfile.writelines(['---\n', 'layout: archive\n', 'title: Lean Prover Zulip Chat Archive\n',
-                        permalink, '\n---\n\n', strm, '\n', tpc, '\n\n<hr>\n\n', '<base href="https://leanprover.zulipchat.com">\n'])
+    outfile.writelines(['---\n', 'layout: archive\n', 'title: {}\n'.format(archive_title),
+                        permalink, '\n---\n\n', strm, '\n', tpc, '\n\n<hr>\n\n', '<base href="{}">\n'.format(zulip_url)])
 
 # formats a single post in a topic
 # Note: the default expects the Zulip "Z" icon at site_url+'assets/img/zulip2.png'
@@ -404,7 +404,7 @@ def github_push():
     print(subprocess.check_output(['git','commit','-m','auto update: {}'.format(datetime.utcfromtimestamp(time.time()).strftime('%b %d %Y at %H:%M UTC'))]))
     print(subprocess.check_output(['git','push']))
 
-parser = argparse.ArgumentParser(description='Build an html archive of the leanprover Zulip chat.')
+parser = argparse.ArgumentParser(description='Build an html archive of the Zulip chat.')
 parser.add_argument('-b', action='store_true', default=False, help='Build .md files')
 parser.add_argument('-t', action='store_true', default=False, help='Make a clean json archive')
 parser.add_argument('-i', action='store_true', default=False, help='Incrementally update the json archive')
