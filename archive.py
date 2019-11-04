@@ -24,6 +24,7 @@
 
 from datetime import datetime
 from pathlib import Path
+from shutil import copyfile
 from typing import Any, Optional
 from zlib import adler32
 import configparser
@@ -177,6 +178,7 @@ def write_topic_index(stream_name, stream):
 
 # formats the header for a topic page.
 def write_topic_header(outfile, stream_name, stream_id, topic_name):
+    outfile.write('<head><link href="/style.css" rel="stylesheet"></head>')
     permalink = 'permalink: {0}/{1}/{2}.html'.format(
         html_root,
         sanitize_stream(stream_name, stream_id),
@@ -408,6 +410,9 @@ def write_last_updated(t):
     f.write('<hr><p>Last updated: {} UTC</p>'.format(t))
     f.close()
 
+def write_css():
+    copyfile('style.css', md_root / 'style.css')
+
 # writes all markdown files to md_root, based on the archive at json_root.
 def write_markdown():
     f = (json_root / Path('stream_index.json')).open('r', encoding='utf-8')
@@ -416,6 +421,7 @@ def write_markdown():
     streams = stream_info['streams']
     write_last_updated(str(stream_info['time']))
     write_stream_index(streams)
+    write_css()
     for s in streams:
         print('building: ', s)
         write_topic_index(s, streams[s])
