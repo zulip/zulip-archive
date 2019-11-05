@@ -29,52 +29,84 @@ from zlib import adler32
 import configparser
 import zulip, os, time, json, urllib, argparse, subprocess
 
-## Configuration options
-# config_file should point to a Zulip api config
-client = zulip.Client(config_file="./zuliprc")
 
-# With additional options supported for the below.
-config_file = configparser.RawConfigParser()
-config_file.read("./zuliprc")
-def get_config(section: str, key: str, default_value: Optional[Any]=None) -> Optional[Any]:
-    if config_file.has_option(section, key):
-        return config_file.get(section, key)
-    return default_value
+# Globals
 
-# The Zulip server's public URL is required in zuliprc already
-zulip_url = get_config("api", "site")
-# The user-facing root url. Only needed for md/html generation.
-site_url = get_config("archive", "root_url", "file://" + os.path.abspath(os.path.dirname(__file__)))
+client = None
+config_file = None
+zulip_url = None
+site_url = None
+stream_whitelist = None
+stream_blacklist = None
+archive_title = None
+md_root = None
+html_root = None
+md_index = None
+last_updated_dir = None
+last_updated_file = None
 
-# Streams in stream_blacklist are ignored.
-# If stream_whitelist is nonempty, only streams that appear there and not in
-# stream_blacklist will be archived.
-stream_blacklist_str = get_config("archive", "stream_blacklist", "")
-stream_whitelist_str = get_config("archive", "stream_whitelist", "")
-if stream_whitelist_str != "":
-    stream_whitelist = stream_whitelist_str.split(",")
-else:
-    stream_whitelist = []
-if stream_blacklist_str != "":
-    stream_blacklist = stream_blacklist_str.split(",")
-else:
-    stream_blacklist = []
+def read_config():
+    global client
+    global config_file
+    global zulip_url
+    global site_url
+    global stream_whitelist
+    global stream_blacklist
+    global archive_title
+    global json_root
+    global md_root
+    global html_root
+    global md_index
+    global last_updated_dir
+    global last_updated_file
 
-# The title of the archive
-archive_title = get_config("archive", "title", "Zulip Chat Archive")
+    def get_config(section: str, key: str, default_value: Optional[Any]=None) -> Optional[Any]:
+        if config_file.has_option(section, key):
+            return config_file.get(section, key)
+        return default_value
 
-# directory to store the generated .json files
-json_root = Path(get_config("archive", "json_root", "./_json"))
-# directory to store the generated .md and .html files
-md_root = Path(get_config("archive", "md_root", "./archive"))
-# user-facing path for the index
-html_root = Path(get_config("archive", "html_root", "archive"))
+    ## Configuration options
+    # config_file should point to a Zulip api config
+    client = zulip.Client(config_file="./zuliprc")
 
-# These options these should be little reason to need to update.
-md_index = Path("index.md") # name for the index files
-last_updated_dir = Path("_includes") # directory to store update timestamp
-last_updated_file = Path("archive_update.html") # filename for update timestamp
+    # With additional options supported for the below.
+    config_file = configparser.RawConfigParser()
+    config_file.read("./zuliprc")
 
+    # The Zulip server's public URL is required in zuliprc already
+    zulip_url = get_config("api", "site")
+    # The user-facing root url. Only needed for md/html generation.
+    site_url = get_config("archive", "root_url", "file://" + os.path.abspath(os.path.dirname(__file__)))
+
+    # Streams in stream_blacklist are ignored.
+    # If stream_whitelist is nonempty, only streams that appear there and not in
+    # stream_blacklist will be archived.
+    stream_blacklist_str = get_config("archive", "stream_blacklist", "")
+    stream_whitelist_str = get_config("archive", "stream_whitelist", "")
+    if stream_whitelist_str != "":
+        stream_whitelist = stream_whitelist_str.split(",")
+    else:
+        stream_whitelist = []
+
+    if stream_blacklist_str != "":
+        stream_blacklist = stream_blacklist_str.split(",")
+    else:
+        stream_blacklist = []
+
+    # The title of the archive
+    archive_title = get_config("archive", "title", "Zulip Chat Archive")
+
+    # directory to store the generated .json files
+    json_root = Path(get_config("archive", "json_root", "./_json"))
+    # directory to store the generated .md and .html files
+    md_root = Path(get_config("archive", "md_root", "./archive"))
+    # user-facing path for the index
+    html_root = Path(get_config("archive", "html_root", "archive"))
+
+    # These options these should be little reason to need to update.
+    md_index = Path("index.md") # name for the index files
+    last_updated_dir = Path("_includes") # directory to store update timestamp
+    last_updated_file = Path("archive_update.html") # filename for update timestamp
 
 
 ## Customizable display functions.
@@ -412,6 +444,8 @@ parser.add_argument('-f', action='store_true', default=False, help='Pull from Gi
 parser.add_argument('-p', action='store_true', default=False, help='Push results to GitHub.')
 
 results = parser.parse_args()
+
+read_config()
 
 if results.t and results.i:
     print('Cannot perform both a total and incremental update. Use -t or -i.')
