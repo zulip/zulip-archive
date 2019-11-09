@@ -215,7 +215,7 @@ def write_topic_body(messages, stream_name, stream_id, topic_name, outfile):
         link = structure_link(stream_id, stream_name, topic_name, c['id'])
         anchor_name = str(c['id'])
         anchor_link = '{0}/{1}/{2}.html#{3}'.format(
-            os.path.join(site_url, html_root),
+            urllib.parse.urljoin(site_url, html_root),
             sanitize_stream(stream_name, stream_id),
             sanitize_topic(topic_name),
             anchor_name)
