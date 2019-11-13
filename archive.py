@@ -100,7 +100,7 @@ def read_config():
     # directory to store the generated .md and .html files
     md_root = Path(get_config("archive", "md_root", "./archive"))
     # user-facing path for the index
-    html_root = Path(get_config("archive", "html_root", "archive"))
+    html_root = get_config("archive", "html_root", "archive")
 
     # These options these should be little reason to need to update.
     md_index = Path("index.md") # name for the index files
@@ -400,7 +400,7 @@ def structure_link(stream_id, stream_name, topic_name, post_id):
 
 # absolute url of a stream directory
 def format_stream_url(stream_id, stream_name):
-    return os.path.join(site_url, str(html_root), sanitize_stream(stream_name, stream_id))
+    return urllib.parse.urljoin(site_url, html_root, sanitize_stream(stream_name, stream_id))
 
 # updates the "last updated" footer message to time `t`.
 def write_last_updated(t):
