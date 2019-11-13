@@ -25,7 +25,7 @@
 from datetime import datetime
 from pathlib import Path
 from shutil import copyfile
-from typing import Any, Optional
+from typing import Optional
 from zlib import adler32
 import configparser
 import zulip, os, time, json, urllib, argparse, subprocess
@@ -34,7 +34,6 @@ import zulip, os, time, json, urllib, argparse, subprocess
 # Globals
 
 client = None
-config_file = None
 zulip_url = None
 site_url = None
 stream_whitelist = None
@@ -48,7 +47,6 @@ last_updated_file = None
 
 def read_config():
     global client
-    global config_file
     global zulip_url
     global site_url
     global stream_whitelist
@@ -61,7 +59,7 @@ def read_config():
     global last_updated_dir
     global last_updated_file
 
-    def get_config(section: str, key: str, default_value: Optional[Any]=None) -> Optional[Any]:
+    def get_config(section: str, key: str, default_value: Optional[str]=None) -> Optional[str]:
         if config_file.has_option(section, key):
             return config_file.get(section, key)
         return default_value
