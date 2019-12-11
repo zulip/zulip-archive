@@ -20,11 +20,13 @@ archive.
 * [Create a bot](https://zulipchat.com/help/add-a-bot-or-integration)
   and download its
   [zuliprc](https://zulipchat.com/api/configuring-python-bindings)
-  file to `zulip_archive/zuliprc` within this project.
+  file to `zulip-archive/zuliprc` within this project.
 * Extend the `zuliprc` file with an `archive` section like this:
     ```
     [archive]
-    root_url=file:///home/tabbott/zulip_archive
+    # root_url is used for internal links in the archive.
+    # A file:/// path is useful for inspecting on the local filesystem.
+    root_url=file:///path/to/zulip-archive
     # A whitelist of streams; if specified, only these streams will be included.
     stream_whitelist=announce
     # A blacklist of streams; these streams will never be included.
@@ -56,7 +58,7 @@ either via a GitHub issue or by posting in
 [#integrations](https://chat.zulip.org/#narrow/stream/127-integrations/)
 in the [Zulip development community](https://chat.zulip.org).
 
-Once `zulip_archive` is more stable and polished, we expect to merge
+Once `zulip-archive` is more stable and polished, we expect to merge
 it into the
 [python-zulip-api](https://github.com/zulip/python-zulip-api) project
 and moves its documentation to live [with other
