@@ -1,22 +1,19 @@
-# zulip_archive
+# Zulip HTML archive
 
-A tool for publicly archiving and displaying Zulip chat channels.
+Generates an HTML archive of a configured set of streams within a
+[Zulip](https://zulipchat.com) organization (usually all public
+streams).  This is particularly useful when used in combination with Jekyll, to
+compile the html/markdown to a functional website.
 
-Author: [Robert Y. Lewis](https://robertylewis.com/) ([@robertylewis](https://github.com/robertylewis))
-
-The script `archive.py` has two functions:
-* It builds a json archive of messages from a Zulip chat room.
-* It generates static markdown/html to display these messages.
-
-This is particularly useful when used in combination with Jekyll, to
-compile the html/markdown to a functional website. An example of this
-can be seen at the [leanprover-community Zulip chat
+Example: [Lean Prover
 archive](https://leanprover-community.github.io/archive/).
 
-This script is provided as-is. Contributions to make it more robust or
-more general are very welcome.
+`zulip-archive` works by downloading Zulip message history via the
+API, storing it in JSON files, maintaining its local archive with
+incremental updates, and turning those JSON files into the HTML
+archive.
 
-## Directions for use
+## Instructions
 
 * The script requires Python 3.
 * Install the Zulip python bindings, with `pip3 install zulip`.
@@ -39,8 +36,43 @@ more general are very welcome.
   defaults are based on the [leanprover-community Jekyll
   setup](https://github.com/leanprover-community/leanprover-community.github.io).
 
-* Run `python3 archive.py` with the following options:
+* Run `python3 archive.py -t` to download a fresh archive.
+
+The tool supports the following options:
+
   * `-t` builds a fresh archive. This will download every message from the Zulip chat and might take a long time. Must be run at least once before using `-i`.
-  * `-i` updates the archives with messages posted since the last scrape.
+  * `-i` updates the archive with messages posted since the last scrape.
   * `-b` generates the markdown/html output.
-  * `-f` updates the git repository containing the script, and `-p` pushes the generated files. Useful if the script is generating a static site hosted using GitHub Pages.
+  * `-f` updates the git repository containing the script, and `-p`
+  pushes the generated files. Useful if the script is generating a static site hosted using GitHub Pages.
+
+## Contributing and future plans
+
+Feedback, issues, and pull requests are encouraged!  Our goal is for
+this project to support the needs of any community looking for an HTML
+archive of their Zulip organization's history, through just
+configuration changes.  So please report even minor inconveniences,
+either via a GitHub issue or by posting in
+[#integrations](https://chat.zulip.org/#narrow/stream/127-integrations/)
+in the [Zulip development community](https://chat.zulip.org).
+
+Once `zulip_archive` is more stable and polished, we expect to merge
+it into the
+[python-zulip-api](https://github.com/zulip/python-zulip-api) project
+and moves its documentation to live [with other
+integrations](https://zulipchat.com/integrations/) for a more
+convenient installation experience.  But at the moment, it's
+convenient for it to have a dedicated repository for greater
+visibility.
+
+There are also [plans](https://github.com/zulip/zulip/issues/13172) to
+allow organizations to configure "web public" streams that can be
+accessed without signing up for a Zulip account.  We consider that
+feature to be complementary to this project; that system will support
+Zulip's full-text search and real-time update, while `zulip-archive`
+supports creating a permanent archive of a Zulip community that is
+being shut down.
+
+This project is licensed under the MIT license.
+
+Author: [Robert Y. Lewis](https://robertylewis.com/) ([@robertylewis](https://github.com/robertylewis))
