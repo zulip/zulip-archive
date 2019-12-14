@@ -44,6 +44,7 @@ html_root = None
 md_index = None
 last_updated_dir = None
 last_updated_file = None
+jekyll_output = True
 
 def read_config():
     global client
@@ -58,8 +59,9 @@ def read_config():
     global md_index
     global last_updated_dir
     global last_updated_file
+    global jekyll_output
 
-    def get_config(section: str, key: str, default_value: Optional[str]=None) -> Optional[str]:
+    def get_config(section: str, key: str, default_value: Optional[str] = None) -> Optional[str]:
         if config_file.has_option(section, key):
             return config_file.get(section, key)
         return default_value
@@ -107,6 +109,9 @@ def read_config():
     last_updated_dir = Path("_includes") # directory to store update timestamp
     last_updated_file = Path("archive_update.html") # filename for update timestamp
 
+    # Whether to emit output in Jekyll format
+    if config_file.has_option('archive', 'jekyll_output'):
+        jekyll_output = config_file.getboolean('archive', 'jekyll_output')
 
 ## Customizable display functions.
 
@@ -141,7 +146,8 @@ def write_stream_index(streams):
             sanitize_stream(s, streams[s]['id']),
             num_topics,
             '' if num_topics == 1 else 's'))
-    outfile.write('\n{% include ' + str(last_updated_file) + ' %}')
+    if jekyll_output:
+        outfile.write('\n{% include ' + str(last_updated_file) + ' %}')
     outfile.close()
 
 # writes the Jekyll header info for the index page for a given stream.
@@ -171,7 +177,8 @@ def write_topic_index(stream_name, stream):
             datetime.utcfromtimestamp(t['latest_date']).strftime('%b %d %Y at %H:%M'),
             '' if t['size'] == 1 else 's'
         ))
-    outfile.write('\n{% include ' + str(last_updated_file) + ' %}')
+    if jekyll_output:
+        outfile.write('\n{% include ' + str(last_updated_file) + ' %}')
     outfile.close()
 
 # formats the header for a topic page.
@@ -230,10 +237,12 @@ def write_topic(stream_name, stream, topic_name):
     f.close()
     o = open_outfile(md_root / Path(sanitize_stream(stream_name, stream['id'])), Path(sanitize_topic(topic_name) + '.html'), 'w+')
     write_topic_header(o, stream_name, stream['id'], topic_name)
-    o.write('\n{% raw %}\n')
+    if jekyll_output:
+        o.write('\n{% raw %}\n')
     write_topic_body(messages, stream_name, stream['id'], topic_name, o)
-    o.write('\n{% endraw %}\n')
-    o.write('\n{% include ' + str(last_updated_file) + ' %}')
+    if jekyll_output:
+        o.write('\n{% endraw %}\n')
+        o.write('\n{% include ' + str(last_updated_file) + ' %}')
     o.close()
 
 

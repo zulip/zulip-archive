@@ -33,6 +33,8 @@ archive.
     stream_blacklist=hidden, other hidden
     # The title of the archive
     title=Lean Prover Zulip Chat Archive
+    # (optional) Whether to emit output in Jekyll format
+    jekyll_output=true
     ```
 * Optionally, modify the display generation code to fit your needs. The
   defaults are based on the [leanprover-community Jekyll
