@@ -68,12 +68,19 @@ convenient for it to have a dedicated repository for greater
 visibility.
 
 There are also [plans](https://github.com/zulip/zulip/issues/13172) to
-allow organizations to configure "web public" streams that can be
-accessed without signing up for a Zulip account.  We consider that
-feature to be complementary to this project; that system will support
-Zulip's full-text search and real-time update, while `zulip-archive`
-supports creating a permanent archive of a Zulip community that is
-being shut down.
+allow organizations to configure "web public" streams that people can
+access without signing up for a Zulip account, while still using
+in-app features like full-text search and real-time update.
+
+Ideally the "web public" feature will satisfy most use cases, but we
+will continue to provide `zulip-archive` for other scenarios:
+
+- If you need to shut down a Zulip community, you can archive the
+streams for posterity.
+- You may want to publish the content "outside" of Zulip with
+your own branding or integrate with other systems.
+- You may want a local copy of the archive for offline reading.
+- You may have some use case that we didn't foresee (but please tell us about it).
 
 This project is licensed under the MIT license.
 
