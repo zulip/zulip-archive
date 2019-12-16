@@ -2,8 +2,8 @@
 
 Generates an HTML archive of a configured set of streams within a
 [Zulip](https://zulipchat.com) organization (usually all public
-streams).  This is particularly useful when used in combination with Jekyll, to
-compile the html/markdown to a functional website.
+streams).  The [hosting docs](hosting.md) offer a few suggestions for
+good ways to host the output of this tool.
 
 Example: [Lean Prover
 archive](https://leanprover-community.github.io/archive/).
@@ -78,8 +78,15 @@ The tool supports the following options:
   * `-t` builds a fresh archive. This will download every message from the Zulip chat and might take a long time. Must be run at least once before using `-i`.
   * `-i` updates the archive with messages posted since the last scrape.
   * `-b` generates the markdown/html output.
-  * `-f` updates the git repository containing the script, and `-p`
-  pushes the generated files. Useful if the script is generating a static site hosted using GitHub Pages.
+
+This repostiory also contains a [hacky tool](github.py) for managing
+pushes to a repository hosted by GitHub Pages, which supports the
+following options.  Be sure to read the warnings in `github.py`.
+
+* `-f` updates the git repository containing the script
+* `-p` pushes the generated files
+
+Contributions are appreciated to make `github.py` no longer hacky.
 
 ## Contributing and future plans
 

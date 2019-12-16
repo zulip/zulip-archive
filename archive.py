@@ -6,8 +6,7 @@
 #   This uses the Zulip API and takes ~10 minutes to crawl the whole chat.
 # - populate_incremental() assumes there is already a json cache and collects only new messages.
 # - write_markdown() builds markdown files in `md_root` from the json. This takes ~15 seconds.
-# - This markdown can be pushed directly to GitHub or built locally with `jekyll serve --incremental`.
-#   Building locally takes about 1 minute.
+# - See hosting.md for suggestions on hosting.
 #
 # The json format for stream_index.json is:
 # { 'time': the last time stream_index.md was updated,
@@ -28,7 +27,7 @@ from shutil import copyfile
 from typing import Optional
 from zlib import adler32
 import configparser
-import zulip, os, time, json, urllib, argparse, subprocess
+import zulip, os, time, json, urllib, argparse
 
 
 # Globals
@@ -428,24 +427,10 @@ def write_markdown():
 
 
 
-# resets the current repository to match origin/master
-def github_pull():
-    print(subprocess.check_output(['git','fetch','origin','master']))
-    print(subprocess.check_output(['git','reset','--hard','origin/master']))
-
-# commits changes in archive/ and pushes the current repository to origin/master
-def github_push():
-    print(subprocess.check_output(['git','add','archive/*']))
-    print(subprocess.check_output(['git','add','_includes/archive_update.html']))
-    print(subprocess.check_output(['git','commit','-m','auto update: {}'.format(datetime.utcfromtimestamp(time.time()).strftime('%b %d %Y at %H:%M UTC'))]))
-    print(subprocess.check_output(['git','push']))
-
 parser = argparse.ArgumentParser(description='Build an html archive of the Zulip chat.')
 parser.add_argument('-b', action='store_true', default=False, help='Build .md files')
 parser.add_argument('-t', action='store_true', default=False, help='Make a clean json archive')
 parser.add_argument('-i', action='store_true', default=False, help='Incrementally update the json archive')
-parser.add_argument('-f', action='store_true', default=False, help='Pull from GitHub before updating. (Warning: could overwrite this script.)')
-parser.add_argument('-p', action='store_true', default=False, help='Push results to GitHub.')
 
 results = parser.parse_args()
 
@@ -458,9 +443,5 @@ if results.t:
     populate_all()
 elif results.i:
     populate_incremental()
-if results.f:
-    github_pull()
 if results.b:
     write_markdown()
-if results.p:
-    github_push()
