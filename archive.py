@@ -315,13 +315,31 @@ def separate_results(list):
 def test_valid(s):
     return s['name'] not in stream_blacklist and (True if stream_whitelist == [] else s['name'] in stream_whitelist)
 
+def exit_immediately(s):
+    print(s)
+    exit(1)
+
 # Retrieves only new messages from Zulip, based on timestamps from the last update.
 # Raises an exception if there is no index at json_root/stream_index.json
 def populate_incremental():
     streams = get_streams()
     stream_index = json_root / Path('stream_index.json')
+
     if not stream_index.exists():
-        raise Exception('stream index does not exist at {}\nCannot update incrementally without an index.'.format(stream_index))
+        error_msg = '''
+    ERROR!
+
+    You are trying to incrementally update your index, but we cannot find
+    a stream index at {}.
+
+    Most likely, you have never built the index.  You can use the -t option
+    of this script to build a full index one time.
+
+    (It's also possible that you have built the index but modified the configuration
+    or moved files in your file system.)
+            '''.format(stream_index)
+        exit_immediately(error_msg)
+
     f = stream_index.open('r', encoding='utf-8')
     stream_index = json.load(f, encoding='utf-8')
     f.close()
