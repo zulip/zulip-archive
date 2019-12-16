@@ -13,6 +13,39 @@ API, storing it in JSON files, maintaining its local archive with
 incremental updates, and turning those JSON files into the HTML
 archive.
 
+## Why archive?
+
+The best place to participate actively in a Zulip community is an app
+that tracks unread messages, formats messages properly, and is
+designed for efficient interaction.  However, there are several use
+cases where this HTML archive tool is a valuable complement to the
+Zulip apps:
+
+* A public HTML archive can be indexed by search engines and doesn't
+  require authentication to access.  For open source projects and
+  other open communities, this provides a convenient search and
+  browsing experience for users who may not want to sign up an account
+  just to find previous answers to common questions.
+
+* It's common to set up Zulip instances for one-time events such as
+  conferences, retreats, or hackathons.  Once the event ends, you may
+  want to shut down the Zulip instance for operational convenience,
+  but still want an archive of the communications.
+
+* You may also decide to shut down a Zulip instance, whether to move
+  to another communication tool, to deduplicate instances, or because
+  your organization is shutting down.  You can always [export your
+  Zulip data](https://zulipchat.com/help/export-your-organization),
+  but the other tool may not be able to import it.  In such a case,
+  you can use this archive tool to keep the old conversations
+  accessible. (Contrast this to scenarios where your provider locks
+  you in to a solution, even when folks are dissatisfied with the
+  tool, because they own the data.)
+
+* You may also want to publish your conversations outside of Zulip for
+  branding reasons or to integrate with other data.  You can modify
+  the tools here as needed for that.  You own your own data.
+
 ## Instructions
 
 * The script requires Python 3.
@@ -68,12 +101,14 @@ convenient for it to have a dedicated repository for greater
 visibility.
 
 There are also [plans](https://github.com/zulip/zulip/issues/13172) to
-allow organizations to configure "web public" streams that can be
-accessed without signing up for a Zulip account.  We consider that
-feature to be complementary to this project; that system will support
-Zulip's full-text search and real-time update, while `zulip-archive`
-supports creating a permanent archive of a Zulip community that is
-being shut down.
+allow organizations to configure "web public" streams that people can
+access without signing up for a Zulip account, while still using
+in-app features like full-text search and real-time update.
+
+Ideally the "web public" feature will be a better solution for the
+most common use case of this tool.  But we expect `zulip-archive` to
+be maintained for the foreseeable future, as it supports a broader set
+of use cases.
 
 This project is licensed under the MIT license.
 
