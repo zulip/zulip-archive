@@ -434,11 +434,17 @@ parser.add_argument('-i', action='store_true', default=False, help='Incrementall
 
 results = parser.parse_args()
 
-read_config()
-
 if results.t and results.i:
     print('Cannot perform both a total and incremental update. Use -t or -i.')
-    exit()
+    exit(1)
+
+if not (results.t or results.i or results.b):
+    print('\nERROR!\n\nYou have not specified any work to do.\n')
+    parser.print_help()
+    exit(1)
+
+read_config()
+
 if results.t:
     populate_all()
 elif results.i:
