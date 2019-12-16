@@ -13,6 +13,39 @@ API, storing it in JSON files, maintaining its local archive with
 incremental updates, and turning those JSON files into the HTML
 archive.
 
+## Why archive?
+
+The best place to view Zulip content is within Zulip itself,
+but some of your customers or collaborators may only wish to
+see the content, without using the tool.  (They may only
+need to read the conversation, not participate in it.
+They may simply be overwhelmed with all the other communication
+tools they already use and resistant to trying out another
+tool.)
+
+Publishing an archive outside of your active Zulip
+instance reduces the friction for those people.
+
+It's also common to set up Zulip instances
+for one-time events such as conferences, retreats, or
+hackathons.  Once the event ends, you may decide to shut
+down the Zulip instance, but participants may want to be
+able to go back and read the conversations later for reference.
+
+You may also decide to shut down Zulip instances to move to
+another communication tool.  You can always export your Zulip
+data, but the other tool may not be able to import it.  In such
+a case, you can use the archive tool to keep the old conversations
+accessible. (Contrast this to scenarios where your provider
+locks you in to a solution, even when folks are dissatisfied
+with the tool, because they own the data.)
+
+You may also want to publish your conversations outside of Zulip for
+branding reasons or to integrate with other data.  You can modify
+the tools here as needed for that.  You own your own data.
+
+Finally, you may want search engines to find your Zulip content.
+
 ## Instructions
 
 * The script requires Python 3.
@@ -73,14 +106,8 @@ access without signing up for a Zulip account, while still using
 in-app features like full-text search and real-time update.
 
 Ideally the "web public" feature will satisfy most use cases, but we
-will continue to provide `zulip-archive` for other scenarios:
-
-- If you need to shut down a Zulip community, you can archive the
-streams for posterity.
-- You may want to publish the content "outside" of Zulip with
-your own branding or integrate with other systems.
-- You may want a local copy of the archive for offline reading.
-- You may have some use case that we didn't foresee (but please tell us about it).
+will continue to provide `zulip-archive` for scenarios that don't
+quite fit under the new feature.
 
 This project is licensed under the MIT license.
 
