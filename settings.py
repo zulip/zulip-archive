@@ -15,3 +15,8 @@ you may prefer another directory structure.
 '''
 
 json_directory = Path('../zulip_json')  # Modify me!
+
+'''
+We write HTML to here.
+'''
+html_directory = Path('./archive')  # Modify me!

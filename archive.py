@@ -5,7 +5,7 @@
 #   containing message data and an index json file mapping streams to their topics.
 #   This uses the Zulip API and takes ~10 minutes to crawl the whole chat.
 # - populate_incremental() assumes there is already a json cache and collects only new messages.
-# - write_markdown() builds markdown files in `md_root` from the json. This takes ~15 seconds.
+# - write_markdown() builds markdown files in `settings.html_directory`
 # - See hosting.md for suggestions on hosting.
 #
 # The json format for stream_index.json is:
@@ -57,6 +57,13 @@ And then fetch the JSON:
 
 python archive.py -t'''
 
+NO_HTML_DIR_ERROR = '''
+We cannot find a place to write HTML files.
+
+Please run the below command:
+
+mkdir {}'''
+
 def get_json_directory(for_writing):
     json_dir = settings.json_directory
 
@@ -75,6 +82,19 @@ def get_json_directory(for_writing):
 
     return settings.json_directory
 
+def get_html_directory():
+    html_dir = settings.html_directory
+
+    if not html_dir.exists():
+        error_msg = NO_HTML_DIR_ERROR.format(html_dir.as_posix())
+
+        exit_immediately(error_msg)
+
+    if not html_dir.is_dir():
+        exit_immediately(str(html_dir) + ' needs to be a directory')
+
+    return settings.html_directory
+
 # Globals
 
 client = None
@@ -83,7 +103,6 @@ site_url = None
 stream_whitelist = None
 stream_blacklist = None
 archive_title = None
-md_root = None
 html_root = None
 md_index = None
 
@@ -94,7 +113,6 @@ def read_config():
     global stream_whitelist
     global stream_blacklist
     global archive_title
-    global md_root
     global html_root
     global md_index
 
@@ -134,8 +152,6 @@ def read_config():
     # The title of the archive
     archive_title = get_config("archive", "title", "Zulip Chat Archive")
 
-    # directory to store the generated .md and .html files
-    md_root = Path(get_config("archive", "md_root", "./archive"))
     # user-facing path for the index
     html_root = get_config("archive", "html_root", "archive")
 
@@ -165,7 +181,7 @@ def write_stream_index_header(outfile):
 
 # writes the index page listing all streams.
 # `streams`: a dict mapping stream names to stream json objects as described in the header.
-def write_stream_index(streams, date_footer):
+def write_stream_index(md_root, streams, date_footer):
     outfile = open_outfile(md_root, md_index, 'w+')
     write_stream_index_header(outfile)
     for s in sorted(streams, key=lambda s: len(streams[s]['topic_data']), reverse=True):
@@ -192,7 +208,7 @@ def write_topic_index_header(outfile, stream_name, stream):
 # writes an index page for a given stream, printing a list of the topics in that stream.
 # `stream_name`: the name of the stream.
 # `stream`: a stream json object as described in the header
-def write_topic_index(stream_name, stream, date_footer):
+def write_topic_index(md_root, stream_name, stream, date_footer):
     directory = md_root / Path(sanitize_stream(stream_name, stream['id']))
     outfile = open_outfile(directory, md_index, 'w+')
     write_topic_index_header(outfile, stream_name, stream)
@@ -257,7 +273,7 @@ def write_topic_body(messages, stream_name, stream_id, topic_name, outfile):
 
 # writes a topic page.
 # `stream`: a stream json object as defined in the header
-def write_topic(json_root, stream_name, stream, topic_name, date_footer):
+def write_topic(json_root, md_root, stream_name, stream, topic_name, date_footer):
     json_path = json_root / Path(sanitize_stream(stream_name, stream['id'])) / Path (sanitize_topic(topic_name) + '.json')
     f = json_path.open('r', encoding='utf-8')
     messages = json.load(f)
@@ -448,23 +464,23 @@ def structure_link(stream_id, stream_name, topic_name, post_id):
 def format_stream_url(stream_id, stream_name):
     return urllib.parse.urljoin(site_url, html_root, sanitize_stream(stream_name, stream_id))
 
-def write_css():
+def write_css(md_root):
     copyfile('style.css', md_root / 'style.css')
 
 # writes all markdown files to md_root, based on the archive at json_root.
-def write_markdown(json_root):
+def write_markdown(json_root, md_root):
     f = (json_root / Path('stream_index.json')).open('r', encoding='utf-8')
     stream_info = json.load(f, encoding='utf-8')
     f.close()
     streams = stream_info['streams']
     date_footer = '\n<hr><p>Last updated: {} UTC</p>'.format(stream_info['time'])
-    write_stream_index(streams, date_footer)
-    write_css()
+    write_stream_index(md_root, streams, date_footer)
+    write_css(md_root)
     for s in streams:
         print('building: ', s)
-        write_topic_index(s, streams[s], date_footer)
+        write_topic_index(md_root, s, streams[s], date_footer)
         for t in streams[s]['topic_data']:
-            write_topic(json_root, s, streams[s], t, date_footer)
+            write_topic(json_root, md_root, s, streams[s], t, date_footer)
 
 parser = argparse.ArgumentParser(description='Build an html archive of the Zulip chat.')
 parser.add_argument('-b', action='store_true', default=False, help='Build .md files')
@@ -484,6 +500,9 @@ if not (results.t or results.i or results.b):
 
 json_root = get_json_directory(for_writing=results.t)
 
+if results.b:
+    md_root = get_html_directory()
+
 read_config()
 
 if results.t:
@@ -491,4 +510,4 @@ if results.t:
 elif results.i:
     populate_incremental(json_root)
 if results.b:
-    write_markdown(json_root)
+    write_markdown(json_root, md_root)
