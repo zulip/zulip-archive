@@ -175,7 +175,6 @@ def write_topic_index(stream_name, stream):
 
 # formats the header for a topic page.
 def write_topic_header(outfile, stream_name, stream_id, topic_name):
-    outfile.write('<head><link href="/style.css" rel="stylesheet"></head>')
     permalink = 'permalink: {0}/{1}/{2}.html'.format(
         html_root,
         sanitize_stream(stream_name, stream_id),
@@ -192,6 +191,7 @@ def write_topic_header(outfile, stream_name, stream_id, topic_name):
     )
     outfile.writelines(['---\n', 'layout: archive\n', 'title: {}\n'.format(archive_title),
                         permalink, '\n---\n\n', strm, '\n', tpc, '\n\n<hr>\n\n', '<base href="{}">\n'.format(zulip_url)])
+    outfile.write('\n<head><link href="/style.css" rel="stylesheet"></head>\n')
 
 # formats a single post in a topic
 # Note: the default expects the Zulip "Z" icon at site_url+'assets/img/zulip2.png'
