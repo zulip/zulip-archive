@@ -86,8 +86,6 @@ archive_title = None
 md_root = None
 html_root = None
 md_index = None
-last_updated_dir = None
-last_updated_file = None
 
 def read_config():
     global client
@@ -99,8 +97,6 @@ def read_config():
     global md_root
     global html_root
     global md_index
-    global last_updated_dir
-    global last_updated_file
 
     def get_config(section: str, key: str, default_value: Optional[str]=None) -> Optional[str]:
         if config_file.has_option(section, key):
@@ -143,10 +139,7 @@ def read_config():
     # user-facing path for the index
     html_root = get_config("archive", "html_root", "archive")
 
-    # These options these should be little reason to need to update.
-    md_index = Path("index.md") # name for the index files
-    last_updated_dir = Path("_includes") # directory to store update timestamp
-    last_updated_file = Path("archive_update.html") # filename for update timestamp
+    md_index = Path("index.md")
 
 
 ## Customizable display functions.
@@ -172,7 +165,7 @@ def write_stream_index_header(outfile):
 
 # writes the index page listing all streams.
 # `streams`: a dict mapping stream names to stream json objects as described in the header.
-def write_stream_index(streams):
+def write_stream_index(streams, date_footer):
     outfile = open_outfile(md_root, md_index, 'w+')
     write_stream_index_header(outfile)
     for s in sorted(streams, key=lambda s: len(streams[s]['topic_data']), reverse=True):
@@ -182,7 +175,7 @@ def write_stream_index(streams):
             sanitize_stream(s, streams[s]['id']),
             num_topics,
             '' if num_topics == 1 else 's'))
-    outfile.write('\n{% include ' + str(last_updated_file) + ' %}')
+    outfile.write(date_footer)
     outfile.close()
 
 # writes the Jekyll header info for the index page for a given stream.
@@ -199,7 +192,7 @@ def write_topic_index_header(outfile, stream_name, stream):
 # writes an index page for a given stream, printing a list of the topics in that stream.
 # `stream_name`: the name of the stream.
 # `stream`: a stream json object as described in the header
-def write_topic_index(stream_name, stream):
+def write_topic_index(stream_name, stream, date_footer):
     directory = md_root / Path(sanitize_stream(stream_name, stream['id']))
     outfile = open_outfile(directory, md_index, 'w+')
     write_topic_index_header(outfile, stream_name, stream)
@@ -212,7 +205,7 @@ def write_topic_index(stream_name, stream):
             datetime.utcfromtimestamp(t['latest_date']).strftime('%b %d %Y at %H:%M'),
             '' if t['size'] == 1 else 's'
         ))
-    outfile.write('\n{% include ' + str(last_updated_file) + ' %}')
+    outfile.write(date_footer)
     outfile.close()
 
 # formats the header for a topic page.
@@ -264,7 +257,7 @@ def write_topic_body(messages, stream_name, stream_id, topic_name, outfile):
 
 # writes a topic page.
 # `stream`: a stream json object as defined in the header
-def write_topic(json_root, stream_name, stream, topic_name):
+def write_topic(json_root, stream_name, stream, topic_name, date_footer):
     json_path = json_root / Path(sanitize_stream(stream_name, stream['id'])) / Path (sanitize_topic(topic_name) + '.json')
     f = json_path.open('r', encoding='utf-8')
     messages = json.load(f)
@@ -274,7 +267,7 @@ def write_topic(json_root, stream_name, stream, topic_name):
     o.write('\n{% raw %}\n')
     write_topic_body(messages, stream_name, stream['id'], topic_name, o)
     o.write('\n{% endraw %}\n')
-    o.write('\n{% include ' + str(last_updated_file) + ' %}')
+    o.write(date_footer)
     o.close()
 
 
@@ -455,12 +448,6 @@ def structure_link(stream_id, stream_name, topic_name, post_id):
 def format_stream_url(stream_id, stream_name):
     return urllib.parse.urljoin(site_url, html_root, sanitize_stream(stream_name, stream_id))
 
-# updates the "last updated" footer message to time `t`.
-def write_last_updated(t):
-    f = open_outfile(last_updated_dir, last_updated_file, 'w+')
-    f.write('<hr><p>Last updated: {} UTC</p>'.format(t))
-    f.close()
-
 def write_css():
     copyfile('style.css', md_root / 'style.css')
 
@@ -470,14 +457,14 @@ def write_markdown(json_root):
     stream_info = json.load(f, encoding='utf-8')
     f.close()
     streams = stream_info['streams']
-    write_last_updated(str(stream_info['time']))
-    write_stream_index(streams)
+    date_footer = '\n<hr><p>Last updated: {} UTC</p>'.format(stream_info['time'])
+    write_stream_index(streams, date_footer)
     write_css()
     for s in streams:
         print('building: ', s)
-        write_topic_index(s, streams[s])
+        write_topic_index(s, streams[s], date_footer)
         for t in streams[s]['topic_data']:
-            write_topic(json_root, s, streams[s], t)
+            write_topic(json_root, s, streams[s], t, date_footer)
 
 parser = argparse.ArgumentParser(description='Build an html archive of the Zulip chat.')
 parser.add_argument('-b', action='store_true', default=False, help='Build .md files')
