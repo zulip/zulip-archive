@@ -20,6 +20,7 @@ from lib.common import (
     open_outfile,
     sanitize_stream,
     sanitize_topic,
+    stream_validator,
     exit_immediately
     )
 
@@ -96,8 +97,6 @@ def get_html_directory():
 client = None
 zulip_url = None
 site_url = None
-stream_whitelist = None
-stream_blacklist = None
 archive_title = None
 html_root = None
 md_index = None
@@ -106,8 +105,6 @@ def read_config():
     global client
     global zulip_url
     global site_url
-    global stream_whitelist
-    global stream_blacklist
     global archive_title
     global html_root
     global md_index
@@ -129,21 +126,6 @@ def read_config():
     zulip_url = get_config("api", "site")
     # The user-facing root url. Only needed for md/html generation.
     site_url = get_config("archive", "root_url", "file://" + os.path.abspath(os.path.dirname(__file__)))
-
-    # Streams in stream_blacklist are ignored.
-    # If stream_whitelist is nonempty, only streams that appear there and not in
-    # stream_blacklist will be archived.
-    stream_blacklist_str = get_config("archive", "stream_blacklist", "")
-    stream_whitelist_str = get_config("archive", "stream_whitelist", "")
-    if stream_whitelist_str != "":
-        stream_whitelist = stream_whitelist_str.split(",")
-    else:
-        stream_whitelist = []
-
-    if stream_blacklist_str != "":
-        stream_blacklist = stream_blacklist_str.split(",")
-    else:
-        stream_blacklist = []
 
     # The title of the archive
     archive_title = get_config("archive", "title", "Zulip Chat Archive")
@@ -290,9 +272,6 @@ def write_topic(json_root, md_root, stream_name, stream, topic_name, date_footer
 def escape_pipes(s):
     return s.replace('|','\|').replace(']','\]').replace('[','\[')
 
-def test_valid(s):
-    return s['name'] not in stream_blacklist and (True if stream_whitelist == [] else s['name'] in stream_whitelist)
-
 ## Display
 
 # Create a link to a post on Zulip
@@ -344,20 +323,23 @@ json_root = get_json_directory(for_writing=results.t)
 if results.b:
     md_root = get_html_directory()
 
+if results.t or results.i:
+    is_valid_stream_name = stream_validator(settings)
+
 read_config()
 
 if results.t:
     populate_all(
         client,
         json_root,
-        test_valid
+        is_valid_stream_name,
         )
 
 elif results.i:
     populate_incremental(
         client,
         json_root,
-        test_valid
+        is_valid_stream_name,
         )
 
 if results.b:

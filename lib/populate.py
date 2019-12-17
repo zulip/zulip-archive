@@ -100,11 +100,11 @@ def get_streams(client):
 def populate_all(
         client,
         json_root,
-        test_valid
+        is_valid_stream_name,
         ):
     streams = get_streams(client)
     ind = {}
-    for s in (s for s in streams if test_valid(s)):
+    for s in (s for s in streams if is_valid_stream_name(s['name'])):
         print(s['name'])
         topics = safe_request(client.get_stream_topics, s['stream_id'])['topics']
         nind = {'id': s['stream_id'], 'latest_id':0}
@@ -137,7 +137,7 @@ def populate_all(
 def populate_incremental(
         client,
         json_root,
-        test_valid
+        is_valid_stream_name,
         ):
     streams = get_streams(client)
     stream_index = json_root / Path('stream_index.json')
@@ -158,7 +158,7 @@ def populate_incremental(
     f = stream_index.open('r', encoding='utf-8')
     stream_index = json.load(f, encoding='utf-8')
     f.close()
-    for s in (s for s in streams if test_valid(s)):
+    for s in (s for s in streams if is_valid_stream_name(s['name'])):
         print(s['name'])
         if s['name'] not in stream_index['streams']:
             stream_index['streams'][s['name']] = {'id':s['stream_id'], 'latest_id':0, 'topic_data':{}}

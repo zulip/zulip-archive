@@ -26,3 +26,28 @@ def sanitize_topic(topic_name):
 def sanitize_stream(stream_name, stream_id):
     return str(stream_id) + sanitize(stream_name)
 
+def stream_validator(settings):
+    if not hasattr(settings, 'included_streams'):
+        exit_immediately('Please set included_streams.')
+
+    if len(settings.included_streams) == 0:
+        exit_immediately('Please add "*" to included_streams.')
+
+    if hasattr(settings, 'excluded_streams'):
+        excluded_streams = set(settings.excluded_streams)
+    else:
+        excluded_streams = set()
+
+    included_streams = set(settings.included_streams)
+
+    def validator(stream):
+        if stream in excluded_streams:
+            return False
+
+        if '*' in included_streams:
+            return True
+
+        return stream in included_streams
+
+    return validator
+

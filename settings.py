@@ -20,3 +20,26 @@ json_directory = Path('../zulip_json')  # Modify me!
 We write HTML to here.
 '''
 html_directory = Path('./archive')  # Modify me!
+
+'''
+You may only want to include certain streams.  If you
+use '*' in included_streams, that gets all your streams,
+except that excluded_streams takes precedence.
+'''
+
+# Modify as needed:
+included_streams = [
+    '*', # for all streams
+    # 'general',
+    # 'public',
+    ]
+
+'''
+add streams here that may be "public" on your Zulip
+instance, but which you don't want to publish in the
+archive
+'''
+excluded_streams = [
+    # 'stream name1',
+    # 'stream name2',
+    ]
