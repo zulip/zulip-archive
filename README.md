@@ -71,6 +71,8 @@ Zulip apps:
   defaults are based on the [leanprover-community Jekyll
   setup](https://github.com/leanprover-community/leanprover-community.github.io).
 
+* Create a directory to store JSON in (see settings.py for more details).
+
 * Run `python3 archive.py -t` to download a fresh archive.
 
 The tool supports the following options:

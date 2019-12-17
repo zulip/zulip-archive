@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #
 # The workflow (timing for the leanprover Zulip chat, on my slow laptop):
-# - populate_all() builds a json file in `json_root` for each topic, containing message data,
-#   and an index json file mapping streams to their topics.
+# - populate_all() builds a json file in `settings.json_directory` for each topic,
+#   containing message data and an index json file mapping streams to their topics.
 #   This uses the Zulip API and takes ~10 minutes to crawl the whole chat.
 # - populate_incremental() assumes there is already a json cache and collects only new messages.
 # - write_markdown() builds markdown files in `md_root` from the json. This takes ~15 seconds.
@@ -15,7 +15,7 @@
 #                               'topic_data': { topic_name: { topic_size: num posts in topic,
 #                                                            latest_date: time of latest post }}}}}
 #
-# stream_index.json is created in the json_root directory.
+# stream_index.json is created in the top level of the JSON directory.
 # This directory also contains a subdirectory for each archived stream.
 # In each stream subdirectory, there is a json file for each topic in that stream.
 # This json file is a list of message objects, as desribed at https://zulipchat.com/api/get-messages
@@ -29,6 +29,51 @@ from zlib import adler32
 import configparser
 import zulip, os, time, json, urllib, argparse
 
+def exit_immediately(s):
+    print('\nERROR\n', s)
+    exit(1)
+
+try:
+    import settings
+except ModuleNotFoundError:
+    # TODO: Add better instructions.
+    exit_immediately('Please create a settings.py file.')
+
+NO_JSON_DIR_ERROR_WRITE = '''
+We cannot find a place to write JSON files.
+
+Please run the below command:
+
+mkdir {}'''
+
+NO_JSON_DIR_ERROR_READ = '''
+We cannot find a place to read JSON files.
+
+Please run the below command:
+
+mkdir {}
+
+And then fetch the JSON:
+
+python archive.py -t'''
+
+def get_json_directory(for_writing):
+    json_dir = settings.json_directory
+
+    if not json_dir.exists():
+        # I use posix paths here, since even on Windows folks will
+        # probably be using some kinda Unix-y shell to run mkdir.
+        if for_writing:
+            error_msg = NO_JSON_DIR_ERROR_WRITE.format(json_dir.as_posix())
+        else:
+            error_msg = NO_JSON_DIR_ERROR_READ.format(json_dir.as_posix())
+
+        exit_immediately(error_msg)
+
+    if not json_dir.is_dir():
+        exit_immediately(str(json_dir) + ' needs to be a directory')
+
+    return settings.json_directory
 
 # Globals
 
@@ -51,7 +96,6 @@ def read_config():
     global stream_whitelist
     global stream_blacklist
     global archive_title
-    global json_root
     global md_root
     global html_root
     global md_index
@@ -94,8 +138,6 @@ def read_config():
     # The title of the archive
     archive_title = get_config("archive", "title", "Zulip Chat Archive")
 
-    # directory to store the generated .json files
-    json_root = Path(get_config("archive", "json_root", "./_json"))
     # directory to store the generated .md and .html files
     md_root = Path(get_config("archive", "md_root", "./archive"))
     # user-facing path for the index
@@ -222,7 +264,7 @@ def write_topic_body(messages, stream_name, stream_id, topic_name, outfile):
 
 # writes a topic page.
 # `stream`: a stream json object as defined in the header
-def write_topic(stream_name, stream, topic_name):
+def write_topic(json_root, stream_name, stream, topic_name):
     json_path = json_root / Path(sanitize_stream(stream_name, stream['id'])) / Path (sanitize_topic(topic_name) + '.json')
     f = json_path.open('r', encoding='utf-8')
     messages = json.load(f)
@@ -315,20 +357,14 @@ def separate_results(list):
 def test_valid(s):
     return s['name'] not in stream_blacklist and (True if stream_whitelist == [] else s['name'] in stream_whitelist)
 
-def exit_immediately(s):
-    print(s)
-    exit(1)
-
 # Retrieves only new messages from Zulip, based on timestamps from the last update.
 # Raises an exception if there is no index at json_root/stream_index.json
-def populate_incremental():
+def populate_incremental(json_root):
     streams = get_streams()
     stream_index = json_root / Path('stream_index.json')
 
     if not stream_index.exists():
         error_msg = '''
-    ERROR!
-
     You are trying to incrementally update your index, but we cannot find
     a stream index at {}.
 
@@ -375,7 +411,7 @@ def populate_incremental():
     out.close()
 
 # Retrieves all messages from Zulip and builds a cache at json_root.
-def populate_all():
+def populate_all(json_root):
     streams = get_streams()
     ind = {}
     for s in (s for s in streams if test_valid(s)):
@@ -429,7 +465,7 @@ def write_css():
     copyfile('style.css', md_root / 'style.css')
 
 # writes all markdown files to md_root, based on the archive at json_root.
-def write_markdown():
+def write_markdown(json_root):
     f = (json_root / Path('stream_index.json')).open('r', encoding='utf-8')
     stream_info = json.load(f, encoding='utf-8')
     f.close()
@@ -441,9 +477,7 @@ def write_markdown():
         print('building: ', s)
         write_topic_index(s, streams[s])
         for t in streams[s]['topic_data']:
-            write_topic(s, streams[s], t)
-
-
+            write_topic(json_root, s, streams[s], t)
 
 parser = argparse.ArgumentParser(description='Build an html archive of the Zulip chat.')
 parser.add_argument('-b', action='store_true', default=False, help='Build .md files')
@@ -461,11 +495,13 @@ if not (results.t or results.i or results.b):
     parser.print_help()
     exit(1)
 
+json_root = get_json_directory(for_writing=results.t)
+
 read_config()
 
 if results.t:
-    populate_all()
+    populate_all(json_root)
 elif results.i:
-    populate_incremental()
+    populate_incremental(json_root)
 if results.b:
-    write_markdown()
+    write_markdown(json_root)
