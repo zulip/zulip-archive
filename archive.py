@@ -328,45 +328,49 @@ def write_markdown(json_root, md_root):
         for t in streams[s]['topic_data']:
             write_topic(json_root, md_root, s, streams[s], t, date_footer)
 
-parser = argparse.ArgumentParser(description='Build an html archive of the Zulip chat.')
-parser.add_argument('-b', action='store_true', default=False, help='Build .md files')
-parser.add_argument('-t', action='store_true', default=False, help='Make a clean json archive')
-parser.add_argument('-i', action='store_true', default=False, help='Incrementally update the json archive')
+def run():
+    parser = argparse.ArgumentParser(description='Build an html archive of the Zulip chat.')
+    parser.add_argument('-b', action='store_true', default=False, help='Build .md files')
+    parser.add_argument('-t', action='store_true', default=False, help='Make a clean json archive')
+    parser.add_argument('-i', action='store_true', default=False, help='Incrementally update the json archive')
 
-results = parser.parse_args()
+    results = parser.parse_args()
 
-if results.t and results.i:
-    print('Cannot perform both a total and incremental update. Use -t or -i.')
-    exit(1)
+    if results.t and results.i:
+        print('Cannot perform both a total and incremental update. Use -t or -i.')
+        exit(1)
 
-if not (results.t or results.i or results.b):
-    print('\nERROR!\n\nYou have not specified any work to do.\n')
-    parser.print_help()
-    exit(1)
+    if not (results.t or results.i or results.b):
+        print('\nERROR!\n\nYou have not specified any work to do.\n')
+        parser.print_help()
+        exit(1)
 
-json_root = get_json_directory(for_writing=results.t)
+    json_root = get_json_directory(for_writing=results.t)
 
-if results.b:
-    md_root = get_html_directory()
+    if results.b:
+        md_root = get_html_directory()
 
-if results.t or results.i:
-    is_valid_stream_name = stream_validator(settings)
+    if results.t or results.i:
+        is_valid_stream_name = stream_validator(settings)
 
-read_config()
+    read_config()
 
-if results.t:
-    populate_all(
-        client,
-        json_root,
-        is_valid_stream_name,
-        )
+    if results.t:
+        populate_all(
+            client,
+            json_root,
+            is_valid_stream_name,
+            )
 
-elif results.i:
-    populate_incremental(
-        client,
-        json_root,
-        is_valid_stream_name,
-        )
+    elif results.i:
+        populate_incremental(
+            client,
+            json_root,
+            is_valid_stream_name,
+            )
 
-if results.b:
-    write_markdown(json_root, md_root)
+    if results.b:
+        write_markdown(json_root, md_root)
+
+if __name__ == '__main__':
+    run()
