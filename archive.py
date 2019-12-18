@@ -97,13 +97,11 @@ def get_html_directory():
 site_url = None
 archive_title = None
 html_root = None
-md_index = None
 
 def read_config():
     global site_url
     global archive_title
     global html_root
-    global md_index
 
     def get_config(section: str, key: str, default_value: Optional[str]=None) -> Optional[str]:
         if config_file.has_option(section, key):
@@ -122,9 +120,6 @@ def read_config():
     # user-facing path for the index
     html_root = get_config("archive", "html_root", "archive")
 
-    md_index = Path("index.md")
-
-
 def get_client_info():
     config_file = './zuliprc'
     client = zulip.Client(config_file=config_file)
@@ -141,9 +136,9 @@ def get_client_info():
 ## Customizable display functions.
 
 # When generating displayable md/html, we create the following structure inside md_root:
-# * md_root/md_index displays a list of all streams
-# * for each stream str, md_root/str/md_index displays a list of all topics in str
-# * for each topic top in a stream str, md_root/str/top.html displays the posts in top.
+# * index.md displays a list of all streams
+# * for each stream str, str/index.md displays a list of all topics in str
+# * for each topic top in a stream str, str/top.html displays the posts in top.
 #
 # Some sanitization is needed to ensure that urls are unique and acceptable.
 # Use sanitize_stream(stream_name, stream_id) in place of str above.
@@ -168,7 +163,7 @@ def write_stream_index_header(outfile):
 # writes the index page listing all streams.
 # `streams`: a dict mapping stream names to stream json objects as described in the header.
 def write_stream_index(md_root, streams, date_footer):
-    outfile = open_outfile(md_root, md_index, 'w+')
+    outfile = open_outfile(md_root, Path('index.md'), 'w+')
     write_stream_index_header(outfile)
     for s in sorted(streams, key=lambda s: len(streams[s]['topic_data']), reverse=True):
         num_topics = len(streams[s]['topic_data'])
@@ -206,7 +201,7 @@ def write_topic_index_header(outfile, stream_name, stream):
 # `stream`: a stream json object as described in the header
 def write_topic_index(md_root, stream_name, stream, date_footer):
     directory = md_root / Path(sanitize_stream(stream_name, stream['id']))
-    outfile = open_outfile(directory, md_index, 'w+')
+    outfile = open_outfile(directory, Path('index.md'), 'w+')
     write_topic_index_header(outfile, stream_name, stream)
     for topic_name in sorted(stream['topic_data'], key=lambda tn: stream['topic_data'][tn]['latest_date'], reverse=True):
         t = stream['topic_data'][topic_name]
