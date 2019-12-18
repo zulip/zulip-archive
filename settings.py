@@ -1,7 +1,33 @@
 # Welcome to settings.py!  You will want to modify these values
 # for your own needs.
 
+import os
 from pathlib import Path
+
+'''
+You generally want to start in debug mode to test out the archive,
+and then set PROD_ARCHIVE to turn on production settings here.  In
+production you usually change two things--the site_url and your
+html_directory.
+'''
+
+if os.getenv('PROD_ARCHIVE'):
+    DEBUG = False
+else:
+    DEBUG = True
+
+'''
+Set the site url.  The default below is good for local
+Jekyll testing, but you will definitely need to set your own
+value for prod.
+'''
+
+if DEBUG:
+    site_url = 'http://127.0.0.1:4000'
+else:
+    # siteurl = 'example.com'
+    raise Exception("You need to configure site_url for prod")
+
 
 '''
 Set the HTML title of your Zulip archive here.
@@ -32,7 +58,15 @@ json_directory = Path('../zulip_json')  # Modify me!
 '''
 We write HTML to here.
 '''
-html_directory = Path('./archive')  # Modify me!
+if DEBUG:
+    html_directory = Path('./archive')  # Modify me!
+else:
+    raise Exception('''
+        You need to set html_directory for prod, and it
+        should be a different location than DEBUG mode,
+        since files will likely have different urls in
+        anchor tags.
+        ''')
 
 '''
 You may only want to include certain streams.  If you
