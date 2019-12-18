@@ -24,6 +24,12 @@ from lib.common import (
     exit_immediately
     )
 
+from lib.front_matter import (
+    write_stream_index_header,
+    write_topic_index_header,
+    write_topic_header,
+    )
+
 from lib.populate import (
     populate_all,
     populate_incremental
@@ -126,23 +132,14 @@ def get_client_info():
 # The index pages are generated in markdown by default, but this can be changed to html.
 # The default settings are designed for a Jekyll build.
 
-# writes the Jekyll header info for the index page listing all streams.
-def write_stream_index_header(outfile, html_root, title):
-    outfile.writelines([
-        '---\n',
-        'layout: archive\n',
-        'title: {}\n'.format(title),
-        'permalink: {}/index.html\n'.format(html_root),
-        '---\n\n',
-        '---\n\n',
-        '## Streams:\n\n',
-        ])
-
 # writes the index page listing all streams.
 # `streams`: a dict mapping stream names to stream json objects as described in the header.
 def write_stream_index(md_root, site_url, html_root, title, streams, date_footer):
     outfile = open_outfile(md_root, Path('index.md'), 'w+')
     write_stream_index_header(outfile, html_root, title)
+
+    outfile.write('---\n\n')
+    outfile.write('## Streams:\n\n')
     for s in sorted(streams, key=lambda s: len(streams[s]['topic_data']), reverse=True):
         num_topics = len(streams[s]['topic_data'])
         outfile.write("* [{0}]({1}/index.html) ({2} topic{3})\n\n".format(
@@ -153,36 +150,23 @@ def write_stream_index(md_root, site_url, html_root, title, streams, date_footer
     outfile.write(date_footer)
     outfile.close()
 
-# writes the Jekyll header info for the index page for a given stream.
-def write_topic_index_header(outfile, site_url, html_root, title, stream_name, stream):
-    sanitized_stream_name = sanitize_stream(stream_name, stream['id'])
-    stream_url = format_stream_url(site_url, html_root, sanitized_stream_name)
-
-    permalink = 'permalink: {0}/{1}/index.html'.format(
-        html_root,
-        sanitized_stream_name,
-    )
-
-    strm = f'## Stream: [{stream_name}]({stream_url})'
-
-    outfile.writelines([
-        '---\n',
-        'layout: archive\n',
-        'title: {}\n'.format(title),
-        permalink,
-        '\n---\n\n',
-        strm,
-        '\n---\n\n',
-        '### Topics:\n\n',
-        ])
-
 # writes an index page for a given stream, printing a list of the topics in that stream.
 # `stream_name`: the name of the stream.
 # `stream`: a stream json object as described in the header
 def write_topic_index(md_root, site_url, html_root, title, stream_name, stream, date_footer):
-    directory = md_root / Path(sanitize_stream(stream_name, stream['id']))
+    sanitized_stream_name = sanitize_stream(stream_name, stream['id'])
+    directory = md_root / Path(sanitized_stream_name)
     outfile = open_outfile(directory, Path('index.md'), 'w+')
     write_topic_index_header(outfile, site_url, html_root, title, stream_name, stream)
+
+    stream_url = format_stream_url(site_url, html_root, sanitized_stream_name)
+
+    outfile.writelines([
+        f'## Stream: [{stream_name}]({stream_url})',
+        '\n---\n\n',
+        '### Topics:\n\n',
+        ])
+
     for topic_name in sorted(stream['topic_data'], key=lambda tn: stream['topic_data'][tn]['latest_date'], reverse=True):
         t = stream['topic_data'][topic_name]
         outfile.write("* [{0}]({1}.html) ({2} message{3}, latest: {4})\n".format(
@@ -194,37 +178,6 @@ def write_topic_index(md_root, site_url, html_root, title, stream_name, stream, 
         ))
     outfile.write(date_footer)
     outfile.close()
-
-# formats the header for a topic page.
-def write_topic_header(outfile, site_url, html_root, zulip_url, title, stream_name, stream_id, topic_name):
-    sanitized_stream_name = sanitize_stream(stream_name, stream_id)
-    sanitized_topic_name = sanitize_topic(topic_name)
-    stream_url = format_stream_url(site_url, html_root, sanitized_stream_name)
-    topic_url = format_topic_url(site_url, html_root, sanitized_stream_name, sanitized_topic_name)
-
-    permalink = 'permalink: {0}/{1}/{2}.html'.format(
-        html_root,
-        sanitized_stream_name,
-        sanitized_topic_name,
-    )
-
-    strm = f'<h2>Stream: <a href="{stream_url}">{stream_name}</a>'
-
-    tpc = f'<h3>Topic: <a href="{topic_url}">{topic_name}</a></h3>'
-
-    outfile.writelines([
-        '---\n',
-        'layout: archive\n',
-        'title: {}\n'.format(title),
-        permalink,
-        '\n---\n\n',
-        strm,
-        '\n',
-        tpc,
-        '\n\n<hr>\n\n',
-        '<base href="{}">\n'.format(zulip_url),
-        ])
-    outfile.write('\n<head><link href="/style.css" rel="stylesheet"></head>\n')
 
 # formats a single post in a topic
 # Note: the default expects the Zulip "Z" icon at site_url+'assets/img/zulip2.png'
@@ -267,17 +220,67 @@ def write_topic(
         topic_name,
         date_footer,
         ):
-    json_path = json_root / Path(sanitize_stream(stream_name, stream['id'])) / Path (sanitize_topic(topic_name) + '.json')
+    sanitized_stream_name = sanitize_stream(stream_name, stream['id'])
+    sanitized_topic_name = sanitize_topic(topic_name)
+
+    json_path = json_root / Path(sanitized_stream_name) / Path (sanitized_topic_name + '.json')
     f = json_path.open('r', encoding='utf-8')
     messages = json.load(f)
     f.close()
-    o = open_outfile(md_root / Path(sanitize_stream(stream_name, stream['id'])), Path(sanitize_topic(topic_name) + '.html'), 'w+')
-    write_topic_header(o, site_url, html_root, zulip_url, title, stream_name, stream['id'], topic_name)
+
+    o = open_outfile(md_root / Path(sanitized_stream_name), Path(sanitized_topic_name + '.html'), 'w+')
+
+    write_topic_header(
+        o,
+        site_url,
+        html_root,
+        zulip_url,
+        title,
+        stream_name,
+        stream['id'],
+        topic_name,
+        )
+
+    write_topic_links(
+        o,
+        site_url,
+        html_root,
+        zulip_url,
+        sanitized_stream_name,
+        sanitized_topic_name,
+        stream_name,
+        topic_name,
+        )
+
+    o.write('\n<head><link href="/style.css" rel="stylesheet"></head>\n')
+
     o.write('\n{% raw %}\n')
     write_topic_body(site_url, html_root, zulip_url, messages, stream_name, stream['id'], topic_name, o)
     o.write('\n{% endraw %}\n')
+
     o.write(date_footer)
     o.close()
+
+def write_topic_links(
+        outfile,
+        site_url,
+        html_root,
+        zulip_url,
+        sanitized_stream_name,
+        sanitized_topic_name,
+        stream_name,
+        topic_name,
+        ):
+    stream_url = format_stream_url(site_url, html_root, sanitized_stream_name)
+    topic_url = format_topic_url(site_url, html_root, sanitized_stream_name, sanitized_topic_name)
+
+    outfile.writelines([
+        f'<h2>Stream: <a href="{stream_url}">{stream_name}</a>',
+        '\n',
+        f'<h3>Topic: <a href="{topic_url}">{topic_name}</a></h3>',
+        '\n\n<hr>\n\n',
+        '<base href="{}">\n'.format(zulip_url),
+        ])
 
 # escape | character with \|
 def escape_pipes(s):
@@ -305,6 +308,7 @@ def write_markdown(json_root, md_root, site_url, html_root, title, zulip_url):
     f = (json_root / Path('stream_index.json')).open('r', encoding='utf-8')
     stream_info = json.load(f, encoding='utf-8')
     f.close()
+
     streams = stream_info['streams']
     date_footer = '\n<hr><p>Last updated: {} UTC</p>'.format(stream_info['time'])
     write_stream_index(md_root, site_url, html_root, title, streams, date_footer)

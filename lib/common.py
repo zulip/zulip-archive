@@ -50,4 +50,3 @@ def stream_validator(settings):
         return stream in included_streams
 
     return validator
-
