@@ -153,9 +153,15 @@ def read_config():
 
 # writes the Jekyll header info for the index page listing all streams.
 def write_stream_index_header(outfile):
-    outfile.writelines(['---\n', 'layout: archive\n', 'title: {}\n'.format(archive_title)])
-    outfile.write('permalink: {}/index.html\n'.format(html_root))
-    outfile.writelines(['---\n\n', '---\n\n', '## Streams:\n\n'])
+    outfile.writelines([
+        '---\n',
+        'layout: archive\n',
+        'title: {}\n'.format(archive_title),
+        'permalink: {}/index.html\n'.format(html_root),
+        '---\n\n',
+        '---\n\n',
+        '## Streams:\n\n',
+        ])
 
 # writes the index page listing all streams.
 # `streams`: a dict mapping stream names to stream json objects as described in the header.
@@ -175,13 +181,23 @@ def write_stream_index(md_root, streams, date_footer):
 # writes the Jekyll header info for the index page for a given stream.
 def write_topic_index_header(outfile, stream_name, stream):
     permalink = 'permalink: {1}/{0}/index.html'.format(
-        sanitize_stream(stream_name, stream['id']), html_root
+        sanitize_stream(stream_name, stream['id']),
+        html_root,
     )
     strm = '## Stream: [{0}]({1}/index.html)'.format(
-        stream_name, format_stream_url(stream['id'], stream_name)
+        stream_name,
+        format_stream_url(stream['id'], stream_name)
     )
-    outfile.writelines(['---\n', 'layout: archive\n', 'title: {}\n'.format(archive_title),
-                        permalink, '\n---\n\n', strm, '\n---\n\n', '### Topics:\n\n'])
+    outfile.writelines([
+        '---\n',
+        'layout: archive\n',
+        'title: {}\n'.format(archive_title),
+        permalink,
+        '\n---\n\n',
+        strm,
+        '\n---\n\n',
+        '### Topics:\n\n',
+        ])
 
 # writes an index page for a given stream, printing a list of the topics in that stream.
 # `stream_name`: the name of the stream.
@@ -218,8 +234,18 @@ def write_topic_header(outfile, stream_name, stream_id, topic_name):
         sanitize_topic(topic_name),
         format_stream_url(stream_id, stream_name)
     )
-    outfile.writelines(['---\n', 'layout: archive\n', 'title: {}\n'.format(archive_title),
-                        permalink, '\n---\n\n', strm, '\n', tpc, '\n\n<hr>\n\n', '<base href="{}">\n'.format(zulip_url)])
+    outfile.writelines([
+        '---\n',
+        'layout: archive\n',
+        'title: {}\n'.format(archive_title),
+        permalink,
+        '\n---\n\n',
+        strm,
+        '\n',
+        tpc,
+        '\n\n<hr>\n\n',
+        '<base href="{}">\n'.format(zulip_url),
+        ])
     outfile.write('\n<head><link href="/style.css" rel="stylesheet"></head>\n')
 
 # formats a single post in a topic
