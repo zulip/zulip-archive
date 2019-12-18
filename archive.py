@@ -171,13 +171,16 @@ def write_stream_index(md_root, title, streams, date_footer):
 
 # writes the Jekyll header info for the index page for a given stream.
 def write_topic_index_header(outfile, title, stream_name, stream):
+    sanitized_stream_name = sanitize_stream(stream_name, stream['id'])
+    stream_url = format_stream_url(sanitized_stream_name)
+
     permalink = 'permalink: {0}/{1}/index.html'.format(
         html_root,
-        sanitize_stream(stream_name, stream['id']),
+        sanitized_stream_name,
     )
     strm = '## Stream: [{0}]({1}/index.html)'.format(
         stream_name,
-        format_stream_url(stream['id'], stream_name)
+        stream_url,
     )
     outfile.writelines([
         '---\n',
@@ -211,17 +214,20 @@ def write_topic_index(md_root, title, stream_name, stream, date_footer):
 
 # formats the header for a topic page.
 def write_topic_header(outfile, zulip_url, title, stream_name, stream_id, topic_name):
+    sanitized_stream_name = sanitize_stream(stream_name, stream_id)
+    stream_url = format_stream_url(sanitized_stream_name)
+
     permalink = 'permalink: {0}/{1}/{2}.html'.format(
         html_root,
-        sanitize_stream(stream_name, stream_id),
+        sanitized_stream_name,
         sanitize_topic(topic_name)
     )
     strm = '<h2>Stream: <a href="{0}/index.html">{1}</a>'.format(
-        format_stream_url(stream_id, stream_name),
+        stream_url,
         stream_name,
     )
     tpc = '<h3>Topic: <a href="{0}/{1}.html">{2}</a></h3>'.format(
-        format_stream_url(stream_id, stream_name),
+        stream_url,
         sanitize_topic(topic_name),
         topic_name,
     )
@@ -292,8 +298,9 @@ def structure_link(zulip_url, stream_id, stream_name, topic_name, post_id):
     return zulip_url + '#narrow/stream/' + sanitized
 
 # absolute url of a stream directory
-def format_stream_url(stream_id, stream_name):
-    return urllib.parse.urljoin(site_url, html_root, sanitize_stream(stream_name, stream_id))
+def format_stream_url(sanitized_stream_name):
+    path = f'{html_root}/{sanitized_stream_name}'
+    return urllib.parse.urljoin(site_url, path)
 
 def write_css(md_root):
     copyfile('style.css', md_root / 'style.css')
