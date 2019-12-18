@@ -94,16 +94,12 @@ def get_html_directory():
 
 # Globals
 
-client = None
-zulip_url = None
 site_url = None
 archive_title = None
 html_root = None
 md_index = None
 
 def read_config():
-    global client
-    global zulip_url
     global site_url
     global archive_title
     global html_root
@@ -114,16 +110,9 @@ def read_config():
             return config_file.get(section, key)
         return default_value
 
-    ## Configuration options
-    # config_file should point to a Zulip api config
-    client = zulip.Client(config_file="./zuliprc")
-
-    # With additional options supported for the below.
     config_file = configparser.RawConfigParser()
     config_file.read("./zuliprc")
 
-    # The Zulip server's public URL is required in zuliprc already
-    zulip_url = get_config("api", "site")
     # The user-facing root url. Only needed for md/html generation.
     site_url = get_config("archive", "root_url", "file://" + os.path.abspath(os.path.dirname(__file__)))
 
@@ -135,6 +124,19 @@ def read_config():
 
     md_index = Path("index.md")
 
+
+def get_client_info():
+    config_file = './zuliprc'
+    client = zulip.Client(config_file=config_file)
+
+    # It would be convenient if the Zulip client object
+    # had a `site` field, but instead I just re-read the file
+    # directly to get it.
+    config = configparser.RawConfigParser()
+    config.read(config_file)
+    zulip_url = config.get('api', 'site')
+
+    return client, zulip_url
 
 ## Customizable display functions.
 
@@ -219,7 +221,7 @@ def write_topic_index(md_root, stream_name, stream, date_footer):
     outfile.close()
 
 # formats the header for a topic page.
-def write_topic_header(outfile, stream_name, stream_id, topic_name):
+def write_topic_header(outfile, zulip_url, stream_name, stream_id, topic_name):
     permalink = 'permalink: {0}/{1}/{2}.html'.format(
         html_root,
         sanitize_stream(stream_name, stream_id),
@@ -259,12 +261,12 @@ def format_message(user_name, date, msg, link, anchor_name, anchor_url):
 
 # writes the body of a topic page (ie, a list of messages)
 # `messages`: a list of message json objects, as defined in the Zulip API
-def write_topic_body(messages, stream_name, stream_id, topic_name, outfile):
+def write_topic_body(zulip_url, messages, stream_name, stream_id, topic_name, outfile):
     for c in messages:
         name = c['sender_full_name']
         date = datetime.utcfromtimestamp(c['timestamp']).strftime('%b %d %Y at %H:%M')
         msg = c['content']
-        link = structure_link(stream_id, stream_name, topic_name, c['id'])
+        link = structure_link(zulip_url, stream_id, stream_name, topic_name, c['id'])
         anchor_name = str(c['id'])
         anchor_link = '{0}/{1}/{2}.html#{3}'.format(
             urllib.parse.urljoin(site_url, html_root),
@@ -277,15 +279,15 @@ def write_topic_body(messages, stream_name, stream_id, topic_name, outfile):
 
 # writes a topic page.
 # `stream`: a stream json object as defined in the header
-def write_topic(json_root, md_root, stream_name, stream, topic_name, date_footer):
+def write_topic(json_root, md_root, zulip_url, stream_name, stream, topic_name, date_footer):
     json_path = json_root / Path(sanitize_stream(stream_name, stream['id'])) / Path (sanitize_topic(topic_name) + '.json')
     f = json_path.open('r', encoding='utf-8')
     messages = json.load(f)
     f.close()
     o = open_outfile(md_root / Path(sanitize_stream(stream_name, stream['id'])), Path(sanitize_topic(topic_name) + '.html'), 'w+')
-    write_topic_header(o, stream_name, stream['id'], topic_name)
+    write_topic_header(o, zulip_url, stream_name, stream['id'], topic_name)
     o.write('\n{% raw %}\n')
-    write_topic_body(messages, stream_name, stream['id'], topic_name, o)
+    write_topic_body(zulip_url, messages, stream_name, stream['id'], topic_name, o)
     o.write('\n{% endraw %}\n')
     o.write(date_footer)
     o.close()
@@ -301,7 +303,7 @@ def escape_pipes(s):
 ## Display
 
 # Create a link to a post on Zulip
-def structure_link(stream_id, stream_name, topic_name, post_id):
+def structure_link(zulip_url, stream_id, stream_name, topic_name, post_id):
     sanitized = urllib.parse.quote(
         '{0}-{1}/topic/{2}/near/{3}'.format(stream_id, stream_name, topic_name, post_id))
     return zulip_url + '#narrow/stream/' + sanitized
@@ -314,7 +316,7 @@ def write_css(md_root):
     copyfile('style.css', md_root / 'style.css')
 
 # writes all markdown files to md_root, based on the archive at json_root.
-def write_markdown(json_root, md_root):
+def write_markdown(json_root, md_root, zulip_url):
     f = (json_root / Path('stream_index.json')).open('r', encoding='utf-8')
     stream_info = json.load(f, encoding='utf-8')
     f.close()
@@ -326,7 +328,7 @@ def write_markdown(json_root, md_root):
         print('building: ', s)
         write_topic_index(md_root, s, streams[s], date_footer)
         for t in streams[s]['topic_data']:
-            write_topic(json_root, md_root, s, streams[s], t, date_footer)
+            write_topic(json_root, md_root, zulip_url, s, streams[s], t, date_footer)
 
 def run():
     parser = argparse.ArgumentParser(description='Build an html archive of the Zulip chat.')
@@ -353,6 +355,8 @@ def run():
     if results.t or results.i:
         is_valid_stream_name = stream_validator(settings)
 
+    client, zulip_url = get_client_info()
+
     read_config()
 
     if results.t:
@@ -370,7 +374,7 @@ def run():
             )
 
     if results.b:
-        write_markdown(json_root, md_root)
+        write_markdown(json_root, md_root, zulip_url)
 
 if __name__ == '__main__':
     run()
