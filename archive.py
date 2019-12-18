@@ -180,9 +180,9 @@ def write_stream_index(md_root, streams, date_footer):
 
 # writes the Jekyll header info for the index page for a given stream.
 def write_topic_index_header(outfile, stream_name, stream):
-    permalink = 'permalink: {1}/{0}/index.html'.format(
-        sanitize_stream(stream_name, stream['id']),
+    permalink = 'permalink: {0}/{1}/index.html'.format(
         html_root,
+        sanitize_stream(stream_name, stream['id']),
     )
     strm = '## Stream: [{0}]({1}/index.html)'.format(
         stream_name,
@@ -208,12 +208,12 @@ def write_topic_index(md_root, stream_name, stream, date_footer):
     write_topic_index_header(outfile, stream_name, stream)
     for topic_name in sorted(stream['topic_data'], key=lambda tn: stream['topic_data'][tn]['latest_date'], reverse=True):
         t = stream['topic_data'][topic_name]
-        outfile.write("* [{0}]({1}.html) ({2} message{4}, latest: {3})\n".format(
+        outfile.write("* [{0}]({1}.html) ({2} message{3}, latest: {4})\n".format(
             escape_pipes(topic_name),
             sanitize_topic(topic_name),
             t['size'],
+            '' if t['size'] == 1 else 's',
             datetime.utcfromtimestamp(t['latest_date']).strftime('%b %d %Y at %H:%M'),
-            '' if t['size'] == 1 else 's'
         ))
     outfile.write(date_footer)
     outfile.close()
@@ -225,14 +225,14 @@ def write_topic_header(outfile, stream_name, stream_id, topic_name):
         sanitize_stream(stream_name, stream_id),
         sanitize_topic(topic_name)
     )
-    strm = '<h2>Stream: <a href="{1}/index.html">{0}</a>'.format(
+    strm = '<h2>Stream: <a href="{0}/index.html">{1}</a>'.format(
+        format_stream_url(stream_id, stream_name),
         stream_name,
-        format_stream_url(stream_id, stream_name)
     )
-    tpc = '<h3>Topic: <a href="{2}/{1}.html">{0}</a></h3>'.format(
-        topic_name,
+    tpc = '<h3>Topic: <a href="{0}/{1}.html">{2}</a></h3>'.format(
+        format_stream_url(stream_id, stream_name),
         sanitize_topic(topic_name),
-        format_stream_url(stream_id, stream_name)
+        topic_name,
     )
     outfile.writelines([
         '---\n',
