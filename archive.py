@@ -133,8 +133,6 @@ def get_client_info():
 
     return client, zulip_url
 
-## Customizable display functions.
-
 # When generating displayable md/html, we create the following structure inside md_root:
 # * index.md displays a list of all streams
 # * for each stream str, str/index.md displays a list of all topics in str
@@ -287,15 +285,9 @@ def write_topic(json_root, md_root, zulip_url, stream_name, stream, topic_name, 
     o.write(date_footer)
     o.close()
 
-
-
-## Nothing after this point should need to be modified.
-
 # escape | character with \|
 def escape_pipes(s):
     return s.replace('|','\|').replace(']','\]').replace('[','\[')
-
-## Display
 
 # Create a link to a post on Zulip
 def structure_link(zulip_url, stream_id, stream_name, topic_name, post_id):
