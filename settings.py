@@ -25,6 +25,10 @@ html_directory = Path('./archive')  # Modify me!
 You may only want to include certain streams.  If you
 use '*' in included_streams, that gets all your streams,
 except that excluded_streams takes precedence.
+
+Note that we only ever read in **public** streams.  You
+can make the settings more restrictive than that, but not
+the opposite direction.
 '''
 
 # Modify as needed:
