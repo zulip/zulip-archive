@@ -110,7 +110,8 @@ def read_config():
     config_file.read("./zuliprc")
 
     # The user-facing root url. Only needed for md/html generation.
-    site_url = get_config("archive", "root_url", "file://" + os.path.abspath(os.path.dirname(__file__)))
+    default_site_url = 'http://127.0.0.1:4000'
+    site_url = get_config("archive", "root_url", default_site_url)
 
     # user-facing path for the index
     html_root = get_config("archive", "html_root", "archive")
