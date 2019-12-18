@@ -178,10 +178,9 @@ def write_topic_index_header(outfile, title, stream_name, stream):
         html_root,
         sanitized_stream_name,
     )
-    strm = '## Stream: [{0}]({1}/index.html)'.format(
-        stream_name,
-        stream_url,
-    )
+
+    strm = f'## Stream: [{stream_name}]({stream_url})'
+
     outfile.writelines([
         '---\n',
         'layout: archive\n',
@@ -215,22 +214,20 @@ def write_topic_index(md_root, title, stream_name, stream, date_footer):
 # formats the header for a topic page.
 def write_topic_header(outfile, zulip_url, title, stream_name, stream_id, topic_name):
     sanitized_stream_name = sanitize_stream(stream_name, stream_id)
+    sanitized_topic_name = sanitize_topic(topic_name)
     stream_url = format_stream_url(sanitized_stream_name)
+    topic_url = format_topic_url(sanitized_stream_name, sanitized_topic_name)
 
     permalink = 'permalink: {0}/{1}/{2}.html'.format(
         html_root,
         sanitized_stream_name,
-        sanitize_topic(topic_name)
+        sanitized_topic_name,
     )
-    strm = '<h2>Stream: <a href="{0}/index.html">{1}</a>'.format(
-        stream_url,
-        stream_name,
-    )
-    tpc = '<h3>Topic: <a href="{0}/{1}.html">{2}</a></h3>'.format(
-        stream_url,
-        sanitize_topic(topic_name),
-        topic_name,
-    )
+
+    strm = f'<h2>Stream: <a href="{stream_url}">{stream_name}</a>'
+
+    tpc = f'<h3>Topic: <a href="{topic_url}">{topic_name}</a></h3>'
+
     outfile.writelines([
         '---\n',
         'layout: archive\n',
@@ -297,9 +294,12 @@ def structure_link(zulip_url, stream_id, stream_name, topic_name, post_id):
         '{0}-{1}/topic/{2}/near/{3}'.format(stream_id, stream_name, topic_name, post_id))
     return zulip_url + '#narrow/stream/' + sanitized
 
-# absolute url of a stream directory
 def format_stream_url(sanitized_stream_name):
-    path = f'{html_root}/{sanitized_stream_name}'
+    path = f'{html_root}/{sanitized_stream_name}/index.html'
+    return urllib.parse.urljoin(site_url, path)
+
+def format_topic_url(sanitized_stream_name, sanitized_topic_name):
+    path = f'{html_root}/{sanitized_stream_name}/{sanitized_topic_name}.html'
     return urllib.parse.urljoin(site_url, path)
 
 def write_css(md_root):
