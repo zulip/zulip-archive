@@ -1,5 +1,12 @@
-# Welcome to settings.py!  You will want to modify these values
-# for your own needs.
+# Welcome to default_settings.py!  You will want to modify these values
+# for your own needs and then copy them to settings.py.  Copying them
+# in the same directory is the mostly likely choice here:
+#
+#    cp default_settings settings.py
+#    <edit> settings.py
+#
+# If you prefer to keep the settings elsewhere, just make sure they
+# are in your Python path.
 
 import os
 from pathlib import Path

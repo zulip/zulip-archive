@@ -34,7 +34,15 @@ try:
     import settings
 except ModuleNotFoundError:
     # TODO: Add better instructions.
-    exit_immediately('Please create a settings.py file.')
+    exit_immediately('''
+    We can't find settings.py.
+
+    Please copy default_settings.py to settings.py
+    and then edit the settings.py file to fit your use case.
+
+    For testing, you can often leave the default settings,
+    but you will still want to review them first.
+    ''')
 
 NO_JSON_DIR_ERROR_WRITE = '''
 We cannot find a place to write JSON files.
