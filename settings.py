@@ -9,6 +9,14 @@ Set the HTML title of your Zulip archive here.
 title = 'Zulip Chat Archive'  # Modify me!
 
 '''
+Set the path prefix of your URLs for Jekyll.
+
+For example, you might want your main page to have
+the path of archive/index.html
+'''
+html_root = 'archive'  # Modify me!
+
+'''
 When we get content from your Zulip instance, we first create
 JSON files that include all of the content data from the Zulip
 instance.  Having the data in JSON makes it easy to incrementally
