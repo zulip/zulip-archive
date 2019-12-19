@@ -135,9 +135,7 @@ def num_topics_string(stream_topic_data):
     plural = '' if num_topics == 1 else 's'
     return f'{num_topics} topic{plural}'
 
-# writes an index page for a given stream, printing a list of the topics in that stream.
-# `stream_name`: the name of the stream.
-# `stream`: a stream json object as described in the header
+
 def write_topic_index(md_root, site_url, html_root, title, stream_name, stream, date_footer):
     sanitized_stream_name = sanitize_stream(stream_name, stream['id'])
     directory = md_root / Path(sanitized_stream_name)
@@ -146,24 +144,19 @@ def write_topic_index(md_root, site_url, html_root, title, stream_name, stream, 
 
     stream_url = format_stream_url(site_url, html_root, sanitized_stream_name)
 
-    outfile.writelines([
-        f'## Stream: [{stream_name}]({stream_url})',
-        '\n---\n\n',
-        '### Topics:\n\n',
-        ])
-
     topic_data = stream['topic_data']
 
-    for topic_name in sorted_topics(topic_data):
-        t = topic_data[topic_name]
-        outfile.write("* [{0}]({1}.html) ({2} message{3}, latest: {4})\n".format(
-            escape_pipes(topic_name),
-            sanitize_topic(topic_name),
-            t['size'],
-            '' if t['size'] == 1 else 's',
-            datetime.utcfromtimestamp(t['latest_date']).strftime('%b %d %Y at %H:%M'),
-        ))
-    outfile.write(date_footer)
+    content = f'''\
+## Stream: [{stream_name}]({stream_url})
+---
+
+### Topics:
+
+{topic_list(topic_data)}
+{date_footer}
+'''
+
+    outfile.write(content)
     outfile.close()
 
 def sorted_topics(topic_data):
@@ -177,6 +170,34 @@ def sorted_topics(topic_data):
         reverse=True
         )
 
+def topic_list(topic_data):
+    '''
+    produce a list like this:
+
+    * topic name (n messages, latest: <date>)
+    * topic name (n messages, latest: <date>)
+    * topic name (n messages, latest: <date>)
+    '''
+
+    def item(topic_name, message_data):
+        link = f'[{escape_pipes(topic_name)}]({sanitize_topic(topic_name)}.html)'
+        topic_info = topic_info_string(message_data)
+        return f'* {link} ({topic_info})'
+
+    return '\n'.join(
+        item(topic_name, topic_data[topic_name])
+        for topic_name
+        in sorted_topics(topic_data))
+
+def topic_info_string(message_data):
+    '''
+    n messages, latest: <date>
+    '''
+    cnt = message_data['size']
+    plural = '' if cnt == 1 else 's'
+    latest_date = message_data['latest_date']
+    date = datetime.utcfromtimestamp(latest_date).strftime('%b %d %Y at %H:%M')
+    return f'{cnt} message{plural}, latest: {date}'
 
 # writes a topic page.
 # `stream`: a stream json object as defined in the header
