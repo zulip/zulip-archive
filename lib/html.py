@@ -234,8 +234,7 @@ def write_topic(
         topic_name,
         )
 
-    write_topic_links(
-        o,
+    topic_links = topic_page_links(
         site_url,
         html_root,
         zulip_url,
@@ -244,6 +243,7 @@ def write_topic(
         stream_name,
         topic_name,
         )
+    o.write(topic_links)
 
     o.write('\n<head><link href="/style.css" rel="stylesheet"></head>\n')
 
@@ -254,8 +254,7 @@ def write_topic(
     o.write(date_footer)
     o.close()
 
-def write_topic_links(
-        outfile,
+def topic_page_links(
         site_url,
         html_root,
         zulip_url,
@@ -267,13 +266,14 @@ def write_topic_links(
     stream_url = format_stream_url(site_url, html_root, sanitized_stream_name)
     topic_url = format_topic_url(site_url, html_root, sanitized_stream_name, sanitized_topic_name)
 
-    outfile.writelines([
-        f'<h2>Stream: <a href="{stream_url}">{stream_name}</a>',
-        '\n',
-        f'<h3>Topic: <a href="{topic_url}">{topic_name}</a></h3>',
-        '\n\n<hr>\n\n',
-        '<base href="{}">\n'.format(zulip_url),
-        ])
+    return f'''\
+<h2>Stream: <a href="{stream_url}">{stream_name}</a>
+<h3>Topic: <a href="{topic_url}">{topic_name}</a></h3>
+
+<hr>
+
+<base href="{zulip_url}">
+'''
 
 
 # writes the body of a topic page (ie, a list of messages)
