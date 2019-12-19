@@ -63,7 +63,7 @@ from .zulip_data import (
 
 
 # writes all markdown files to md_root, based on the archive at json_root.
-def write_markdown(json_root, md_root, site_url, html_root, title, zulip_url):
+def write_markdown(json_root, md_root, site_url, html_root, title, zulip_url, zulip_icon_url):
     f = (json_root / Path('stream_index.json')).open('r', encoding='utf-8')
     stream_info = json.load(f, encoding='utf-8')
     f.close()
@@ -84,6 +84,7 @@ def write_markdown(json_root, md_root, site_url, html_root, title, zulip_url):
                 html_root,
                 title,
                 zulip_url,
+                zulip_icon_url,
                 s,
                 streams[s],
                 t,
@@ -181,6 +182,7 @@ def write_topic(
         html_root,
         title,
         zulip_url,
+        zulip_icon_url,
         stream_name,
         stream,
         topic_name,
@@ -229,6 +231,7 @@ def write_topic(
                 site_url,
                 html_root,
                 zulip_url,
+                zulip_icon_url,
                 stream_name,
                 stream_id,
                 topic_name,
@@ -270,16 +273,26 @@ def format_message(
         site_url,
         html_root,
         zulip_url,
+        zulip_icon_url,
         stream_name,
         stream_id,
         topic_name,
         msg
         ):
+    msg_id = str(msg['id'])
+
+    zulip_link = link_to_zulip(
+        zulip_url,
+        zulip_icon_url,
+        stream_id,
+        stream_name,
+        topic_name,
+        msg_id,
+        )
+
     user_name = msg['sender_full_name']
     date = format_date1(msg['timestamp'])
     msg_content = msg['content']
-    link = zulip_post_url(zulip_url, stream_id, stream_name, topic_name, msg['id'])
-    msg_id = str(msg['id'])
     anchor_url = archive_message_url(
         site_url,
         html_root,
@@ -288,10 +301,27 @@ def format_message(
         msg_id
         )
     anchor = '<a name="{0}"></a>'.format(msg_id)
-    zulip_link = '<a href="{0}" class="zl"><img src="{1}" alt="view this post on Zulip"></a>'.format(link, site_url+'assets/img/zulip2.png')
+
     local_link = '<a href="{0}">{1} ({2})</a>'.format(anchor_url, user_name, date)
     return '{0}\n<h4>{1} {2}:</h4>\n{3}'.format(anchor, zulip_link, local_link, msg_content)
 
+def link_to_zulip(
+        zulip_url,
+        zulip_icon_url,
+        stream_id,
+        stream_name,
+        topic_name,
+        msg_id,
+        ):
+    # format a link to the original post where you click on the Zulip icon
+    # (if it's available)
+    post_link = zulip_post_url(zulip_url, stream_id, stream_name, topic_name, msg_id)
+    if zulip_icon_url:
+        img_tag = f'<img src="{zulip_icon_url}" alt="view this post on Zulip">'
+    else:
+        img_tag = ''
+    zulip_link = f'<a href="{post_link}" class="zl">{img_tag}</a>'
+    return zulip_link
 
 # escape | character with \|
 def escape_pipes(s):

@@ -35,6 +35,17 @@ else:
     # siteurl = 'example.com'
     raise Exception("You need to configure site_url for prod")
 
+'''
+Set the zulip icon url.  Folks can press the icon to see a
+message in the actual Zulip instance.
+'''
+
+if DEBUG:
+    zulip_icon_url = 'http://127.0.0.1:4000/assets/img/zulip2.png'
+else:
+    # Set this according to how you serve your prod assets.
+    zulip_icon_url = None
+
 
 '''
 Set the HTML title of your Zulip archive here.

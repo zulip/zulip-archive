@@ -178,7 +178,8 @@ def run():
             settings.site_url,
             settings.html_root,
             settings.title,
-            zulip_url
+            zulip_url,
+            settings.zulip_icon_url,
             )
 
 if __name__ == '__main__':
