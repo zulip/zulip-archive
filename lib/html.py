@@ -40,6 +40,13 @@ from .url import (
     zulip_post_url,
     )
 
+from .zulip_data import (
+    num_topics_string,
+    sorted_streams,
+    sorted_topics,
+    topic_info_string,
+    )
+
 # Here are some more comments from the initial implementation:
 #
 # When generating displayable md/html, we create the following structure inside md_root:
@@ -101,17 +108,6 @@ def write_stream_index(md_root, site_url, html_root, title, streams, date_footer
     outfile.write(content)
     outfile.close()
 
-def sorted_streams(streams):
-    '''
-    Streams are sorted so that streams with the most topics
-    go to the top.
-    '''
-    return sorted(
-        streams,
-        key=lambda s: len(streams[s]['topic_data']),
-        reverse=True
-        )
-
 def stream_list(streams):
     '''
     produce a list like this:
@@ -133,15 +129,6 @@ def stream_list(streams):
         item(stream_name, streams[stream_name])
         for stream_name
         in sorted_streams(streams))
-
-def num_topics_string(stream_topic_data):
-    '''
-    example: "5 topics"
-    '''
-    num_topics = len(stream_topic_data)
-    plural = '' if num_topics == 1 else 's'
-    return f'{num_topics} topic{plural}'
-
 
 def write_topic_index(md_root, site_url, html_root, title, stream_name, stream, date_footer):
     sanitized_stream_name = sanitize_stream(stream_name, stream['id'])
@@ -166,17 +153,6 @@ def write_topic_index(md_root, site_url, html_root, title, stream_name, stream, 
     outfile.write(content)
     outfile.close()
 
-def sorted_topics(topic_data):
-    '''
-    Topics are sorted so that the most recently updated
-    topic is at the top of the list.
-    '''
-    return sorted(
-        topic_data,
-        key=lambda tn: topic_data[tn]['latest_date'],
-        reverse=True
-        )
-
 def topic_list(topic_data):
     '''
     produce a list like this:
@@ -195,16 +171,6 @@ def topic_list(topic_data):
         item(topic_name, topic_data[topic_name])
         for topic_name
         in sorted_topics(topic_data))
-
-def topic_info_string(message_data):
-    '''
-    n messages, latest: <date>
-    '''
-    cnt = message_data['size']
-    plural = '' if cnt == 1 else 's'
-    latest_date = message_data['latest_date']
-    date = format_date1(latest_date)
-    return f'{cnt} message{plural}, latest: {date}'
 
 # writes a topic page.
 # `stream`: a stream json object as defined in the header
