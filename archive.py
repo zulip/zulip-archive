@@ -43,7 +43,7 @@ from lib.populate import (
     populate_incremental
     )
 
-from lib.html import (
+from lib.jekyll import (
     write_markdown
     )
 
