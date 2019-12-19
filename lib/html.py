@@ -307,13 +307,15 @@ def format_message(
     date = format_date1(msg['timestamp'])
     msg_content = msg['content']
     link = zulip_post_url(zulip_url, stream_id, stream_name, topic_name, msg['id'])
-    anchor_name = str(msg['id'])
-    anchor_url = '{0}/{1}/{2}.html#{3}'.format(
-        urllib.parse.urljoin(site_url, html_root),
+    msg_id = str(msg['id'])
+    anchor_url = archive_message_url(
+        site_url,
+        html_root,
         sanitize_stream(stream_name, stream_id),
         sanitize_topic(topic_name),
-        anchor_name)
-    anchor = '<a name="{0}"></a>'.format(anchor_name)
+        msg_id
+        )
+    anchor = '<a name="{0}"></a>'.format(msg_id)
     zulip_link = '<a href="{0}" class="zl"><img src="{1}" alt="view this post on Zulip"></a>'.format(link, site_url+'assets/img/zulip2.png')
     local_link = '<a href="{0}">{1} ({2})</a>'.format(anchor_url, user_name, date)
     return '{0}\n<h4>{1} {2}:</h4>\n{3}'.format(anchor, zulip_link, local_link, msg_content)
@@ -345,3 +347,7 @@ def archive_topic_url(site_url, html_root, sanitized_stream_name, sanitized_topi
     path = f'{html_root}/{sanitized_stream_name}/{sanitized_topic_name}.html'
     return urllib.parse.urljoin(site_url, path)
 
+def archive_message_url(site_url, html_root, sanitized_stream_name, sanitized_topic_name, msg_id):
+    base_url = urllib.parse.urljoin(site_url, html_root)
+    full_url = f'{base_url}/{sanitized_stream_name}/{sanitized_topic_name}#{msg_id}'
+    return full_url
