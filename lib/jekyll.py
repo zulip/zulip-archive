@@ -1,25 +1,25 @@
 '''
-This module emits the HTML (plus some markdown, and, indirectly,
-some YAML) for your archive.
+This module emits the content for your archive.
+
+It directly emits markdown, and indirectly emits
+HTML and YAML.
+
+As I write this today (December 2019), we are mostly testing with
+Jekyll, so the output is geared toward a Jekyll system, which
+is what GitHub Pages uses, too.  We will try to make this more
+flexible as we go.
 
 This module is probably the most likely module to be forked if
 you have unique requirements for how your archive should look.
 
 If you are interest in porting this system away from Python to your
 language of choice, this is probably the best place to start.
-
-As I write this today (December 2019), we are mostly testing with
-Jekyll, so the output is geared toward a Jekyll system, which
-is what GitHub Pages uses, too.  We will try to make this more
-flexible as we go.
 '''
 
 import json
 
 from pathlib import Path
 from shutil import copyfile
-
-from .date_helper import format_date1
 
 from .common import (
     open_outfile,
@@ -33,11 +33,13 @@ from .front_matter import (
     write_topic_header,
     )
 
+from .html import (
+    topic_page_links,
+    format_message,
+    )
+
 from .url import (
-    archive_message_url,
     archive_stream_url,
-    archive_topic_url,
-    zulip_post_url,
     )
 
 from .zulip_data import (
@@ -245,86 +247,8 @@ def write_topic(
     o.write(date_footer)
     o.close()
 
-def topic_page_links(
-        site_url,
-        html_root,
-        zulip_url,
-        sanitized_stream_name,
-        sanitized_topic_name,
-        stream_name,
-        topic_name,
-        ):
-    stream_url = archive_stream_url(site_url, html_root, sanitized_stream_name)
-    topic_url = archive_topic_url(site_url, html_root, sanitized_stream_name, sanitized_topic_name)
-
-    return f'''\
-<h2>Stream: <a href="{stream_url}">{stream_name}</a>
-<h3>Topic: <a href="{topic_url}">{topic_name}</a></h3>
-
-<hr>
-
-<base href="{zulip_url}">
-'''
-
 def write_css(md_root):
     copyfile('style.css', md_root / 'style.css')
-
-def format_message(
-        site_url,
-        html_root,
-        zulip_url,
-        zulip_icon_url,
-        stream_name,
-        stream_id,
-        topic_name,
-        msg
-        ):
-    msg_id = str(msg['id'])
-
-    zulip_link = link_to_zulip(
-        zulip_url,
-        zulip_icon_url,
-        stream_id,
-        stream_name,
-        topic_name,
-        msg_id,
-        )
-
-    user_name = msg['sender_full_name']
-    date = format_date1(msg['timestamp'])
-    msg_content = msg['content']
-    anchor_url = archive_message_url(
-        site_url,
-        html_root,
-        sanitize_stream(stream_name, stream_id),
-        sanitize_topic(topic_name),
-        msg_id
-        )
-    anchor = '<a name="{0}"></a>'.format(msg_id)
-    html = f'''
-{anchor}
-<h4>{zulip_link} {user_name} <a href="{anchor_url}">({date})</a>:</h4>
-{msg_content}
-'''
-    return html
-
-def link_to_zulip(
-        zulip_url,
-        zulip_icon_url,
-        stream_id,
-        stream_name,
-        topic_name,
-        msg_id,
-        ):
-    # format a link to the original post where you click on the Zulip icon
-    # (if it's available)
-    post_link = zulip_post_url(zulip_url, stream_id, stream_name, topic_name, msg_id)
-    if zulip_icon_url:
-        img_tag = f'<img src="{zulip_icon_url}" alt="view this post on Zulip">'
-    else:
-        img_tag = ''
-    zulip_link = f'<a href="{post_link}" class="zl">{img_tag}</a>'
-    return zulip_link
 
 # escape | character with \|
 def escape_pipes(s):
