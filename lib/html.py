@@ -143,7 +143,7 @@ def write_topic_index(md_root, site_url, html_root, title, stream_name, stream, 
     outfile = open_outfile(directory, Path('index.md'), 'w+')
     write_topic_index_header(outfile, site_url, html_root, title, stream_name, stream)
 
-    stream_url = format_stream_url(site_url, html_root, sanitized_stream_name)
+    stream_url = archive_stream_url(site_url, html_root, sanitized_stream_name)
 
     topic_data = stream['topic_data']
 
@@ -279,8 +279,8 @@ def topic_page_links(
         stream_name,
         topic_name,
         ):
-    stream_url = format_stream_url(site_url, html_root, sanitized_stream_name)
-    topic_url = format_topic_url(site_url, html_root, sanitized_stream_name, sanitized_topic_name)
+    stream_url = archive_stream_url(site_url, html_root, sanitized_stream_name)
+    topic_url = archive_topic_url(site_url, html_root, sanitized_stream_name, sanitized_topic_name)
 
     return f'''\
 <h2>Stream: <a href="{stream_url}">{stream_name}</a>
@@ -306,7 +306,7 @@ def format_message(
     user_name = msg['sender_full_name']
     date = format_date1(msg['timestamp'])
     msg_content = msg['content']
-    link = structure_link(zulip_url, stream_id, stream_name, topic_name, msg['id'])
+    link = zulip_post_url(zulip_url, stream_id, stream_name, topic_name, msg['id'])
     anchor_name = str(msg['id'])
     anchor_url = '{0}/{1}/{2}.html#{3}'.format(
         urllib.parse.urljoin(site_url, html_root),
@@ -323,17 +323,25 @@ def format_message(
 def escape_pipes(s):
     return s.replace('|','\|').replace(']','\]').replace('[','\[')
 
-# Create a link to a post on Zulip
-def structure_link(zulip_url, stream_id, stream_name, topic_name, post_id):
+def zulip_post_url(zulip_url, stream_id, stream_name, topic_name, post_id):
+    '''
+    https://example.zulipchat.com/#narrow/stream/213222-general/topic/hello/near/179892604
+    '''
     sanitized = urllib.parse.quote(
         '{0}-{1}/topic/{2}/near/{3}'.format(stream_id, stream_name, topic_name, post_id))
     return zulip_url + '#narrow/stream/' + sanitized
 
-def format_stream_url(site_url, html_root, sanitized_stream_name):
+def archive_stream_url(site_url, html_root, sanitized_stream_name):
+    '''
+    http://127.0.0.1:4000/archive/213222general/index.html
+    '''
     path = f'{html_root}/{sanitized_stream_name}/index.html'
     return urllib.parse.urljoin(site_url, path)
 
-def format_topic_url(site_url, html_root, sanitized_stream_name, sanitized_topic_name):
+def archive_topic_url(site_url, html_root, sanitized_stream_name, sanitized_topic_name):
+    '''
+    http://127.0.0.1:4000/archive/213222general/74282newstreams.html
+    '''
     path = f'{html_root}/{sanitized_stream_name}/{sanitized_topic_name}.html'
     return urllib.parse.urljoin(site_url, path)
 
