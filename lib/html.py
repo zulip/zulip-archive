@@ -152,8 +152,10 @@ def write_topic_index(md_root, site_url, html_root, title, stream_name, stream, 
         '### Topics:\n\n',
         ])
 
-    for topic_name in sorted(stream['topic_data'], key=lambda tn: stream['topic_data'][tn]['latest_date'], reverse=True):
-        t = stream['topic_data'][topic_name]
+    topic_data = stream['topic_data']
+
+    for topic_name in sorted_topics(topic_data):
+        t = topic_data[topic_name]
         outfile.write("* [{0}]({1}.html) ({2} message{3}, latest: {4})\n".format(
             escape_pipes(topic_name),
             sanitize_topic(topic_name),
@@ -163,6 +165,17 @@ def write_topic_index(md_root, site_url, html_root, title, stream_name, stream, 
         ))
     outfile.write(date_footer)
     outfile.close()
+
+def sorted_topics(topic_data):
+    '''
+    Topics are sorted so that the most recently updated
+    topic is at the top of the list.
+    '''
+    return sorted(
+        topic_data,
+        key=lambda tn: topic_data[tn]['latest_date'],
+        reverse=True
+        )
 
 
 # writes a topic page.
