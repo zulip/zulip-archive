@@ -34,8 +34,9 @@ from .front_matter import (
     )
 
 from .html import (
-    topic_page_links,
     format_message,
+    last_updated_footer,
+    topic_page_links,
     )
 
 from .url import (
@@ -71,7 +72,7 @@ def write_markdown(json_root, md_root, site_url, html_root, title, zulip_url, zu
     f.close()
 
     streams = stream_info['streams']
-    date_footer = '\n<hr><p>Last updated: {} UTC</p>'.format(stream_info['time'])
+    date_footer = last_updated_footer(stream_info)
     write_stream_index(md_root, site_url, html_root, title, streams, date_footer)
     write_css(md_root)
 
@@ -106,9 +107,9 @@ def write_stream_index(md_root, site_url, html_root, title, streams, date_footer
 ## Streams:
 
 {stream_list(streams)}
-{date_footer}
 '''
     outfile.write(content)
+    outfile.write(date_footer)
     outfile.close()
 
 def stream_list(streams):
@@ -150,10 +151,10 @@ def write_topic_index(md_root, site_url, html_root, title, stream_name, stream, 
 ### Topics:
 
 {topic_list(topic_data)}
-{date_footer}
 '''
 
     outfile.write(content)
+    outfile.write(date_footer)
     outfile.close()
 
 def topic_list(topic_data):

@@ -104,3 +104,7 @@ def link_to_zulip(
     zulip_link = f'<a href="{post_link}" class="zl">{img_tag}</a>'
     return zulip_link
 
+def last_updated_footer(stream_info):
+    date_footer = '\n<hr><p>Last updated: {} UTC</p>'.format(stream_info['time'])
+    return date_footer
+
