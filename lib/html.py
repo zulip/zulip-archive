@@ -213,7 +213,9 @@ def write_topic(
         topic_name,
         date_footer,
         ):
-    sanitized_stream_name = sanitize_stream(stream_name, stream['id'])
+    stream_id = stream['id']
+
+    sanitized_stream_name = sanitize_stream(stream_name, stream_id)
     sanitized_topic_name = sanitize_topic(topic_name)
 
     json_path = json_root / Path(sanitized_stream_name) / Path (sanitized_topic_name + '.json')
@@ -230,7 +232,7 @@ def write_topic(
         zulip_url,
         title,
         stream_name,
-        stream['id'],
+        stream_id,
         topic_name,
         )
 
@@ -248,7 +250,20 @@ def write_topic(
     o.write('\n<head><link href="/style.css" rel="stylesheet"></head>\n')
 
     o.write('\n{% raw %}\n')
-    write_topic_body(site_url, html_root, zulip_url, messages, stream_name, stream['id'], topic_name, o)
+
+    for msg in messages:
+        msg_html = format_message(
+                site_url,
+                html_root,
+                zulip_url,
+                stream_name,
+                stream_id,
+                topic_name,
+                msg,
+                )
+        o.write(msg_html)
+        o.write('\n\n')
+
     o.write('\n{% endraw %}\n')
 
     o.write(date_footer)
@@ -275,32 +290,28 @@ def topic_page_links(
 <base href="{zulip_url}">
 '''
 
-
-# writes the body of a topic page (ie, a list of messages)
-# `messages`: a list of message json objects, as defined in the Zulip API
-def write_topic_body(site_url, html_root, zulip_url, messages, stream_name, stream_id, topic_name, outfile):
-    for msg in messages:
-        user_name = msg['sender_full_name']
-        date = datetime.utcfromtimestamp(msg['timestamp']).strftime('%b %d %Y at %H:%M')
-        msg_content = msg['content']
-        link = structure_link(zulip_url, stream_id, stream_name, topic_name, msg['id'])
-        anchor_name = str(msg['id'])
-        anchor_url = '{0}/{1}/{2}.html#{3}'.format(
-            urllib.parse.urljoin(site_url, html_root),
-            sanitize_stream(stream_name, stream_id),
-            sanitize_topic(topic_name),
-            anchor_name)
-        outfile.write(format_message(site_url, user_name, date, msg_content, link, anchor_name, anchor_url))
-        outfile.write('\n\n')
-
-
 def write_css(md_root):
     copyfile('style.css', md_root / 'style.css')
 
-
-# formats a single post in a topic
-# Note: the default expects the Zulip "Z" icon at site_url+'assets/img/zulip2.png'
-def format_message(site_url, user_name, date, msg_content, link, anchor_name, anchor_url):
+def format_message(
+        site_url,
+        html_root,
+        zulip_url,
+        stream_name,
+        stream_id,
+        topic_name,
+        msg
+        ):
+    user_name = msg['sender_full_name']
+    date = datetime.utcfromtimestamp(msg['timestamp']).strftime('%b %d %Y at %H:%M')
+    msg_content = msg['content']
+    link = structure_link(zulip_url, stream_id, stream_name, topic_name, msg['id'])
+    anchor_name = str(msg['id'])
+    anchor_url = '{0}/{1}/{2}.html#{3}'.format(
+        urllib.parse.urljoin(site_url, html_root),
+        sanitize_stream(stream_name, stream_id),
+        sanitize_topic(topic_name),
+        anchor_name)
     anchor = '<a name="{0}"></a>'.format(anchor_name)
     zulip_link = '<a href="{0}" class="zl"><img src="{1}" alt="view this post on Zulip"></a>'.format(link, site_url+'assets/img/zulip2.png')
     local_link = '<a href="{0}">{1} ({2})</a>'.format(anchor_url, user_name, date)
