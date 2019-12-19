@@ -85,7 +85,7 @@ def write_stream_index(md_root, site_url, html_root, title, streams, date_footer
 
     outfile.write('---\n\n')
     outfile.write('## Streams:\n\n')
-    for s in sorted(streams, key=lambda s: len(streams[s]['topic_data']), reverse=True):
+    for s in sorted_streams(streams):
         num_topics = len(streams[s]['topic_data'])
         outfile.write("* [{0}]({1}/index.html) ({2} topic{3})\n\n".format(
             s,
@@ -95,6 +95,16 @@ def write_stream_index(md_root, site_url, html_root, title, streams, date_footer
     outfile.write(date_footer)
     outfile.close()
 
+def sorted_streams(streams):
+    '''
+    Streams are sorted so that streams with the most topics
+    go to the top.
+    '''
+    return sorted(
+        streams,
+        key=lambda s: len(streams[s]['topic_data']),
+        reverse=True
+        )
 
 # writes an index page for a given stream, printing a list of the topics in that stream.
 # `stream_name`: the name of the stream.
