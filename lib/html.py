@@ -15,7 +15,6 @@ flexible as we go.
 '''
 
 import json
-import urllib
 
 from pathlib import Path
 from shutil import copyfile
@@ -32,6 +31,13 @@ from .front_matter import (
     write_stream_index_header,
     write_topic_index_header,
     write_topic_header,
+    )
+
+from .url import (
+    archive_message_url,
+    archive_stream_url,
+    archive_topic_url,
+    zulip_post_url,
     )
 
 # Here are some more comments from the initial implementation:
@@ -324,30 +330,3 @@ def format_message(
 # escape | character with \|
 def escape_pipes(s):
     return s.replace('|','\|').replace(']','\]').replace('[','\[')
-
-def zulip_post_url(zulip_url, stream_id, stream_name, topic_name, post_id):
-    '''
-    https://example.zulipchat.com/#narrow/stream/213222-general/topic/hello/near/179892604
-    '''
-    sanitized = urllib.parse.quote(
-        '{0}-{1}/topic/{2}/near/{3}'.format(stream_id, stream_name, topic_name, post_id))
-    return zulip_url + '#narrow/stream/' + sanitized
-
-def archive_stream_url(site_url, html_root, sanitized_stream_name):
-    '''
-    http://127.0.0.1:4000/archive/213222general/index.html
-    '''
-    path = f'{html_root}/{sanitized_stream_name}/index.html'
-    return urllib.parse.urljoin(site_url, path)
-
-def archive_topic_url(site_url, html_root, sanitized_stream_name, sanitized_topic_name):
-    '''
-    http://127.0.0.1:4000/archive/213222general/74282newstreams.html
-    '''
-    path = f'{html_root}/{sanitized_stream_name}/{sanitized_topic_name}.html'
-    return urllib.parse.urljoin(site_url, path)
-
-def archive_message_url(site_url, html_root, sanitized_stream_name, sanitized_topic_name, msg_id):
-    base_url = urllib.parse.urljoin(site_url, html_root)
-    full_url = f'{base_url}/{sanitized_stream_name}/{sanitized_topic_name}#{msg_id}'
-    return full_url
