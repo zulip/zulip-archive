@@ -279,18 +279,18 @@ def topic_page_links(
 # writes the body of a topic page (ie, a list of messages)
 # `messages`: a list of message json objects, as defined in the Zulip API
 def write_topic_body(site_url, html_root, zulip_url, messages, stream_name, stream_id, topic_name, outfile):
-    for c in messages:
-        name = c['sender_full_name']
-        date = datetime.utcfromtimestamp(c['timestamp']).strftime('%b %d %Y at %H:%M')
-        msg = c['content']
-        link = structure_link(zulip_url, stream_id, stream_name, topic_name, c['id'])
-        anchor_name = str(c['id'])
-        anchor_link = '{0}/{1}/{2}.html#{3}'.format(
+    for msg in messages:
+        user_name = msg['sender_full_name']
+        date = datetime.utcfromtimestamp(msg['timestamp']).strftime('%b %d %Y at %H:%M')
+        msg_content = msg['content']
+        link = structure_link(zulip_url, stream_id, stream_name, topic_name, msg['id'])
+        anchor_name = str(msg['id'])
+        anchor_url = '{0}/{1}/{2}.html#{3}'.format(
             urllib.parse.urljoin(site_url, html_root),
             sanitize_stream(stream_name, stream_id),
             sanitize_topic(topic_name),
             anchor_name)
-        outfile.write(format_message(site_url, name, date, msg, link, anchor_name, anchor_link))
+        outfile.write(format_message(site_url, user_name, date, msg_content, link, anchor_name, anchor_url))
         outfile.write('\n\n')
 
 
@@ -300,11 +300,11 @@ def write_css(md_root):
 
 # formats a single post in a topic
 # Note: the default expects the Zulip "Z" icon at site_url+'assets/img/zulip2.png'
-def format_message(site_url, user_name, date, msg, link, anchor_name, anchor_url):
+def format_message(site_url, user_name, date, msg_content, link, anchor_name, anchor_url):
     anchor = '<a name="{0}"></a>'.format(anchor_name)
     zulip_link = '<a href="{0}" class="zl"><img src="{1}" alt="view this post on Zulip"></a>'.format(link, site_url+'assets/img/zulip2.png')
     local_link = '<a href="{0}">{1} ({2})</a>'.format(anchor_url, user_name, date)
-    return '{0}\n<h4>{1} {2}:</h4>\n{3}'.format(anchor, zulip_link, local_link, msg)
+    return '{0}\n<h4>{1} {2}:</h4>\n{3}'.format(anchor, zulip_link, local_link, msg_content)
 
 
 # escape | character with \|
