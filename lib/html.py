@@ -17,9 +17,10 @@ flexible as we go.
 import json
 import urllib
 
-from datetime import datetime
 from pathlib import Path
 from shutil import copyfile
+
+from .date_helper import format_date1
 
 from .common import (
     open_outfile,
@@ -196,7 +197,7 @@ def topic_info_string(message_data):
     cnt = message_data['size']
     plural = '' if cnt == 1 else 's'
     latest_date = message_data['latest_date']
-    date = datetime.utcfromtimestamp(latest_date).strftime('%b %d %Y at %H:%M')
+    date = format_date1(latest_date)
     return f'{cnt} message{plural}, latest: {date}'
 
 # writes a topic page.
@@ -303,7 +304,7 @@ def format_message(
         msg
         ):
     user_name = msg['sender_full_name']
-    date = datetime.utcfromtimestamp(msg['timestamp']).strftime('%b %d %Y at %H:%M')
+    date = format_date1(msg['timestamp'])
     msg_content = msg['content']
     link = structure_link(zulip_url, stream_id, stream_name, topic_name, msg['id'])
     anchor_name = str(msg['id'])
