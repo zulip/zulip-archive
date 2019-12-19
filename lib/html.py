@@ -83,16 +83,15 @@ def write_stream_index(md_root, site_url, html_root, title, streams, date_footer
     outfile = open_outfile(md_root, Path('index.md'), 'w+')
     write_stream_index_header(outfile, html_root, title)
 
-    outfile.write('---\n\n')
-    outfile.write('## Streams:\n\n')
-    for s in sorted_streams(streams):
-        num_topics = len(streams[s]['topic_data'])
-        outfile.write("* [{0}]({1}/index.html) ({2} topic{3})\n\n".format(
-            s,
-            sanitize_stream(s, streams[s]['id']),
-            num_topics,
-            '' if num_topics == 1 else 's'))
-    outfile.write(date_footer)
+    content = f'''\
+---
+
+## Streams:
+
+{stream_list(streams)}
+{date_footer}
+'''
+    outfile.write(content)
     outfile.close()
 
 def sorted_streams(streams):
@@ -105,6 +104,36 @@ def sorted_streams(streams):
         key=lambda s: len(streams[s]['topic_data']),
         reverse=True
         )
+
+def stream_list(streams):
+    '''
+    produce a list like this:
+
+    * stream_name (n topics)
+    * stream_name (n topics)
+    * stream_name (n topics)
+    '''
+
+    def item(stream_name, stream_data):
+        stream_id = stream_data['id']
+        sanitized_name = sanitize_stream(stream_name, stream_id)
+        url = f'{sanitized_name}/index.html'
+        stream_topic_data = stream_data['topic_data']
+        num_topics = num_topics_string(stream_topic_data)
+        return f'* [{stream_name}]({url}) ({num_topics})'
+
+    return '\n\n'.join(
+        item(stream_name, streams[stream_name])
+        for stream_name
+        in sorted_streams(streams))
+
+def num_topics_string(stream_topic_data):
+    '''
+    example: "5 topics"
+    '''
+    num_topics = len(stream_topic_data)
+    plural = '' if num_topics == 1 else 's'
+    return f'{num_topics} topic{plural}'
 
 # writes an index page for a given stream, printing a list of the topics in that stream.
 # `stream_name`: the name of the stream.
