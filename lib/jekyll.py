@@ -1,8 +1,8 @@
 '''
 This module emits the content for your archive.
 
-It directly emits markdown, and indirectly emits
-HTML and YAML.
+It emits markdown, HTML, and YAML, mostly by calling
+into other modules.
 
 As I write this today (December 2019), we are mostly testing with
 Jekyll, so the output is geared toward a Jekyll system, which
@@ -39,15 +39,13 @@ from .html import (
     topic_page_links,
     )
 
-from .url import (
-    archive_stream_url,
+from .markdown import (
+    stream_list_page,
+    topic_list_page,
     )
 
-from .zulip_data import (
-    num_topics_string,
-    sorted_streams,
-    sorted_topics,
-    topic_info_string,
+from .url import (
+    archive_stream_url,
     )
 
 # Here are some more comments from the initial implementation:
@@ -101,38 +99,11 @@ def write_stream_index(md_root, site_url, html_root, title, streams, date_footer
     outfile = open_outfile(md_root, Path('index.md'), 'w+')
     write_stream_index_header(outfile, html_root, title)
 
-    content = f'''\
----
+    content = stream_list_page(streams)
 
-## Streams:
-
-{stream_list(streams)}
-'''
     outfile.write(content)
     outfile.write(date_footer)
     outfile.close()
-
-def stream_list(streams):
-    '''
-    produce a list like this:
-
-    * stream_name (n topics)
-    * stream_name (n topics)
-    * stream_name (n topics)
-    '''
-
-    def item(stream_name, stream_data):
-        stream_id = stream_data['id']
-        sanitized_name = sanitize_stream(stream_name, stream_id)
-        url = f'{sanitized_name}/index.html'
-        stream_topic_data = stream_data['topic_data']
-        num_topics = num_topics_string(stream_topic_data)
-        return f'* [{stream_name}]({url}) ({num_topics})'
-
-    return '\n\n'.join(
-        item(stream_name, streams[stream_name])
-        for stream_name
-        in sorted_streams(streams))
 
 def write_topic_index(md_root, site_url, html_root, title, stream_name, stream, date_footer):
     sanitized_stream_name = sanitize_stream(stream_name, stream['id'])
@@ -144,37 +115,11 @@ def write_topic_index(md_root, site_url, html_root, title, stream_name, stream, 
 
     topic_data = stream['topic_data']
 
-    content = f'''\
-## Stream: [{stream_name}]({stream_url})
----
-
-### Topics:
-
-{topic_list(topic_data)}
-'''
+    content = topic_list_page(stream_name, stream_url, topic_data)
 
     outfile.write(content)
     outfile.write(date_footer)
     outfile.close()
-
-def topic_list(topic_data):
-    '''
-    produce a list like this:
-
-    * topic name (n messages, latest: <date>)
-    * topic name (n messages, latest: <date>)
-    * topic name (n messages, latest: <date>)
-    '''
-
-    def item(topic_name, message_data):
-        link = f'[{escape_pipes(topic_name)}]({sanitize_topic(topic_name)}.html)'
-        topic_info = topic_info_string(message_data)
-        return f'* {link} ({topic_info})'
-
-    return '\n'.join(
-        item(topic_name, topic_data[topic_name])
-        for topic_name
-        in sorted_topics(topic_data))
 
 # writes a topic page.
 # `stream`: a stream json object as defined in the header
