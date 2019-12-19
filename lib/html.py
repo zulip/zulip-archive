@@ -301,9 +301,12 @@ def format_message(
         msg_id
         )
     anchor = '<a name="{0}"></a>'.format(msg_id)
-
-    local_link = '<a href="{0}">{1} ({2})</a>'.format(anchor_url, user_name, date)
-    return '{0}\n<h4>{1} {2}:</h4>\n{3}'.format(anchor, zulip_link, local_link, msg_content)
+    html = f'''
+{anchor}
+<h4>{zulip_link} {user_name} <a href="{anchor_url}">({date})</a>:</h4>
+{msg_content}
+'''
+    return html
 
 def link_to_zulip(
         zulip_url,
