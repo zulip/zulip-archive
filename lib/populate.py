@@ -113,20 +113,19 @@ def populate_all(
         nind = {'id': s['stream_id'], 'latest_id':0}
         tpmap = {}
         for t in topics:
+            topic_name = t['name']
             request = {
                 'narrow': [{'operator': 'stream', 'operand': s['name']},
-                           {'operator': 'topic', 'operand': t['name']}],
+                           {'operator': 'topic', 'operand': topic_name}],
                 'client_gravatar': True,
                 'apply_markdown': True
             }
             m = request_all(client, request)
-            tpmap[t['name']] = {'size': len(m),
+            tpmap[topic_name] = {'size': len(m),
                                 'latest_date': m[-1]['timestamp']}
             nind['latest_id'] = max(nind['latest_id'], m[-1]['id'])
-            out = open_outfile(json_root / Path(sanitize_stream(s['name'], s['stream_id'])),
-                               Path(sanitize_topic(t['name']) + '.json'), 'w')
-            dump_json(m, out)
-            out.close()
+            dump_topic_messages(json_root, s, topic_name, m)
+
         nind['topic_data'] = tpmap
         ind[s['name']] = nind
     js = {'streams':ind, 'time':datetime.utcfromtimestamp(time.time()).strftime('%b %d %Y at %H:%M')}
@@ -171,24 +170,34 @@ def populate_incremental(
         if len(new_msgs) > 0:
             stream_index['streams'][s['name']]['latest_id'] = new_msgs[-1]['id']
         nm = separate_results(new_msgs)
-        for t in nm:
-            p = json_root / Path(sanitize_stream(s['name'], s['stream_id'])) / Path(sanitize_topic(t) + '.json')
+        for topic_name in nm:
+            p = json_root / Path(sanitize_stream(s['name'], s['stream_id'])) / Path(sanitize_topic(topic_name) + '.json')
             topic_exists = p.exists()
             old = []
             if topic_exists:
                 f = p.open('r', encoding='utf-8')
                 old = json.load(f)
                 f.close()
-            m = nm[t]
+            m = nm[topic_name]
             new_topic_data = {'size': len(m)+len(old),
                                 'latest_date': m[-1]['timestamp']}
-            stream_index['streams'][s['name']]['topic_data'][t] = new_topic_data
-            out = open_outfile(json_root / Path(sanitize_stream(s['name'], s['stream_id'])),
-                               Path(sanitize_topic(t) + '.json'), 'w')
-            dump_json(old+m, out)
-            out.close()
+            stream_index['streams'][s['name']]['topic_data'][topic_name] = new_topic_data
+            dump_topic_messages(json_root, s, topic_name, old+m)
+
     stream_index['time'] = datetime.utcfromtimestamp(time.time()).strftime('%b %d %Y at %H:%M')
     out = open_outfile(json_root, Path('stream_index.json'), 'w')
     dump_json(stream_index, out)
     out.close()
 
+def dump_topic_messages(json_root, stream_data, topic_name, message_data):
+    stream_name = stream_data['name']
+    stream_id = stream_data['stream_id']
+    sanitized_stream_name = sanitize_stream(stream_name, stream_id)
+    stream_dir = json_root / Path(sanitized_stream_name)
+
+    sanitized_topic_name = sanitize_topic(topic_name)
+    topic_fn = sanitized_topic_name + '.json'
+
+    out = open_outfile(stream_dir, topic_fn, 'w')
+    dump_json(message_data, out)
+    out.close()
