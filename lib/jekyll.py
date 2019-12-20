@@ -176,10 +176,14 @@ def write_topic_messages(
         sanitized_topic_name
         )
 
-    o = open_topic_messages_page(md_root, sanitized_stream_name, sanitized_topic_name)
+    outfile = open_topic_messages_page(
+        md_root,
+        sanitized_stream_name,
+        sanitized_topic_name,
+        )
 
     write_topic_messages_header(
-        o,
+        outfile,
         site_url,
         html_root,
         zulip_url,
@@ -198,11 +202,10 @@ def write_topic_messages(
         stream_name,
         topic_name,
         )
-    o.write(topic_links)
 
-    o.write('\n<head><link href="/style.css" rel="stylesheet"></head>\n')
-
-    o.write('\n{% raw %}\n')
+    outfile.write(topic_links)
+    outfile.write('\n<head><link href="/style.css" rel="stylesheet"></head>\n')
+    outfile.write('\n{% raw %}\n')
 
     for msg in messages:
         msg_html = format_message(
@@ -215,13 +218,13 @@ def write_topic_messages(
                 topic_name,
                 msg,
                 )
-        o.write(msg_html)
-        o.write('\n\n')
+        outfile.write(msg_html)
+        outfile.write('\n\n')
 
-    o.write('\n{% endraw %}\n')
+    outfile.write('\n{% endraw %}\n')
 
-    o.write(date_footer)
-    o.close()
+    outfile.write(date_footer)
+    outfile.close()
 
 def write_css(md_root):
     copyfile('style.css', md_root / 'style.css')
