@@ -59,6 +59,8 @@ import json
 
 from pathlib import Path
 
+from .common import open_outfile
+
 def read_zulip_stream_info(json_root):
     '''
     stream_index.json
@@ -88,4 +90,18 @@ def read_zulip_messages_for_topic(
     messages = json.load(f)
     f.close()
     return messages
+
+def open_main_page(md_root):
+    outfile = open_outfile(md_root, Path('index.md'), 'w+')
+    return outfile
+
+def open_stream_topics_page(md_root, sanitized_stream_name):
+    directory = md_root / Path(sanitized_stream_name)
+    outfile = open_outfile(directory, Path('index.md'), 'w+')
+    return outfile
+
+def open_topic_messages_page(md_root, sanitized_stream_name, sanitized_topic_name):
+    directory = md_root / Path(sanitized_stream_name)
+    outfile = open_outfile(directory, Path(sanitized_topic_name + '.html'), 'w+')
+    return outfile
 

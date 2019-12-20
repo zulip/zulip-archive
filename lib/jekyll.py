@@ -20,14 +20,16 @@ from pathlib import Path
 from shutil import copyfile
 
 from .common import (
-    open_outfile,
     sanitize_stream,
     sanitize_topic,
     )
 
 from .files import (
-    read_zulip_stream_info,
+    open_main_page,
+    open_stream_topics_page,
+    open_topic_messages_page,
     read_zulip_messages_for_topic,
+    read_zulip_stream_info,
     )
 
 from .front_matter import (
@@ -89,7 +91,8 @@ def write_main_page(md_root, site_url, html_root, title, streams, date_footer):
         general (70 topics)
         announce (42 topics)
     '''
-    outfile = open_outfile(md_root, Path('index.md'), 'w+')
+    outfile = open_main_page(md_root)
+
     write_main_page_header(outfile, html_root, title)
 
     content = stream_list_page(streams)
@@ -110,8 +113,8 @@ def write_stream_topics(md_root, site_url, html_root, title, stream_name, stream
     '''
 
     sanitized_stream_name = sanitize_stream(stream_name, stream['id'])
-    directory = md_root / Path(sanitized_stream_name)
-    outfile = open_outfile(directory, Path('index.md'), 'w+')
+    outfile = open_stream_topics_page(md_root, sanitized_stream_name)
+
     write_stream_topics_header(outfile, site_url, html_root, title, stream_name, stream)
 
     stream_url = archive_stream_url(site_url, html_root, sanitized_stream_name)
@@ -161,7 +164,7 @@ def write_topic_messages(
         sanitized_topic_name
         )
 
-    o = open_outfile(md_root / Path(sanitized_stream_name), Path(sanitized_topic_name + '.html'), 'w+')
+    o = open_topic_messages_page(md_root, sanitized_stream_name, sanitized_topic_name)
 
     write_topic_messages_header(
         o,
