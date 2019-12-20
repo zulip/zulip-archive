@@ -31,9 +31,9 @@ from .files import (
     )
 
 from .front_matter import (
-    write_stream_index_header,
-    write_topic_index_header,
-    write_topic_header,
+    write_main_page_header,
+    write_stream_topics_header,
+    write_topic_messages_header,
     )
 
 from .html import (
@@ -51,19 +51,19 @@ from .url import (
     archive_stream_url,
     )
 
-def write_markdown(json_root, md_root, site_url, html_root, title, zulip_url, zulip_icon_url):
+def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zulip_icon_url):
     stream_info = read_zulip_stream_info(json_root)
 
     streams = stream_info['streams']
     date_footer = last_updated_footer(stream_info)
-    write_stream_index(md_root, site_url, html_root, title, streams, date_footer)
+    write_main_page(md_root, site_url, html_root, title, streams, date_footer)
     write_css(md_root)
 
     for s in streams:
         print('building: ', s)
-        write_topic_index(md_root, site_url, html_root, title, s, streams[s], date_footer)
+        write_stream_topics(md_root, site_url, html_root, title, s, streams[s], date_footer)
         for t in streams[s]['topic_data']:
-            write_topic(
+            write_topic_messages(
                 json_root,
                 md_root,
                 site_url,
@@ -80,9 +80,17 @@ def write_markdown(json_root, md_root, site_url, html_root, title, zulip_url, zu
 
 # writes the index page listing all streams.
 # `streams`: a dict mapping stream names to stream json objects as described in the header.
-def write_stream_index(md_root, site_url, html_root, title, streams, date_footer):
+def write_main_page(md_root, site_url, html_root, title, streams, date_footer):
+    '''
+    The main page in our website lists streams:
+
+        Streams:
+
+        general (70 topics)
+        announce (42 topics)
+    '''
     outfile = open_outfile(md_root, Path('index.md'), 'w+')
-    write_stream_index_header(outfile, html_root, title)
+    write_main_page_header(outfile, html_root, title)
 
     content = stream_list_page(streams)
 
@@ -90,11 +98,21 @@ def write_stream_index(md_root, site_url, html_root, title, streams, date_footer
     outfile.write(date_footer)
     outfile.close()
 
-def write_topic_index(md_root, site_url, html_root, title, stream_name, stream, date_footer):
+def write_stream_topics(md_root, site_url, html_root, title, stream_name, stream, date_footer):
+    '''
+    A stream page lists all topics for the stream:
+
+        Stream: social
+
+        Topics:
+            lunch (4 messages)
+            happy hour (1 message)
+    '''
+
     sanitized_stream_name = sanitize_stream(stream_name, stream['id'])
     directory = md_root / Path(sanitized_stream_name)
     outfile = open_outfile(directory, Path('index.md'), 'w+')
-    write_topic_index_header(outfile, site_url, html_root, title, stream_name, stream)
+    write_stream_topics_header(outfile, site_url, html_root, title, stream_name, stream)
 
     stream_url = archive_stream_url(site_url, html_root, sanitized_stream_name)
 
@@ -106,9 +124,7 @@ def write_topic_index(md_root, site_url, html_root, title, stream_name, stream, 
     outfile.write(date_footer)
     outfile.close()
 
-# writes a topic page.
-# `stream`: a stream json object as defined in the header
-def write_topic(
+def write_topic_messages(
         json_root,
         md_root,
         site_url,
@@ -121,6 +137,19 @@ def write_topic(
         topic_name,
         date_footer,
         ):
+    '''
+    Writes the topics page, which lists all messages
+    for one particular topic within a stream:
+
+    Stream: social
+    Topic: lunch
+
+    Alice:
+        I want pizza!
+
+    Bob:
+        No, let's get tacos!
+    '''
     stream_id = stream['id']
 
     sanitized_stream_name = sanitize_stream(stream_name, stream_id)
@@ -134,7 +163,7 @@ def write_topic(
 
     o = open_outfile(md_root / Path(sanitized_stream_name), Path(sanitized_topic_name + '.html'), 'w+')
 
-    write_topic_header(
+    write_topic_messages_header(
         o,
         site_url,
         html_root,

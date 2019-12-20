@@ -23,7 +23,7 @@ The actual work is done in two main libraries:
 #   containing message data and an index json file mapping streams to their topics.
 #   This uses the Zulip API and takes ~10 minutes to crawl the whole chat.
 # - populate_incremental() assumes there is already a json cache and collects only new messages.
-# - write_markdown() builds markdown files in `settings.html_directory`
+# - build_website() builds the webstie
 # - See hosting.md for suggestions on hosting.
 #
 
@@ -44,7 +44,7 @@ from lib.populate import (
     )
 
 from lib.jekyll import (
-    write_markdown
+    build_website
     )
 
 try:
@@ -172,7 +172,7 @@ def run():
             )
 
     if results.b:
-        write_markdown(
+        build_website(
             json_root,
             md_root,
             settings.site_url,

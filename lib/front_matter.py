@@ -23,8 +23,7 @@ from .common import (
     sanitize_topic,
     )
 
-# writes the Jekyll header info for the index page listing all streams.
-def write_stream_index_header(outfile, html_root, title):
+def write_main_page_header(outfile, html_root, title):
     outfile.writelines([
         '---\n',
         'layout: archive\n',
@@ -33,9 +32,7 @@ def write_stream_index_header(outfile, html_root, title):
         '---\n\n',
         ])
 
-# writes the Jekyll header info for the index page for
-# a given stream (which lists all the topics)
-def write_topic_index_header(outfile, site_url, html_root, title, stream_name, stream):
+def write_stream_topics_header(outfile, site_url, html_root, title, stream_name, stream):
     sanitized_stream_name = sanitize_stream(stream_name, stream['id'])
 
     permalink = 'permalink: {0}/{1}/index.html'.format(
@@ -52,9 +49,7 @@ def write_topic_index_header(outfile, site_url, html_root, title, stream_name, s
         ])
 
 
-# formats the header for a topic page (which lists all
-# the messages for a topic)
-def write_topic_header(outfile, site_url, html_root, zulip_url, title, stream_name, stream_id, topic_name):
+def write_topic_messages_header(outfile, site_url, html_root, zulip_url, title, stream_name, stream_id, topic_name):
     sanitized_stream_name = sanitize_stream(stream_name, stream_id)
     sanitized_topic_name = sanitize_topic(topic_name)
     permalink = 'permalink: {0}/{1}/{2}.html'.format(
