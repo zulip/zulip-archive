@@ -133,11 +133,7 @@ def populate_all(
         streams=ind,
         time=time.time()
         )
-
-    out = open_outfile(json_root, Path('stream_index.json'), 'w')
-    dump_json(js, out)
-    out.close()
-
+    dump_stream_index(json_root, js)
 
 # Retrieves only new messages from Zulip, based on timestamps from the last update.
 # Raises an exception if there is no index at json_root/stream_index.json
@@ -163,17 +159,18 @@ def populate_incremental(
         exit_immediately(error_msg)
 
     f = stream_index.open('r', encoding='utf-8')
-    stream_index = json.load(f, encoding='utf-8')
+    js = json.load(f, encoding='utf-8')
     f.close()
+
     for s in (s for s in streams if is_valid_stream_name(s['name'])):
         print(s['name'])
-        if s['name'] not in stream_index['streams']:
-            stream_index['streams'][s['name']] = {'id':s['stream_id'], 'latest_id':0, 'topic_data':{}}
+        if s['name'] not in js['streams']:
+            js['streams'][s['name']] = {'id':s['stream_id'], 'latest_id':0, 'topic_data':{}}
         request = {'narrow':[{'operator':'stream', 'operand':s['name']}], 'client_gravatar': True,
                    'apply_markdown': True}
-        new_msgs = request_all(client, request, stream_index['streams'][s['name']]['latest_id']+1)
+        new_msgs = request_all(client, request, js['streams'][s['name']]['latest_id']+1)
         if len(new_msgs) > 0:
-            stream_index['streams'][s['name']]['latest_id'] = new_msgs[-1]['id']
+            js['streams'][s['name']]['latest_id'] = new_msgs[-1]['id']
         nm = separate_results(new_msgs)
         for topic_name in nm:
             p = json_root / Path(sanitize_stream(s['name'], s['stream_id'])) / Path(sanitize_topic(topic_name) + '.json')
@@ -186,13 +183,18 @@ def populate_incremental(
             m = nm[topic_name]
             new_topic_data = {'size': len(m)+len(old),
                                 'latest_date': m[-1]['timestamp']}
-            stream_index['streams'][s['name']]['topic_data'][topic_name] = new_topic_data
+            js['streams'][s['name']]['topic_data'][topic_name] = new_topic_data
             dump_topic_messages(json_root, s, topic_name, old+m)
 
-    stream_index['time'] = time.time()
+    js['time'] = time.time()
+    dump_stream_index(json_root, js)
+
+def dump_stream_index(json_root, js):
+    if not ('streams' in js and 'time' in js):
+        raise Exception('programming error')
 
     out = open_outfile(json_root, Path('stream_index.json'), 'w')
-    dump_json(stream_index, out)
+    dump_json(js, out)
     out.close()
 
 def dump_topic_messages(json_root, stream_data, topic_name, message_data):
