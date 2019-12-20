@@ -199,5 +199,15 @@ def dump_topic_messages(json_root, stream_data, topic_name, message_data):
     topic_fn = sanitized_topic_name + '.json'
 
     out = open_outfile(stream_dir, topic_fn, 'w')
-    dump_json(message_data, out)
+    msgs = [slim_message(m) for m in message_data]
+    dump_json(msgs, out)
     out.close()
+
+def slim_message(msg):
+    fields = [
+        'content',
+        'id',
+        'sender_full_name',
+        'timestamp',
+        ]
+    return { k : v for k, v in msg.items() if k in fields }
