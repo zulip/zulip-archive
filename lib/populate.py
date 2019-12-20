@@ -105,32 +105,60 @@ def populate_all(
         json_root,
         is_valid_stream_name,
         ):
-    streams = get_streams(client)
-    ind = {}
-    for s in (s for s in streams if is_valid_stream_name(s['name'])):
-        print(s['name'])
-        topics = safe_request(client.get_stream_topics, s['stream_id'])['topics']
-        nind = {'id': s['stream_id'], 'latest_id':0}
-        tpmap = {}
+    all_streams = get_streams(client)
+
+    streams = [s for s in all_streams if is_valid_stream_name(s['name'])]
+
+    streams_data = {}
+
+    for s in streams:
+        stream_name = s['name']
+        stream_id = s['stream_id']
+
+        print(stream_name)
+
+        topics = safe_request(client.get_stream_topics, stream_id)['topics']
+
+        latest_id = 0  # till we know better
+
+        topic_data = {}
+
         for t in topics:
             topic_name = t['name']
+
             request = {
-                'narrow': [{'operator': 'stream', 'operand': s['name']},
-                           {'operator': 'topic', 'operand': topic_name}],
+                'narrow': [
+                    {'operator': 'stream', 'operand': stream_name},
+                    {'operator': 'topic', 'operand': topic_name}
+                ],
                 'client_gravatar': True,
                 'apply_markdown': True
             }
-            m = request_all(client, request)
-            tpmap[topic_name] = {'size': len(m),
-                                'latest_date': m[-1]['timestamp']}
-            nind['latest_id'] = max(nind['latest_id'], m[-1]['id'])
-            dump_topic_messages(json_root, s, topic_name, m)
 
-        nind['topic_data'] = tpmap
-        ind[s['name']] = nind
+            messages = request_all(client, request)
+
+            topic_count = len(messages)
+            last_message = messages[-1]
+            latest_date = last_message['timestamp']
+
+            topic_data[topic_name] = dict(
+                size=topic_count,
+                latest_date=latest_date)
+
+            latest_id = max(latest_id, last_message['id'])
+
+            dump_topic_messages(json_root, s, topic_name, messages)
+
+        stream_data = dict(
+            id=stream_id,
+            latest_id=latest_id,
+            topic_data=topic_data,
+            )
+
+        streams_data[stream_name] = stream_data
 
     js = dict(
-        streams=ind,
+        streams=streams_data,
         time=time.time()
         )
     dump_stream_index(json_root, js)
