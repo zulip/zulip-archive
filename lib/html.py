@@ -105,6 +105,7 @@ def link_to_zulip(
     return zulip_link
 
 def last_updated_footer(stream_info):
-    date_footer = '\n<hr><p>Last updated: {} UTC</p>'.format(stream_info['time'])
+    last_updated = format_date1(stream_info['time'])
+    date_footer = f'\n<hr><p>Last updated: {last_updated} UTC</p>'
     return date_footer
 

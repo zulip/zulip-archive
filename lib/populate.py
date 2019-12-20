@@ -128,7 +128,12 @@ def populate_all(
 
         nind['topic_data'] = tpmap
         ind[s['name']] = nind
-    js = {'streams':ind, 'time':datetime.utcfromtimestamp(time.time()).strftime('%b %d %Y at %H:%M')}
+
+    js = dict(
+        streams=ind,
+        time=time.time()
+        )
+
     out = open_outfile(json_root, Path('stream_index.json'), 'w')
     dump_json(js, out)
     out.close()
@@ -184,7 +189,8 @@ def populate_incremental(
             stream_index['streams'][s['name']]['topic_data'][topic_name] = new_topic_data
             dump_topic_messages(json_root, s, topic_name, old+m)
 
-    stream_index['time'] = datetime.utcfromtimestamp(time.time()).strftime('%b %d %Y at %H:%M')
+    stream_index['time'] = time.time()
+
     out = open_outfile(json_root, Path('stream_index.json'), 'w')
     dump_json(stream_index, out)
     out.close()
