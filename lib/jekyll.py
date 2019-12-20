@@ -16,8 +16,6 @@ If you are interest in porting this system away from Python to your
 language of choice, this is probably the best place to start.
 '''
 
-import json
-
 from pathlib import Path
 from shutil import copyfile
 
@@ -25,6 +23,11 @@ from .common import (
     open_outfile,
     sanitize_stream,
     sanitize_topic,
+    )
+
+from .files import (
+    read_zulip_stream_info,
+    read_zulip_messages_for_topic,
     )
 
 from .front_matter import (
@@ -48,26 +51,8 @@ from .url import (
     archive_stream_url,
     )
 
-# Here are some more comments from the initial implementation:
-#
-# When generating displayable md/html, we create the following structure inside md_root:
-# * index.md displays a list of all streams
-# * for each stream str, str/index.md displays a list of all topics in str
-# * for each topic top in a stream str, str/top.html displays the posts in top.
-#
-# Some sanitization is needed to ensure that urls are unique and acceptable.
-# Use sanitize_stream(stream_name, stream_id) in place of str above.
-# Use sanitize_topic(topic_name) in place of top.
-#
-# The topic display must be an html file, since we use the html provided by Zulip.
-# The index pages are generated in markdown by default, but this can be changed to html.
-
-
-# writes all markdown files to md_root, based on the archive at json_root.
 def write_markdown(json_root, md_root, site_url, html_root, title, zulip_url, zulip_icon_url):
-    f = (json_root / Path('stream_index.json')).open('r', encoding='utf-8')
-    stream_info = json.load(f, encoding='utf-8')
-    f.close()
+    stream_info = read_zulip_stream_info(json_root)
 
     streams = stream_info['streams']
     date_footer = last_updated_footer(stream_info)
@@ -141,10 +126,11 @@ def write_topic(
     sanitized_stream_name = sanitize_stream(stream_name, stream_id)
     sanitized_topic_name = sanitize_topic(topic_name)
 
-    json_path = json_root / Path(sanitized_stream_name) / Path (sanitized_topic_name + '.json')
-    f = json_path.open('r', encoding='utf-8')
-    messages = json.load(f)
-    f.close()
+    messages = read_zulip_messages_for_topic(
+        json_root,
+        sanitized_stream_name,
+        sanitized_topic_name
+        )
 
     o = open_outfile(md_root / Path(sanitized_stream_name), Path(sanitized_topic_name + '.html'), 'w+')
 
