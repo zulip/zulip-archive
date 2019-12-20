@@ -51,6 +51,9 @@ from .common import (
         sanitize_topic,
         )
 
+def dump_json(js, outfile):
+    json.dump(js, outfile, ensure_ascii=False, sort_keys=True, indent=4)
+
 # Takes a list of messages. Returns a dict mapping topic names to lists of messages in that topic.
 def separate_results(list):
     map = {}
@@ -122,13 +125,13 @@ def populate_all(
             nind['latest_id'] = max(nind['latest_id'], m[-1]['id'])
             out = open_outfile(json_root / Path(sanitize_stream(s['name'], s['stream_id'])),
                                Path(sanitize_topic(t['name']) + '.json'), 'w')
-            json.dump(m, out, ensure_ascii=False)
+            dump_json(m, out)
             out.close()
         nind['topic_data'] = tpmap
         ind[s['name']] = nind
     js = {'streams':ind, 'time':datetime.utcfromtimestamp(time.time()).strftime('%b %d %Y at %H:%M')}
     out = open_outfile(json_root, Path('stream_index.json'), 'w')
-    json.dump(js, out, ensure_ascii = False)
+    dump_json(js, out)
     out.close()
 
 
@@ -182,10 +185,10 @@ def populate_incremental(
             stream_index['streams'][s['name']]['topic_data'][t] = new_topic_data
             out = open_outfile(json_root / Path(sanitize_stream(s['name'], s['stream_id'])),
                                Path(sanitize_topic(t) + '.json'), 'w')
-            json.dump(old+m, out, ensure_ascii=False)
+            dump_json(old+m, out)
             out.close()
     stream_index['time'] = datetime.utcfromtimestamp(time.time()).strftime('%b %d %Y at %H:%M')
     out = open_outfile(json_root, Path('stream_index.json'), 'w')
-    json.dump(stream_index, out, ensure_ascii = False)
+    dump_json(stream_index, out)
     out.close()
 
