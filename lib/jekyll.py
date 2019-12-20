@@ -61,10 +61,22 @@ def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zul
     write_main_page(md_root, site_url, html_root, title, streams, date_footer)
     write_css(md_root)
 
-    for s in streams:
-        print('building: ', s)
-        write_stream_topics(md_root, site_url, html_root, title, s, streams[s], date_footer)
-        for t in streams[s]['topic_data']:
+    for stream_name in streams:
+        print('building: ', stream_name)
+        stream_data = streams[stream_name]
+        topic_data = stream_data['topic_data']
+
+        write_stream_topics(
+            md_root,
+            site_url,
+            html_root,
+            title,
+            stream_name,
+            stream_data,
+            date_footer,
+            )
+
+        for topic_name in topic_data:
             write_topic_messages(
                 json_root,
                 md_root,
@@ -73,9 +85,9 @@ def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zul
                 title,
                 zulip_url,
                 zulip_icon_url,
-                s,
-                streams[s],
-                t,
+                stream_name,
+                streams[stream_name],
+                topic_name,
                 date_footer,
                 )
 
