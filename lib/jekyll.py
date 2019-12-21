@@ -205,7 +205,6 @@ def write_topic_messages(
 
     outfile.write(topic_links)
     outfile.write('\n<head><link href="/style.css" rel="stylesheet"></head>\n')
-    outfile.write('\n{% raw %}\n')
 
     for msg in messages:
         msg_html = format_message(
@@ -220,8 +219,6 @@ def write_topic_messages(
                 )
         outfile.write(msg_html)
         outfile.write('\n\n')
-
-    outfile.write('\n{% endraw %}\n')
 
     outfile.write(date_footer)
     outfile.close()
