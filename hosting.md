@@ -14,11 +14,19 @@ Here are some convenient options for serving the HTML:
 serving static content.
 
 The archive script generates index pages in markdown that are
-designed for a Jekyll build, so you can do something like this:
+designed for a Jekyll build, so you can do something like this
+from within this directory (where you checked out code):
 
 ```
-jekyll serve --incremental
+gem install jekyll bundler
+jekyll serve
 ```
+
+With the default configuration you should be able to see
+your archive at http://127.0.0.1:4000/archive/
+
+If you have a large archive that you update regularly,
+you may want to run `jekyll serve --incremental`.
 
 ### GitHub
 
