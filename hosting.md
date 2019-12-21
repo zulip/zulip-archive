@@ -6,7 +6,44 @@ In other words, Zulip is not opinionated about you serve
 the HTML (and in some ways the entire mission of this project
 is to empower you to put your data where you want).
 
-Here are some convenient options for serving the HTML:
+### General procedures
+
+No matter where you host your data, you will typically
+have a "PROD" install.  This will involve more detailed
+updates to `settings.py` than you probably made for local
+testing.  Here is a typical diff:
+
+~~~
+<     # site_url = 'example.com'
+<     raise Exception("You need to configure site_url for prod")
+---
+>     site_url = 'https://showell.github.io/'
+46,47c45
+<     # Set this according to how you serve your prod assets.
+<     zulip_icon_url = None
+---
+>     zulip_icon_url = 'http://showell.github.io/assets/img/zulip2.png'
+82,87c80
+<     raise Exception('''
+<         You need to set html_directory for prod, and it
+<         should be a different location than DEBUG mode,
+<         since files will likely have different urls in
+<         anchor tags.
+<         ''')
+---
+>     html_directory = Path('../website/archive')
+~~~
+
+
+To build your site with prod settings, do this:
+
+    `PROD_ARCHIVE=1 python archive.py -b`
+
+You will also want to copy layouts and assets to your production
+directory.  These include:
+
+* layouts
+* zulip2.png
 
 ### Jekyll
 
