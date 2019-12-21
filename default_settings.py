@@ -32,7 +32,7 @@ value for prod.
 if DEBUG:
     site_url = 'http://127.0.0.1:4000'
 else:
-    # siteurl = 'example.com'
+    # site_url = 'example.com'
     raise Exception("You need to configure site_url for prod")
 
 '''
