@@ -48,47 +48,8 @@ Zulip apps:
 
 ## Instructions
 
-* The script requires Python 3.
-* Install the Zulip python bindings, with `pip3 install zulip`.
-* [Create a bot](https://zulipchat.com/help/add-a-bot-or-integration)
-  and download its
-  [zuliprc](https://zulipchat.com/api/configuring-python-bindings)
-  file to `zulip-archive/zuliprc` within this project.
-* Extend the `zuliprc` file with an `archive` section like this:
-    ```
-    [archive]
-    # root_url is used for internal links in the archive.
-    # A file:/// path is useful for inspecting on the local filesystem.
-    root_url=file:///path/to/zulip-archive
-    # A whitelist of streams; if specified, only these streams will be included.
-    stream_whitelist=announce
-    # A blacklist of streams; these streams will never be included.
-    stream_blacklist=hidden, other hidden
-    # The title of the archive
-    title=Lean Prover Zulip Chat Archive
-    ```
-* Optionally, modify the display generation code to fit your needs. The
-  defaults are based on the [leanprover-community Jekyll
-  setup](https://github.com/leanprover-community/leanprover-community.github.io).
-
-* Create a directory to store JSON in (see settings.py for more details).
-
-* Run `python3 archive.py -t` to download a fresh archive.
-
-The tool supports the following options:
-
-  * `-t` builds a fresh archive. This will download every message from the Zulip chat and might take a long time. Must be run at least once before using `-i`.
-  * `-i` updates the archive with messages posted since the last scrape.
-  * `-b` generates the markdown/html output.
-
-This repostiory also contains a [hacky tool](github.py) for managing
-pushes to a repository hosted by GitHub Pages, which supports the
-following options.  Be sure to read the warnings in `github.py`.
-
-* `-f` updates the git repository containing the script
-* `-p` pushes the generated files
-
-Contributions are appreciated to make `github.py` no longer hacky.
+See the [instructions](instructions.md) to learn how to build
+your Zulip archive.
 
 ## Contributing and future plans
 
