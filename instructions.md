@@ -37,13 +37,13 @@ but you can also use your main user's API key.
   first--see `settings.py` for details.)
 
 Note: you will be able to update your archive later with
-`python archive.py -i` to get more messages.
+`python3 archive.py -i` to get more messages.
 
 ## Build the HTML/markdown files for Jekyll
 
 Run this command to build your archive
 
-    python archive.py -b
+    python3 archive.py -b
 
 ## Test your changes locally
 
