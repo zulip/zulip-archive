@@ -27,6 +27,12 @@ The actual work is done in two main libraries:
 # - See hosting.md for suggestions on hosting.
 #
 
+import sys
+if sys.version_info < (3,6):
+    version_error = " Python version must be 3.6 or higher\n\
+            Your current version of python is {}.{}\n\
+            Please try again with python3.".format(sys.version_info.major,sys.version_info.minor)
+    raise Exception(version_error)
 import argparse
 import configparser
 import zulip
