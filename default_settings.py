@@ -80,12 +80,15 @@ We write HTML to here.
 if DEBUG:
     html_directory = Path('./archive')  # Modify me!
 else:
-    raise Exception('''
-        You need to set html_directory for prod, and it
-        should be a different location than DEBUG mode,
-        since files will likely have different urls in
-        anchor tags.
-        ''')
+    try:
+        html_directory = Path(os.getenv("HTML_DIRECTORY", None))
+    except TypeError:
+        raise Exception('''
+            You need to set html_directory for prod, and it
+            should be a different location than DEBUG mode,
+            since files will likely have different urls in
+            anchor tags.
+            ''')
 
 '''
 You may only want to include certain streams.  If you
