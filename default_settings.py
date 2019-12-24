@@ -32,8 +32,9 @@ value for prod.
 if DEBUG:
     site_url = 'http://127.0.0.1:4000'
 else:
-    # site_url = 'example.com'
-    raise Exception("You need to configure site_url for prod")
+    site_url = os.getenv('SITE_URL')
+    if not site_url:
+        raise Exception("You need to configure site_url for prod")
 
 '''
 Set the zulip icon url.  Folks can press the icon to see a
@@ -44,7 +45,7 @@ if DEBUG:
     zulip_icon_url = 'http://127.0.0.1:4000/assets/img/zulip2.png'
 else:
     # Set this according to how you serve your prod assets.
-    zulip_icon_url = None
+    zulip_icon_url = os.getenv("ZULIP_ICON_URL", None)
 
 
 '''
