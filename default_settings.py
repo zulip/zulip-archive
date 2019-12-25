@@ -72,7 +72,7 @@ your repo.  Here we assume a sibling directory named zulip_json, but
 you may prefer another directory structure.
 '''
 
-json_directory = Path('../zulip_json')  # Modify me!
+json_directory = Path(os.getenv("JSON_DIRECTORY", "../zulip_json"))
 
 '''
 We write HTML to here.
