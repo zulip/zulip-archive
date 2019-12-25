@@ -59,7 +59,7 @@ Set the path prefix of your URLs for Jekyll.
 For example, you might want your main page to have
 the path of archive/index.html
 '''
-html_root = 'archive'  # Modify me!
+html_root = os.getenv("HTML_ROOT", "archive")  # Modify me!
 
 '''
 When we get content from your Zulip instance, we first create
