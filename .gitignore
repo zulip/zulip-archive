@@ -99,6 +99,11 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+bin/
+include/
+lib/python3.6/
+pip-selfcheck.json
+share/
 
 # Spyder project settings
 .spyderproject
