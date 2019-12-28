@@ -21,7 +21,7 @@ def assert_equal(v1, v2):
 def test_sanitize():
     assert_equal(
         common.sanitize_stream(stream_name='foo bar', stream_id=7),
-        '7foobar'
+        '7-foobar'
         )
 
     # The 87695 below is an adler32 hash of the topic name
