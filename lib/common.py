@@ -24,7 +24,7 @@ def sanitize_topic(topic_name):
 
 # create a unique sanitized identifier for a stream
 def sanitize_stream(stream_name, stream_id):
-    return str(stream_id) + sanitize(stream_name)
+    return str(stream_id) + '-' + sanitize(stream_name)
 
 def stream_validator(settings):
     if not hasattr(settings, 'included_streams'):
