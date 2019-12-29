@@ -48,3 +48,18 @@ def archive_topic_url(site_url, html_root, sanitized_stream_name, sanitized_topi
 def archive_message_url(site_url, html_root, sanitized_stream_name, sanitized_topic_name, msg_id):
     base_url = urllib.parse.urljoin(site_url, html_root)
     return f'{base_url}/{sanitized_stream_name}/{sanitized_topic_name}#{msg_id}'
+
+## String cleaning functions
+
+# remove non-alnum ascii symbols from string
+def sanitize(s):
+    return "".join(filter(lambda x:x.isalnum or x==' ', s.encode('ascii', 'ignore')\
+        .decode('utf-8'))).replace(' ','-')
+
+# create a unique sanitized identifier for a topic
+def sanitize_topic(topic_name):
+    return urllib.parse.quote(topic_name, safe='~()*!.\'').replace('.','%2E').replace('%','.')
+
+# create a unique sanitized identifier for a stream
+def sanitize_stream(stream_name, stream_id):
+    return str(stream_id) + '-' + sanitize(stream_name)

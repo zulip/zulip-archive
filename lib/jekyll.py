@@ -19,7 +19,7 @@ language of choice, this is probably the best place to start.
 from pathlib import Path
 from shutil import copyfile
 
-from .common import (
+from .url import (
     sanitize_stream,
     sanitize_topic,
     )

@@ -47,6 +47,8 @@ from pathlib import Path
 from .common import (
         exit_immediately,
         open_outfile,
+        )
+from .url import (
         sanitize_stream,
         sanitize_topic,
         )
