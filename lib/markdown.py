@@ -7,7 +7,7 @@ We may want to move toward just emitting pure HTML.
 '''
 
 
-from .common import (
+from .url import (
     sanitize_stream,
     sanitize_topic,
     )

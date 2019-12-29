@@ -1,5 +1,4 @@
 import os
-import urllib.parse
 
 def exit_immediately(s):
     print('\nERROR\n', s)
@@ -10,21 +9,6 @@ def open_outfile(dir, filename, mode):
     if not dir.exists():
         os.makedirs(str(dir))
     return (dir / filename).open(mode, encoding='utf-8')
-
-## String cleaning functions
-
-# remove non-alnum ascii symbols from string
-def sanitize(s):
-    return "".join(filter(lambda x:x.isalnum or x==' ', s.encode('ascii', 'ignore')\
-        .decode('utf-8'))).replace(' ','-')
-
-# create a unique sanitized identifier for a topic
-def sanitize_topic(topic_name):
-    return urllib.parse.quote(topic_name, safe='~()*!.\'').replace('.','%2E').replace('%','.')
-
-# create a unique sanitized identifier for a stream
-def sanitize_stream(stream_name, stream_id):
-    return str(stream_id) + '-' + sanitize(stream_name)
 
 def stream_validator(settings):
     if not hasattr(settings, 'included_streams'):

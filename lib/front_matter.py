@@ -18,7 +18,7 @@ like the following:
 The Jekyll code reads those lines to set up layout and
 create nice URLs for your pages.
 '''
-from .common import (
+from .url import (
     sanitize_stream,
     sanitize_topic,
     )

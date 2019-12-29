@@ -5,6 +5,7 @@ os.chdir(os.path.dirname(sys.argv[0]))
 sys.path.append('../lib')
 
 import common
+import url
 
 class Settings:
     def __init__(self, **kwargs):
@@ -20,12 +21,12 @@ def assert_equal(v1, v2):
 
 def test_sanitize():
     assert_equal(
-        common.sanitize_stream(stream_name='foo bar', stream_id=7),
+        url.sanitize_stream(stream_name='foo bar', stream_id=7),
         '7-foo-bar'
         )
 
     assert_equal(
-        common.sanitize_topic(topic_name='pick a place for lunch'),
+        url.sanitize_topic(topic_name='pick a place for lunch'),
         'pick.20a.20place.20for.20lunch'
         )
 
