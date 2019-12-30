@@ -26,7 +26,7 @@ from .url import (
 def write_main_page_header(outfile, html_root, title):
     outfile.writelines([
         '---\n',
-        'layout: archive\n',
+        'layouts: archive\n',
         'title: {}\n'.format(title),
         'permalink: {}/index.html\n'.format(html_root),
         '---\n\n',
@@ -35,14 +35,14 @@ def write_main_page_header(outfile, html_root, title):
 def write_stream_topics_header(outfile, site_url, html_root, title, stream_name, stream):
     sanitized_stream_name = sanitize_stream(stream_name, stream['id'])
 
-    permalink = 'permalink: {0}/{1}/index.html'.format(
+    permalink = 'permalink: {0}/stream/{1}/index.html'.format(
         html_root,
         sanitized_stream_name,
     )
 
     outfile.writelines([
         '---\n',
-        'layout: archive\n',
+        'layouts: archive\n',
         'title: {}\n'.format(title),
         permalink,
         '\n---\n\n',
@@ -52,7 +52,7 @@ def write_stream_topics_header(outfile, site_url, html_root, title, stream_name,
 def write_topic_messages_header(outfile, site_url, html_root, zulip_url, title, stream_name, stream_id, topic_name):
     sanitized_stream_name = sanitize_stream(stream_name, stream_id)
     sanitized_topic_name = sanitize_topic(topic_name)
-    permalink = 'permalink: {0}/{1}/{2}.html'.format(
+    permalink = 'permalink: {0}/stream/{1}/topic/{2}.html'.format(
         html_root,
         sanitized_stream_name,
         sanitized_topic_name,
@@ -60,7 +60,7 @@ def write_topic_messages_header(outfile, site_url, html_root, zulip_url, title, 
 
     outfile.writelines([
         '---\n',
-        'layout: archive\n',
+        'layouts: archive\n',
         'title: {}\n'.format(title),
         permalink,
         '\n---\n\n',
