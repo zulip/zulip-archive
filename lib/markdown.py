@@ -41,7 +41,7 @@ def stream_list(streams):
     def item(stream_name, stream_data):
         stream_id = stream_data['id']
         sanitized_name = sanitize_stream(stream_name, stream_id)
-        url = f'{sanitized_name}/index.html'
+        url = f'stream/{sanitized_name}/index.html'
         stream_topic_data = stream_data['topic_data']
         num_topics = num_topics_string(stream_topic_data)
         return f'* [{stream_name}]({url}) ({num_topics})'
@@ -73,7 +73,7 @@ def topic_list(topic_data):
     '''
 
     def item(topic_name, message_data):
-        link = f'[{escape_pipes(topic_name)}]({sanitize_topic(topic_name)}.html)'
+        link = f'[{escape_pipes(topic_name)}](topic/{sanitize_topic(topic_name)}.html)'
         topic_info = topic_info_string(message_data)
         return f'* {link} ({topic_info})'
 

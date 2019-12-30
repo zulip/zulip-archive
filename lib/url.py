@@ -17,11 +17,11 @@ And then URLs use Zulip stream/topics, which are sometimes
     stream_name: general
     topic_name: lunch
 
-    sanitized_stream_name : 599general
-    sanitized_topic_name: 222lunch
+    sanitized_stream_name : 599-general
+    sanitized_topic_name: lunch
 '''
 
-import urllib
+import urllib.parse
 
 def zulip_post_url(zulip_url, stream_id, stream_name, topic_name, post_id):
     '''
@@ -33,17 +33,17 @@ def zulip_post_url(zulip_url, stream_id, stream_name, topic_name, post_id):
 
 def archive_stream_url(site_url, html_root, sanitized_stream_name):
     '''
-    http://127.0.0.1:4000/archive/213222general/index.html
+    http://127.0.0.1:4000/archive/stream/213222-general/index.html
     '''
     base_url = urllib.parse.urljoin(site_url, html_root)
-    return f'{base_url}/{sanitized_stream_name}/index.html'
+    return f'{base_url}/stream/{sanitized_stream_name}/index.html'
 
 def archive_topic_url(site_url, html_root, sanitized_stream_name, sanitized_topic_name):
     '''
-    http://127.0.0.1:4000/archive/213222general/74282newstreams.html
+    http://127.0.0.1:4000/archive/stream/213222-general/topic/newstreams.html
     '''
     base_url = urllib.parse.urljoin(site_url, html_root)
-    return f'{base_url}/{sanitized_stream_name}/{sanitized_topic_name}.html'
+    return f'{base_url}/stream/{sanitized_stream_name}/topic/{sanitized_topic_name}.html'
 
 def archive_message_url(site_url, html_root, sanitized_stream_name, sanitized_topic_name, msg_id):
     base_url = urllib.parse.urljoin(site_url, html_root)

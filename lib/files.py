@@ -96,12 +96,12 @@ def open_main_page(md_root):
     return outfile
 
 def open_stream_topics_page(md_root, sanitized_stream_name):
-    directory = md_root / Path(sanitized_stream_name)
+    directory = md_root / Path('stream/'+sanitized_stream_name)
     outfile = open_outfile(directory, Path('index.md'), 'w+')
     return outfile
 
 def open_topic_messages_page(md_root, sanitized_stream_name, sanitized_topic_name):
-    directory = md_root / Path(sanitized_stream_name)
+    directory = md_root / Path(sanitized_stream_name+'/topic')
     outfile = open_outfile(directory, Path(sanitized_topic_name + '.html'), 'w+')
     return outfile
 
