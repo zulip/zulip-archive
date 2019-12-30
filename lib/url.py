@@ -35,17 +35,16 @@ def archive_stream_url(site_url, html_root, sanitized_stream_name):
     '''
     http://127.0.0.1:4000/archive/213222general/index.html
     '''
-    path = f'{html_root}/{sanitized_stream_name}/index.html'
-    return urllib.parse.urljoin(site_url, path)
+    base_url = urllib.parse.urljoin(site_url, html_root)
+    return f'{base_url}/{sanitized_stream_name}/index.html'
 
 def archive_topic_url(site_url, html_root, sanitized_stream_name, sanitized_topic_name):
     '''
     http://127.0.0.1:4000/archive/213222general/74282newstreams.html
     '''
-    path = f'{html_root}/{sanitized_stream_name}/{sanitized_topic_name}.html'
-    return urllib.parse.urljoin(site_url, path)
+    base_url = urllib.parse.urljoin(site_url, html_root)
+    return f'{base_url}/{sanitized_stream_name}/{sanitized_topic_name}.html'
 
 def archive_message_url(site_url, html_root, sanitized_stream_name, sanitized_topic_name, msg_id):
     base_url = urllib.parse.urljoin(site_url, html_root)
-    full_url = f'{base_url}/{sanitized_stream_name}/{sanitized_topic_name}#{msg_id}'
-    return full_url
+    return f'{base_url}/{sanitized_stream_name}/{sanitized_topic_name}#{msg_id}'
