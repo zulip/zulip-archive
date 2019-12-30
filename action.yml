@@ -1,0 +1,24 @@
+# action.yml
+name: 'Zulip Archive'
+description: 'Publish Zulip archive in GitHub pages'
+inputs:
+  site:
+    description: 'URL of Zulip organization'
+    required: true
+  key:
+    description: 'API key of the Zulip bot'
+    required: true
+  email:
+    description: 'Email of the Zulip bot'
+    required: true
+  github_token:
+    description: 'GitHub token'
+    required: true
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.site }}
+    - ${{ inputs.key }}
+    - ${{ inputs.email }}
+    - ${{ inputs.github_token }}
