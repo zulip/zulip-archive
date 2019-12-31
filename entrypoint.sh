@@ -11,6 +11,18 @@ html_dir_path=$checked_out_repo_path
 json_dir_path="${checked_out_repo_path}/zulip_json"
 _layouts_path="${checked_out_repo_path}/_layouts"
 img_dir_path="${checked_out_repo_path}/assets/img"
+included_streams_file_path="${checked_out_repo_path}/included_streams.txt"
+excluded_streams_file_path="${checked_out_repo_path}/excluded_streams.txt"
+
+if [ ! -f $included_streams_file_path ]; then
+    echo "Please create included_streams.txt file."
+    exit 1
+fi
+
+if [ ! -f $excluded_streams_file_path ]; then
+    echo "Please create excluded_streams.txt file."
+    exit 1
+fi
 
 cd "/zulip-archive-action"
 
@@ -34,6 +46,8 @@ github_pages_url_with_trailing_slash=$(curl -H "${auth_header}" $page_api_url | 
 github_pages_url=${github_pages_url_with_trailing_slash%/}
 
 cp default_settings.py settings.py
+cp $included_streams_file_path .
+cp $excluded_streams_file_path .
 
 crudini --set zuliprc api site $zulip_realm_url
 crudini --set zuliprc api key $zulip_bot_api_key
