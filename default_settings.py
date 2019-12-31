@@ -98,21 +98,51 @@ except that excluded_streams takes precedence.
 Note that we only ever read in **public** streams.  You
 can make the settings more restrictive than that, but not
 the opposite direction.
+
+eg:
+
+included_streams = [
+    "*"
+]
+ or
+
+included_streams = [
+    "general",
+    "new members"
+]
 '''
 
-# Modify as needed:
-included_streams = [
-    '*', # for all streams
-    # 'general',
-    # 'public',
-    ]
+if DEBUG:
+    included_streams = ["*"]
+else:
+    # In production store the streams line by line in a file called
+    # included_streams.txt
+    try:
+        with open("included_streams.txt") as f:
+            included_streams = f.read().split("\n")
+    except FileNotFoundError:
+        raise Exception("Missing included_streams.txt file")
+
 
 '''
 add streams here that may be "public" on your Zulip
 instance, but which you don't want to publish in the
 archive
-'''
+
+eg :
+
 excluded_streams = [
-    # 'stream name1',
-    # 'stream name2',
-    ]
+    "general",
+    "new members"
+]
+'''
+if DEBUG:
+    excluded_streams = []
+else:
+    # In production store the streams line by line in a file called
+    # excluded_streams.txt
+    try:
+        with open("excluded_streams.txt") as f:
+            excluded_streams = f.read().split("\n")
+    except FileNotFoundError:
+        raise Exception("Missing excluded_streams.txt file")
