@@ -1,0 +1,9 @@
+included:
+- '*'
+# - general
+# - javascript
+# - data structures
+
+excluded:
+# - checkins
+# - development help

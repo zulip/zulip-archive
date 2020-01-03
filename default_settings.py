@@ -9,6 +9,7 @@
 # are in your Python path.
 
 import os
+import yaml
 from pathlib import Path
 
 '''
@@ -90,59 +91,54 @@ else:
             anchor tags.
             ''')
 
-'''
-You may only want to include certain streams.  If you
-use '*' in included_streams, that gets all your streams,
-except that excluded_streams takes precedence.
-
-Note that we only ever read in **public** streams.  You
-can make the settings more restrictive than that, but not
-the opposite direction.
-
-eg:
-
-included_streams = [
-    "*"
-]
- or
-
-included_streams = [
-    "general",
-    "new members"
-]
-'''
-
-if DEBUG:
-    included_streams = ["*"]
-else:
-    # In production store the streams line by line in a file called
-    # included_streams.txt
-    try:
-        with open("included_streams.txt") as f:
-            included_streams = f.read().split("\n")
-    except FileNotFoundError:
-        raise Exception("Missing included_streams.txt file")
-
 
 '''
-add streams here that may be "public" on your Zulip
-instance, but which you don't want to publish in the
-archive
+You may only want to include certain streams.  In `streams.yaml`
+file, mention the streams you want to include under `included` section.
 
-eg :
+Example
+---
 
-excluded_streams = [
-    "general",
-    "new members"
-]
+included:
+  - general
+  - javascript
+  - data structures
+
+
+If you want to include all the streams you can use '*'
+
+Example
+---
+
+included:
+  - '*'
+
+Using '*' includes all the **public streams** in Zulip archive.  You
+can make the settings more restrictive than that, but not the opposite
+direction.
+
+If you want to exclude some public streams, mention them under `excluded`
+category in `streams.yaml`
+
+Example:
+---
+
+excluded:
+  - checkins
+  - development help
+
 '''
-if DEBUG:
-    excluded_streams = []
-else:
-    # In production store the streams line by line in a file called
-    # excluded_streams.txt
-    try:
-        with open("excluded_streams.txt") as f:
-            excluded_streams = f.read().split("\n")
-    except FileNotFoundError:
-        raise Exception("Missing excluded_streams.txt file")
+
+try:
+    with open("streams.yaml") as f:
+        streams = yaml.load(f, Loader=yaml.BaseLoader)
+        if "included" not in streams or not streams["included"]:
+            raise Exception("Please specify the streams to be included under `included` section in streams.yaml file")
+        included_streams = streams["included"]
+
+        excluded_streams = []
+        if "excluded" in streams and streams["excluded"]:
+            excluded_streams = streams["excluded"]
+
+except FileNotFoundError:
+    raise Exception("Missing streams.yaml file")
