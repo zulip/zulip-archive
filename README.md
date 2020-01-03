@@ -34,8 +34,8 @@ Zulip apps:
 
 * You may also decide to shut down a Zulip instance, whether to move
   to another communication tool, to deduplicate instances, or because
-  your organization is shutting down.  You can always [export your
-  Zulip data](https://zulipchat.com/help/export-your-organization),
+  your organization is shutting down. You can always [export your
+  Zulip data] (https://zulipchat.com/help/export-your-organization),
   but the other tool may not be able to import it.  In such a case,
   you can use this archive tool to keep the old conversations
   accessible. (Contrast this to scenarios where your provider locks
