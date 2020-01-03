@@ -11,16 +11,10 @@ html_dir_path=$checked_out_repo_path
 json_dir_path="${checked_out_repo_path}/zulip_json"
 _layouts_path="${checked_out_repo_path}/_layouts"
 img_dir_path="${checked_out_repo_path}/assets/img"
-included_streams_file_path="${checked_out_repo_path}/included_streams.txt"
-excluded_streams_file_path="${checked_out_repo_path}/excluded_streams.txt"
+streams_config_file_path="${checked_out_repo_path}/streams.yaml"
 
-if [ ! -f $included_streams_file_path ]; then
-    echo "Please create included_streams.txt file."
-    exit 1
-fi
-
-if [ ! -f $excluded_streams_file_path ]; then
-    echo "Please create excluded_streams.txt file."
+if [ ! -f $streams_config_file_path ]; then
+    echo "Missing streams.yaml file."
     exit 1
 fi
 
@@ -33,6 +27,7 @@ pip install virtualenv
 virtualenv -p python3 .
 source bin/activate
 pip3 install zulip
+pip3 install pyyaml
 
 # GitHub pages API is in Preview mode. This might break in future.
 auth_header="Authorization: Bearer ${github_personal_access_token}"
@@ -46,8 +41,7 @@ github_pages_url_with_trailing_slash=$(curl -H "${auth_header}" $page_api_url | 
 github_pages_url=${github_pages_url_with_trailing_slash%/}
 
 cp default_settings.py settings.py
-cp $included_streams_file_path .
-cp $excluded_streams_file_path .
+cp $streams_config_file_path .
 
 crudini --set zuliprc api site $zulip_realm_url
 crudini --set zuliprc api key $zulip_bot_api_key

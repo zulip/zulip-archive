@@ -6,6 +6,7 @@ Creating your Zulip archive takes a few steps to set up.
 * Download [python3](https://www.python.org/downloads/) if you
   don't already have it.  (We require version 3.6 or higher.)
 * Install the Zulip python bindings, with `pip3 install zulip`.
+* Install `pyyaml` python package with, `pip3 install pyyaml`.
 * Download [Jekyll](https://jekyllrb.com/)
 
 ## Get a Zulip API key
