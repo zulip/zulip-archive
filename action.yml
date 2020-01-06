@@ -2,23 +2,23 @@
 name: 'Zulip Archive'
 description: 'Publish Zulip archive in GitHub pages'
 inputs:
-  site:
+  zulip_organization_url:
     description: 'URL of Zulip organization'
     required: true
-  key:
-    description: 'API key of the Zulip bot'
-    required: true
-  email:
+  zulip_bot_email:
     description: 'Email of the Zulip bot'
     required: true
-  github_token:
-    description: 'GitHub token'
+  zulip_bot_key:
+    description: 'API key of the Zulip bot'
+    required: true
+  github_personal_access_token:
+    description: 'GitHub personal access token'
     required: true
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ${{ inputs.site }}
-    - ${{ inputs.key }}
-    - ${{ inputs.email }}
-    - ${{ inputs.github_token }}
+    - ${{ inputs.zulip_organization_url }}
+    - ${{ inputs.zulip_bot_email }}
+    - ${{ inputs.zulip_bot_key }}
+    - ${{ inputs.github_personal_access_token }}
