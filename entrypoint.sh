@@ -1,9 +1,9 @@
 #!/bin/bash
 set -e
 
-zulip_realm_url=$1
-zulip_bot_api_key=$2
-zulip_bot_email=$3
+zulip_organization_url=$1
+zulip_bot_email=$2
+zulip_bot_api_key=$3
 github_personal_access_token=$4
 
 checked_out_repo_path="$(pwd)"
@@ -43,7 +43,7 @@ github_pages_url=${github_pages_url_with_trailing_slash%/}
 cp default_settings.py settings.py
 cp $streams_config_file_path .
 
-crudini --set zuliprc api site $zulip_realm_url
+crudini --set zuliprc api site $zulip_organization_url
 crudini --set zuliprc api key $zulip_bot_api_key
 crudini --set zuliprc api email $zulip_bot_email
 
