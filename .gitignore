@@ -1,5 +1,6 @@
 # configuration, caches, output
 settings.py
+streams.yaml
 _json
 archive
 zuliprc
