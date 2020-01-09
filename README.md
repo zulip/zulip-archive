@@ -53,7 +53,7 @@ Now create the following 4 secrets. Use the credentials generated in the above s
 
 
 ### Step 4 - Configure the streams you want to index
-`zulip-archive` by default don't know which all public streams to be indexed. You can tell `zulip-archive` which all streams to be indexed by creating a file called `streams.yaml` in the newly created repository.
+`zulip-archive` by default don't know which all public streams to be indexed. You can tell `zulip-archive` which all streams to be indexed by creating a file called `streams.yaml` in the newly created repository. You can make a copy of a default file to start with: `cp default_streams.yaml streams.yaml`
 
 If you want to index all the public streams, set the following as the content of `streams.yaml` file.
 
