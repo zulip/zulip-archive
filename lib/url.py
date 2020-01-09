@@ -46,8 +46,11 @@ def archive_topic_url(site_url, html_root, sanitized_stream_name, sanitized_topi
     return f'{base_url}/stream/{sanitized_stream_name}/topic/{sanitized_topic_name}.html'
 
 def archive_message_url(site_url, html_root, sanitized_stream_name, sanitized_topic_name, msg_id):
-    base_url = urllib.parse.urljoin(site_url, html_root)
-    return f'{base_url}/{sanitized_stream_name}/{sanitized_topic_name}#{msg_id}'
+    '''
+    http://127.0.0.1:4000/archive/stream/213222-general/topic/newstreams.html#1234567
+    '''
+    topic_url = archive_topic_url(site_url, html_root, sanitized_stream_name, sanitized_topic_name)
+    return f'{topic_url}#{msg_id}'
 
 ## String cleaning functions
 
