@@ -37,7 +37,9 @@ testing.  Here is a typical diff:
 
 To build your site with prod settings, do this:
 
-    `PROD_ARCHIVE=1 python archive.py -b`
+```
+PROD_ARCHIVE=1 python archive.py -b
+```
 
 You will also want to copy layouts and assets to your production
 directory.  These include:
