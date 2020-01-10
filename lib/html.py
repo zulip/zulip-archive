@@ -38,7 +38,7 @@ def topic_page_links(
     topic_url = archive_topic_url(site_url, html_root, sanitized_stream_name, sanitized_topic_name)
 
     return f'''\
-<h2>Stream: <a href="{stream_url}">{stream_name}</a>
+<h2>Stream: <a href="{stream_url}">{stream_name}</a></h2>
 <h3>Topic: <a href="{topic_url}">{topic_name}</a></h3>
 
 <hr>
