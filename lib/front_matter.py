@@ -26,7 +26,7 @@ from .url import (
 def write_main_page_header(outfile, html_root, title):
     outfile.writelines([
         '---\n',
-        'layouts: archive\n',
+        'layout: archive\n',
         'title: {}\n'.format(title),
         'permalink: {}/index.html\n'.format(html_root),
         '---\n\n',
@@ -42,7 +42,7 @@ def write_stream_topics_header(outfile, site_url, html_root, title, stream_name,
 
     outfile.writelines([
         '---\n',
-        'layouts: archive\n',
+        'layout: archive\n',
         'title: {}\n'.format(title),
         permalink,
         '\n---\n\n',
@@ -60,7 +60,7 @@ def write_topic_messages_header(outfile, site_url, html_root, zulip_url, title, 
 
     outfile.writelines([
         '---\n',
-        'layouts: archive\n',
+        'layout: archive\n',
         'title: {}\n'.format(title),
         permalink,
         '\n---\n\n',
