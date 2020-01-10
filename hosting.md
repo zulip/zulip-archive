@@ -2,7 +2,7 @@ The code in this repo helps you extract content from a Zulip
 instance and build the basic HTML structure, but it leaves it
 to you to actually host the data on some server.
 
-In other words, Zulip is not opinionated about you serve
+In other words, Zulip is not opinionated about how you serve
 the HTML (and in some ways the entire mission of this project
 is to empower you to put your data where you want).
 

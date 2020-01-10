@@ -12,7 +12,7 @@ flexible as we go.
 This module is probably the most likely module to be forked if
 you have unique requirements for how your archive should look.
 
-If you are interest in porting this system away from Python to your
+If you are interested in porting this system away from Python to your
 language of choice, this is probably the best place to start.
 '''
 
