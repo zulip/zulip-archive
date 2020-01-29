@@ -86,9 +86,12 @@ def request_all(client, request, anchor=0):
 def safe_request(cmd, *args, **kwargs):
     rsp = cmd(*args, **kwargs)
     while rsp['result'] == 'error':
-        print("timeout hit: {}".format(rsp['retry-after']))
-        time.sleep(float(rsp['retry-after']) + 1)
-        rsp = cmd(*args, **kwargs)
+        if 'retry-after' in rsp:
+            print("timeout hit: {}".format(rsp['retry-after']))
+            time.sleep(float(rsp['retry-after']) + 1)
+            rsp = cmd(*args, **kwargs)
+        else:
+            exit_immediately(rsp['msg'])
     return rsp
 
 def get_streams(client):
