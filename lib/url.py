@@ -57,7 +57,7 @@ def archive_message_url(site_url, html_root, sanitized_stream_name, sanitized_to
 # remove non-alnum ascii symbols from string
 def sanitize(s):
     return "".join(filter(lambda x:x.isalnum or x==' ', s.encode('ascii', 'ignore')\
-        .decode('utf-8'))).replace(' ','-')
+        .decode('utf-8'))).replace(' ','-').replace('?','%3F')
 
 # create a unique sanitized identifier for a topic
 def sanitize_topic(topic_name):
