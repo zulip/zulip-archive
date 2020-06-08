@@ -1,7 +1,7 @@
 # Zulip HTML archive
 
 Generates an HTML archive of a configured set of streams within a
-[Zulip](https://zulipchat.com) organization (usually all public
+[Zulip](https://zulip.com) organization (usually all public
 streams).
 
 Example: [Lean Prover
@@ -32,7 +32,7 @@ GitHub action needs the following credentials for running.
 
 #### Zulip API Key
 
-Zulip API key is used for fetching the messages of public streams from the Zulip organization. We recommend creating a bot and using it's API key instead of using your own API key. See https://zulipchat.com/help/add-a-bot-or-integration for more details.
+Zulip API key is used for fetching the messages of public streams from the Zulip organization. We recommend creating a bot and using it's API key instead of using your own API key. See https://zulip.com/help/add-a-bot-or-integration for more details.
 
 #### GitHub Personal Access Token
 
@@ -141,7 +141,7 @@ Zulip apps:
 * You may also decide to shut down a Zulip instance, whether to move
   to another communication tool, to deduplicate instances, or because
   your organization is shutting down.  You can always [export your
-  Zulip data](https://zulipchat.com/help/export-your-organization),
+  Zulip data](https://zulip.com/help/export-your-organization),
   but the other tool may not be able to import it.  In such a case,
   you can use this archive tool to keep the old conversations
   accessible. (Contrast this to scenarios where your provider locks
@@ -167,7 +167,7 @@ Once `zulip-archive` is more stable and polished, we expect to merge
 it into the
 [python-zulip-api](https://github.com/zulip/python-zulip-api) project
 and moves its documentation to live [with other
-integrations](https://zulipchat.com/integrations/) for a more
+integrations](https://zulip.com/integrations/) for a more
 convenient installation experience.  But at the moment, it's
 convenient for it to have a dedicated repository for greater
 visibility.

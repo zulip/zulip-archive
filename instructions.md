@@ -12,10 +12,10 @@ Creating your Zulip archive takes a few steps to set up.
 ## Get a Zulip API key
 
 You will need an API key to get data from Zulip.  Often you
-will do this by  [creating a bot](https://zulipchat.com/help/add-a-bot-or-integration),
+will do this by  [creating a bot](https://zulip.com/help/add-a-bot-or-integration),
 but you can also use your main user's API key.
 
-* Download a [zuliprc](https://zulipchat.com/api/configuring-python-bindings)
+* Download a [zuliprc](https://zulip.com/api/configuring-python-bindings)
   file to `zuliprc` within this project.
 
 ## Customize your settings

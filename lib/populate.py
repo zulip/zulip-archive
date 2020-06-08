@@ -37,7 +37,7 @@ About the data:
     In each stream subdirectory, there is a json file for each topic in that stream.
 
     This json file is a list of message objects,
-    as desribed at https://zulipchat.com/api/get-messages
+    as desribed at https://zulip.com/api/get-messages
 """
 
 import json
