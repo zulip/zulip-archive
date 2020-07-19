@@ -5,6 +5,7 @@ zulip_organization_url=$1
 zulip_bot_email=$2
 zulip_bot_api_key=$3
 github_personal_access_token=$4
+delete_history=$5
 
 checked_out_repo_path="$(pwd)"
 html_dir_path=$checked_out_repo_path
@@ -12,6 +13,7 @@ json_dir_path="${checked_out_repo_path}/zulip_json"
 _layouts_path="${checked_out_repo_path}/_layouts"
 img_dir_path="${checked_out_repo_path}/assets/img"
 streams_config_file_path="${checked_out_repo_path}/streams.yaml"
+initial_sha="$(git rev-parse HEAD)"
 
 if [ ! -f $streams_config_file_path ]; then
     echo "Missing streams.yaml file."
@@ -75,14 +77,35 @@ cd ${checked_out_repo_path}
 
 git checkout master
 
+git fetch origin
+
+current_sha="$(git rev-parse origin/master)"
+
+if [[ "$current_sha" != "$initial_sha" ]]
+then
+  echo "Archive update failed, commits have been added while processing"
+  exit 1
+fi
+
+echo "delete history: $delete_history"
+
+if [[ "$delete_history" == "true" ]]
+then
+    echo "resetting"
+    rm -rf .git
+    git init
+fi
+
 git config --global user.email "zulip-archive-bot@users.noreply.github.com"
 git config --global user.name "Archive Bot"
 
 git add -A
 git commit -m "Update archive."
 
-git remote set-url --push origin https://${GITHUB_ACTOR}:${github_personal_access_token}@github.com/${GITHUB_REPOSITORY}
+git remote add origin2 https://${GITHUB_ACTOR}:${github_personal_access_token}@github.com/${GITHUB_REPOSITORY}
 
-git push origin master --force
+git push origin2 master -f
+
+echo "pushed"
 
 echo "Zulip Archive published/updated in ${github_pages_url}"

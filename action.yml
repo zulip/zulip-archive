@@ -22,3 +22,4 @@ runs:
     - ${{ inputs.zulip_bot_email }}
     - ${{ inputs.zulip_bot_key }}
     - ${{ inputs.github_personal_access_token }}
+    - ${{ inputs.delete_history }}
