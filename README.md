@@ -106,9 +106,12 @@ jobs:
         zulip_bot_email: ${{ secrets.zulip_bot_email }}
         zulip_bot_key: ${{ secrets.zulip_bot_key }}
         github_personal_access_token: ${{ secrets.github_personal_access_token }}
+        delete_history: true
 ```
 
 The above file tells GitHub to run the `zulip-archive` action every 20 minutes. You can adjust the `cron` key to modify the schedule as you feel appropriate. If you Zulip organization history is very large (not the case for most users) we recommend to increase the cron period from running every 30 minutes to maybe run every 1 hour (eg `'0 * * * *'`). This is is because the initial archive run that fetches the messages for the first time takes a lot of time and we don't want the second cron job to start before finishing the first run is over. After the initial run is over you can shorten the cron job period if necessary.
+
+If you are running frequent updates on a moderately sized Zulip channel, the archive you use to run the action will grow very quickly. We recommend setting the `delete_history` option to `true`. This will overwrite the git history in the repository (but keep all the content). If you are using the repository for more than just the Zulip archive, you may want to set this to `false`, but be warned that the repository size may explode.
 
 ### Step 6 - Verify everything works
 
