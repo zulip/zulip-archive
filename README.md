@@ -49,7 +49,7 @@ Now create the following 4 secrets. Use the credentials generated in the above s
 |zulip_organization_url       | URL of your Zulip organization.              |
 |zulip_bot_email              | The email of the Zulip bot you created       |
 |zulip_bot_key                | API key of the Zulip bot you created         |
-|github_personal_access_token | The GitHub personal access token you created |
+|gh_personal_access_token     | The GitHub personal access token you created |
 
 
 ### Step 4 - Configure the streams you want to index
@@ -105,7 +105,7 @@ jobs:
         zulip_organization_url: ${{ secrets.zulip_organization_url }}
         zulip_bot_email: ${{ secrets.zulip_bot_email }}
         zulip_bot_key: ${{ secrets.zulip_bot_key }}
-        github_personal_access_token: ${{ secrets.github_personal_access_token }}
+        github_personal_access_token: ${{ secrets.gh_personal_access_token }}
 ```
 
 The above file tells GitHub to run the `zulip-archive` action every 20 minutes. You can adjust the `cron` key to modify the schedule as you feel appropriate. If you Zulip organization history is very large (not the case for most users) we recommend to increase the cron period from running every 30 minutes to maybe run every 1 hour (eg `'0 * * * *'`). This is is because the initial archive run that fetches the messages for the first time takes a lot of time and we don't want the second cron job to start before finishing the first run is over. After the initial run is over you can shorten the cron job period if necessary.
