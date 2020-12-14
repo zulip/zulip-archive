@@ -19,12 +19,15 @@ language of choice, this is probably the best place to start.
 from pathlib import Path
 from shutil import copyfile
 
+from .date_helper import format_date1
+
 from .url import (
     sanitize_stream,
     sanitize_topic,
     )
 
 from .files import (
+    open_config,
     open_main_page,
     open_stream_topics_page,
     open_topic_messages_page,
@@ -57,7 +60,8 @@ def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zul
     stream_info = read_zulip_stream_info(json_root)
 
     streams = stream_info['streams']
-    date_footer = last_updated_footer(stream_info)
+    date_footer = last_updated_footer()
+    write_config(md_root, stream_info)
     write_main_page(md_root, site_url, html_root, title, streams, date_footer)
     write_css(md_root)
 
@@ -91,6 +95,13 @@ def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zul
                 date_footer,
                 )
 
+# writes the _config.yml file, currently only needed for last_updated
+# `streams`: a dict mapping stream names to stream json objects as described in the header.
+def write_config(md_root, streams):
+    last_updated = format_date1(stream_info['time'])
+    outfile = open_config(md_root)
+    outfile.write(f'last_updated: {last_updated}\n')
+    outfile.close()
 
 # writes the index page listing all streams.
 # `streams`: a dict mapping stream names to stream json objects as described in the header.

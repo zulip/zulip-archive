@@ -11,8 +11,6 @@ strive for pure HTML in our output in the future.
 add helpers/converters as necessary.)
 '''
 
-from .date_helper import format_date1
-
 from .url import (
     sanitize_stream,
     sanitize_topic,
@@ -104,8 +102,8 @@ def link_to_zulip(
     zulip_link = f'<a href="{post_link}" class="zl">{img_tag}</a>'
     return zulip_link
 
-def last_updated_footer(stream_info):
-    last_updated = format_date1(stream_info['time'])
-    date_footer = f'\n<hr><p>Last updated: {last_updated} UTC</p>'
+def last_updated_footer():
+    # fetch last updated formatted timestamp from _config.yml
+    date_footer = '\n<hr><p>Last updated: {{ site.last_updated }} UTC</p>'
     return date_footer
 
