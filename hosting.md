@@ -22,7 +22,7 @@ testing.  Here is a typical diff:
 <     # Set this according to how you serve your prod assets.
 <     zulip_icon_url = None
 ---
->     zulip_icon_url = 'http://showell.github.io/assets/img/zulip2.png'
+>     zulip_icon_url = 'http://showell.github.io/assets/img/zulip.svg'
 82,87c80
 <     raise Exception('''
 <         You need to set html_directory for prod, and it
@@ -45,7 +45,7 @@ You will also want to copy layouts and assets to your production
 directory.  These include:
 
 * layouts
-* zulip2.png
+* zulip.svg
 
 ### Jekyll
 

@@ -98,7 +98,7 @@ def link_to_zulip(
     # (if it's available)
     post_link = zulip_post_url(zulip_url, stream_id, stream_name, topic_name, msg_id)
     if zulip_icon_url:
-        img_tag = f'<img src="{zulip_icon_url}" alt="view this post on Zulip">'
+        img_tag = f'<img src="{zulip_icon_url}" alt="view this post on Zulip" style="width:20px;height:20px;">'
     else:
         img_tag = ''
     zulip_link = f'<a href="{post_link}" class="zl">{img_tag}</a>'

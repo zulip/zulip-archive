@@ -60,7 +60,7 @@ You may wish to copy the following assets into your Jekyll directory
 structure:
 
 - `layouts/archive.html` -> `_layouts`
-- `assets/img/zulip2.png`
+- `assets/img/zulip.svg`
 
 ## Go to production
 
