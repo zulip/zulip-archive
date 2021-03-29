@@ -14,6 +14,11 @@ inputs:
   github_personal_access_token:
     description: 'GitHub personal access token'
     required: true
+  archive_branch:
+    description: 'Branch where to commit archive files (should coincide with GH Pages branch)'
+    # legacy
+    required: false
+    default: 'master'
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -23,3 +28,4 @@ runs:
     - ${{ inputs.zulip_bot_key }}
     - ${{ inputs.github_personal_access_token }}
     - ${{ inputs.delete_history }}
+    - ${{ inputs.archive_branch }}
