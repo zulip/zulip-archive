@@ -43,7 +43,7 @@ message in the actual Zulip instance.
 '''
 
 if DEBUG:
-    zulip_icon_url = 'http://127.0.0.1:4000/assets/img/zulip2.png'
+    zulip_icon_url = 'http://127.0.0.1:4000/assets/img/zulip.svg'
 else:
     # Set this according to how you serve your prod assets.
     zulip_icon_url = os.getenv("ZULIP_ICON_URL", None)
