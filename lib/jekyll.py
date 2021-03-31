@@ -96,8 +96,8 @@ def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zul
                 )
 
 # writes the _config.yml file, currently only needed for last_updated
-# `streams`: a dict mapping stream names to stream json objects as described in the header.
-def write_config(md_root, streams):
+# `stream_info`: a dict read from the big JSON of streams metadata
+def write_config(md_root, stream_info):
     last_updated = format_date1(stream_info['time'])
     outfile = open_config(md_root)
     outfile.write(f'last_updated: {last_updated}\n')
