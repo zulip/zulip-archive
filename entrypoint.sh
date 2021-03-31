@@ -95,6 +95,7 @@ then
     echo "resetting"
     rm -rf .git
     git init
+    git branch -m master ${archive_branch}
 fi
 
 git config --global user.email "zulip-archive-bot@users.noreply.github.com"
