@@ -19,6 +19,8 @@ language of choice, this is probably the best place to start.
 from pathlib import Path
 from shutil import copyfile
 
+import yaml
+
 from .date_helper import format_date1
 
 from .url import (
@@ -99,9 +101,16 @@ def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zul
 # `stream_info`: a dict read from the big JSON of streams metadata
 def write_config(md_root, stream_info):
     last_updated = format_date1(stream_info['time'])
-    outfile = open_config(md_root)
-    outfile.write(f'last_updated: {last_updated}\n')
-    outfile.close()
+    config_file = open_read_config(md_root)
+
+    config = yaml.load(config_file, Loader=yaml.FullLoader)
+    config_file.close()
+
+    config['last_updated'] = last_updated
+
+    config_file = open_write_config(md_root)
+    yaml.dump(config, config_file)
+    config_file.close()
 
 # writes the index page listing all streams.
 # `streams`: a dict mapping stream names to stream json objects as described in the header.

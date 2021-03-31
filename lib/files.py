@@ -91,8 +91,12 @@ def read_zulip_messages_for_topic(
     f.close()
     return messages
 
-def open_config(md_root):
-    outfile = open_outfile(md_root, Path('_config.yml'), 'w+')
+def open_read_config(md_root):
+    outfile = open_outfile(('..' / Path(md_root)).resolve(), Path('_config.yml'), 'r+')
+    return outfile;
+
+def open_write_config(md_root):
+    outfile = open_outfile(('..' / Path(md_root)).resolve(), Path('_config.yml'), 'w+')
     return outfile;
 
 def open_main_page(md_root):
