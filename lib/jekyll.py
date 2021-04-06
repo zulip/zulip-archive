@@ -204,7 +204,7 @@ def write_topic_messages(
         )
 
     outfile.write(topic_links)
-    outfile.write('\n<head><link href="/style.css" rel="stylesheet"></head>\n')
+    outfile.write(f'\n<head><link href="{site_url}/style.css" rel="stylesheet"></head>\n')
 
     outfile.write('\n{% raw %}\n')
 
