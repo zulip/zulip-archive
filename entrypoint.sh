@@ -94,6 +94,7 @@ if [[ "$delete_history" == "true" ]]
 then
     echo "resetting"
     rm -rf .git
+    git config --global init.defaultBranch "$archive_branch"
     git init
 fi
 
