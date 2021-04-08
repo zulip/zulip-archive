@@ -36,6 +36,7 @@ if sys.version_info < (3,6):
 import argparse
 import configparser
 import zulip
+from pathlib import Path
 
 from lib.common import (
     stream_validator,
@@ -92,6 +93,14 @@ Please run the below command:
 
 mkdir {}'''
 
+NO_CONFIG_FILE_FOUND = '''
+We cannot find a place to write config parameters.
+
+Please run the below command at the repo root:
+
+touch {}
+'''
+
 def get_json_directory(for_writing):
     json_dir = settings.json_directory
 
@@ -122,6 +131,14 @@ def get_html_directory():
         exit_immediately(str(html_dir) + ' needs to be a directory')
 
     return settings.html_directory
+
+def check_config_file_present():
+    file_directory = Path.resolve(Path(__file__).parent)
+    config_file =  Path(file_directory/'_config.yml')
+    if not config_file.exists():
+        error_msg = NO_CONFIG_FILE_FOUND.format(config_file.as_posix())
+
+        exit_immediately(error_msg)
 
 def get_client_info():
     config_file = './zuliprc'
@@ -154,6 +171,8 @@ def run():
         exit(1)
 
     json_root = get_json_directory(for_writing=results.t)
+    
+    check_config_file_present()
 
     if results.b:
         md_root = get_html_directory()

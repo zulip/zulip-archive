@@ -19,12 +19,18 @@ language of choice, this is probably the best place to start.
 from pathlib import Path
 from shutil import copyfile
 
+import yaml
+
+from .date_helper import format_date1
+
 from .url import (
     sanitize_stream,
     sanitize_topic,
     )
 
 from .files import (
+    open_read_config,
+    open_write_config,
     open_main_page,
     open_stream_topics_page,
     open_topic_messages_page,
@@ -57,7 +63,8 @@ def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zul
     stream_info = read_zulip_stream_info(json_root)
 
     streams = stream_info['streams']
-    date_footer = last_updated_footer(stream_info)
+    date_footer = last_updated_footer()
+    write_config(md_root, stream_info)
     write_main_page(md_root, site_url, html_root, title, streams, date_footer)
     write_css(md_root)
 
@@ -91,6 +98,24 @@ def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zul
                 date_footer,
                 )
 
+# writes the _config.yml file, currently only needed for last_updated
+# `stream_info`: a dict read from the big JSON of streams metadata
+def write_config(md_root, stream_info):
+    last_updated = format_date1(stream_info['time'])
+    root_directory = Path.resolve(Path(__file__)).parents[1]
+    config_file = open_read_config(root_directory)
+    config = yaml.load(config_file, Loader=yaml.FullLoader)
+
+    if not config:
+        config = {}
+
+    config_file.close()
+
+    config['last_updated'] = last_updated
+
+    config_file = open_write_config(root_directory)
+    yaml.dump(config, config_file)
+    config_file.close()
 
 # writes the index page listing all streams.
 # `streams`: a dict mapping stream names to stream json objects as described in the header.
