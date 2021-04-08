@@ -1,1 +1,6 @@
 .msg { margin-left: 2em; }
+
+.archive-link-color{
+    color: grey;
+    text-decoration: none;
+}
