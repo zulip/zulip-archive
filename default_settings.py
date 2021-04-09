@@ -76,6 +76,13 @@ you may prefer another directory structure.
 json_directory = Path(os.getenv("JSON_DIRECTORY", "../zulip_json"))
 
 '''
+Option whether we would like to use Jekyll themed templates or pure html.
+Jekyll themed templates are recommended and would reduce the diffs.
+'''
+
+use_jekyll = True
+
+'''
 We write HTML to here.
 '''
 if DEBUG:

@@ -59,11 +59,12 @@ from .url import (
     archive_stream_url,
     )
 
-def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zulip_icon_url):
+def build_website(json_root, md_root, site_url, html_root, title, zulip_url,
+                  zulip_icon_url, use_jekyll):
     stream_info = read_zulip_stream_info(json_root)
 
     streams = stream_info['streams']
-    date_footer = last_updated_footer()
+    date_footer = last_updated_footer(stream_info, use_jekyll)
     write_config(md_root, stream_info)
     write_main_page(md_root, site_url, html_root, title, streams, date_footer)
     write_css(md_root)

@@ -205,6 +205,7 @@ def run():
             settings.title,
             zulip_url,
             settings.zulip_icon_url,
+            settings.use_jekyll
             )
 
 if __name__ == '__main__':
