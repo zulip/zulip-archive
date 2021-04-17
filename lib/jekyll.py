@@ -32,12 +32,6 @@ from .files import (
     read_zulip_stream_info,
     )
 
-from .front_matter import (
-    write_main_page_header,
-    write_stream_topics_header,
-    write_topic_messages_header,
-    )
-
 from .html import (
     format_message,
     last_updated_footer,
@@ -105,12 +99,12 @@ def write_main_page(md_root, site_url, html_root, title, streams, date_footer):
     '''
     outfile = open_main_page(md_root)
 
-    write_main_page_header(outfile, html_root, title)
-
     content = stream_list_page(streams)
 
+    outfile.write('<html>\n')
     outfile.write(content)
     outfile.write(date_footer)
+    outfile.write('\n</html>')
     outfile.close()
 
 def write_stream_topics(md_root, site_url, html_root, title, stream_name, stream, date_footer):
@@ -127,16 +121,16 @@ def write_stream_topics(md_root, site_url, html_root, title, stream_name, stream
     sanitized_stream_name = sanitize_stream(stream_name, stream['id'])
     outfile = open_stream_topics_page(md_root, sanitized_stream_name)
 
-    write_stream_topics_header(outfile, site_url, html_root, title, stream_name, stream)
-
     stream_url = archive_stream_url(site_url, html_root, sanitized_stream_name)
 
     topic_data = stream['topic_data']
 
     content = topic_list_page(stream_name, stream_url, topic_data)
 
+    outfile.write('<html>\n')
     outfile.write(content)
     outfile.write(date_footer)
+    outfile.write('\n</html>')
     outfile.close()
 
 def write_topic_messages(
@@ -182,17 +176,6 @@ def write_topic_messages(
         sanitized_topic_name,
         )
 
-    write_topic_messages_header(
-        outfile,
-        site_url,
-        html_root,
-        zulip_url,
-        title,
-        stream_name,
-        stream_id,
-        topic_name,
-        )
-
     topic_links = topic_page_links(
         site_url,
         html_root,
@@ -203,10 +186,9 @@ def write_topic_messages(
         topic_name,
         )
 
+    outfile.write('<html>\n')
     outfile.write(topic_links)
     outfile.write(f'\n<head><link href="{site_url}/style.css" rel="stylesheet"></head>\n')
-
-    outfile.write('\n{% raw %}\n')
 
     for msg in messages:
         msg_html = format_message(
@@ -222,9 +204,8 @@ def write_topic_messages(
         outfile.write(msg_html)
         outfile.write('\n\n')
 
-    outfile.write('\n{% endraw %}\n')
-
     outfile.write(date_footer)
+    outfile.write('\n</html>')
     outfile.close()
 
 def write_css(md_root):
