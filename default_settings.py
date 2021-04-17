@@ -25,9 +25,8 @@ else:
     DEBUG = True
 
 '''
-Set the site url.  The default below is good for local
-Jekyll testing, but you will definitely need to set your own
-value for prod.
+Set the site url.  The default below is good for local testing, but you will
+definitely need to set your own value for prod.
 '''
 
 if DEBUG:

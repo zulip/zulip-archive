@@ -1,13 +1,11 @@
 '''
 This module emits the content for your archive.
 
-It emits markdown, HTML, and YAML, mostly by calling
+It emits HTML, and YAML, mostly by calling
 into other modules.
 
-As I write this today (December 2019), we are mostly testing with
-Jekyll, so the output is geared toward a Jekyll system, which
-is what GitHub Pages uses, too.  We will try to make this more
-flexible as we go.
+As of April 2021, the generated html pages can be hosted simply with `python -m
+http.server`.
 
 This module is probably the most likely module to be forked if
 you have unique requirements for how your archive should look.
