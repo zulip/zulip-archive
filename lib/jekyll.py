@@ -37,9 +37,6 @@ from .html import (
     last_updated_footer,
     topic_page_links,
     stream_list_page,
-    )
-
-from .markdown import (
     topic_list_page,
     )
 
