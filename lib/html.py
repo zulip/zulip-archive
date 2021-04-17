@@ -153,3 +153,39 @@ def stream_list(streams):
     return '<ul>\n' + the_list + '\n</ul>'
 
 
+def topic_list_page(stream_name, stream_url, topic_data):
+
+    content = f'''\
+<h2> Stream: <a href="{stream_url}">{stream_name}</a></h2>
+<hr>
+
+<h3>Topics:</h3>
+
+{topic_list(topic_data)}
+'''
+    return content
+
+def topic_list(topic_data):
+    '''
+    produce a list like this:
+
+    * topic name (n messages, latest: <date>)
+    * topic name (n messages, latest: <date>)
+    * topic name (n messages, latest: <date>)
+    '''
+
+    def item(topic_name, message_data):
+        link = f'<a href="topic/{sanitize_topic(topic_name)}.html">{escape_pipes(topic_name)}</a>'
+        topic_info = topic_info_string(message_data)
+        return f'<li> {link} ({topic_info}) </li>'
+
+    the_list = '\n'.join(
+        item(topic_name, topic_data[topic_name])
+        for topic_name
+        in sorted_topics(topic_data))
+    return '<ul>\n' + the_list + '\n</ul>'
+
+# escape | character with \|
+def escape_pipes(s):
+    return s.replace('|','\|').replace(']','\]').replace('[','\[')
+
