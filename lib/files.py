@@ -23,16 +23,16 @@ And then here is what your website output might
 look like:
 
     <md_root>
-        index.md
+        index.html
         style.css
         213222general
-            index.md
+            index.html
             47413hello.html
             48863swimmingturtles.html
             51687topicdemonstration.html
             74282newstreams.html
         213224python
-            index.md
+            index.html
             47413hello.html
             95106streamevents.html
 
@@ -92,12 +92,12 @@ def read_zulip_messages_for_topic(
     return messages
 
 def open_main_page(md_root):
-    outfile = open_outfile(md_root, Path('index.md'), 'w+')
+    outfile = open_outfile(md_root, Path('index.html'), 'w+')
     return outfile
 
 def open_stream_topics_page(md_root, sanitized_stream_name):
     directory = md_root / Path('stream/'+sanitized_stream_name)
-    outfile = open_outfile(directory, Path('index.md'), 'w+')
+    outfile = open_outfile(directory, Path('index.html'), 'w+')
     return outfile
 
 def open_topic_messages_page(md_root, sanitized_stream_name, sanitized_topic_name):
