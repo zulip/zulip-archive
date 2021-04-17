@@ -25,16 +25,17 @@ look like:
     <md_root>
         index.html
         style.css
-        213222general
-            index.html
-            47413hello.html
-            48863swimmingturtles.html
-            51687topicdemonstration.html
-            74282newstreams.html
-        213224python
-            index.html
-            47413hello.html
-            95106streamevents.html
+        stream
+            213222general
+                index.html
+                47413hello.html
+                48863swimmingturtles.html
+                51687topicdemonstration.html
+                74282newstreams.html
+            213224python
+                index.html
+                47413hello.html
+                95106streamevents.html
 
 In the examples above we have two streams:
 
@@ -101,7 +102,7 @@ def open_stream_topics_page(md_root, sanitized_stream_name):
     return outfile
 
 def open_topic_messages_page(md_root, sanitized_stream_name, sanitized_topic_name):
-    directory = md_root / Path(sanitized_stream_name+'/topic')
+    directory = md_root / Path('stream/'+sanitized_stream_name+'/topic')
     outfile = open_outfile(directory, Path(sanitized_topic_name + '.html'), 'w+')
     return outfile
 
