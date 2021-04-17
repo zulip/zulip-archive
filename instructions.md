@@ -7,7 +7,6 @@ Creating your Zulip archive takes a few steps to set up.
   don't already have it.  (We require version 3.6 or higher.)
 * Install the Zulip python bindings, with `pip3 install zulip`.
 * Install `pyyaml` python package with, `pip3 install pyyaml`.
-* Download [Jekyll](https://jekyllrb.com/)
 
 ## Get a Zulip API key
 
@@ -40,7 +39,7 @@ but you can also use your main user's API key.
 Note: you will be able to update your archive later with
 `python3 archive.py -i` to get more messages.
 
-## Build the HTML/markdown files for Jekyll
+## Build the HTML files
 
 Run this command to build your archive
 
@@ -48,9 +47,9 @@ Run this command to build your archive
 
 ## Test your changes locally
 
-You can use this command to serve your files using Jekyll:
+You can use this command to serve your files:
 
-    jekyll serve
+    python3 -m http.server 4000
 
 Typically you will then view your files at http://127.0.0.1:4000/archive/.
 
