@@ -36,10 +36,10 @@ from .html import (
     format_message,
     last_updated_footer,
     topic_page_links,
+    stream_list_page,
     )
 
 from .markdown import (
-    stream_list_page,
     topic_list_page,
     )
 

@@ -13,43 +13,9 @@ from .url import (
     )
 
 from .zulip_data import (
-    num_topics_string,
-    sorted_streams,
     sorted_topics,
     topic_info_string,
     )
-
-def stream_list_page(streams):
-    content = f'''\
----
-
-## Streams:
-
-{stream_list(streams)}
-'''
-    return content
-
-def stream_list(streams):
-    '''
-    produce a list like this:
-
-    * stream_name (n topics)
-    * stream_name (n topics)
-    * stream_name (n topics)
-    '''
-
-    def item(stream_name, stream_data):
-        stream_id = stream_data['id']
-        sanitized_name = sanitize_stream(stream_name, stream_id)
-        url = f'stream/{sanitized_name}/index.html'
-        stream_topic_data = stream_data['topic_data']
-        num_topics = num_topics_string(stream_topic_data)
-        return f'* [{stream_name}]({url}) ({num_topics})'
-
-    return '\n\n'.join(
-        item(stream_name, streams[stream_name])
-        for stream_name
-        in sorted_streams(streams))
 
 def topic_list_page(stream_name, stream_url, topic_data):
 

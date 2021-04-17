@@ -25,6 +25,14 @@ from .url import (
     zulip_post_url,
     )
 
+from .zulip_data import (
+    num_topics_string,
+    sorted_streams,
+    sorted_topics,
+    topic_info_string,
+    )
+
+
 def topic_page_links(
         site_url,
         html_root,
@@ -108,4 +116,40 @@ def last_updated_footer(stream_info):
     last_updated = format_date1(stream_info['time'])
     date_footer = f'\n<hr><p>Last updated: {last_updated} UTC</p>'
     return date_footer
+
+
+def stream_list_page(streams):
+    content = f'''\
+<hr>
+
+<h2>Streams:</h2>
+
+{stream_list(streams)}
+'''
+    return content
+
+
+def stream_list(streams):
+    '''
+    produce a list like this:
+
+    * stream_name (n topics)
+    * stream_name (n topics)
+    * stream_name (n topics)
+    '''
+
+    def item(stream_name, stream_data):
+        stream_id = stream_data['id']
+        sanitized_name = sanitize_stream(stream_name, stream_id)
+        url = f'stream/{sanitized_name}/index.html'
+        stream_topic_data = stream_data['topic_data']
+        num_topics = num_topics_string(stream_topic_data)
+        return f'<li> <a href="{url}">{stream_name}</a> ({num_topics}) </li>'
+
+    the_list = '\n\n'.join(
+        item(stream_name, streams[stream_name])
+        for stream_name
+        in sorted_streams(streams))
+    return '<ul>\n' + the_list + '\n</ul>'
+
 
