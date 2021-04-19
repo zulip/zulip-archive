@@ -11,7 +11,6 @@ archive_branch=$6
 checked_out_repo_path="$(pwd)"
 html_dir_path=$checked_out_repo_path
 json_dir_path="${checked_out_repo_path}/zulip_json"
-_layouts_path="${checked_out_repo_path}/_layouts"
 img_dir_path="${checked_out_repo_path}/assets/img"
 streams_config_file_path="${checked_out_repo_path}/streams.yaml"
 initial_sha="$(git rev-parse HEAD)"
@@ -59,9 +58,6 @@ export ZULIP_ICON_URL="${github_pages_url}/assets/img/zulip.svg"
 
 if [ ! -d $json_dir_path ]; then
     mkdir -p $json_dir_path
-
-    mkdir -p $_layouts_path
-    cp -rf layouts/* $_layouts_path
 
     mkdir -p $img_dir_path
     cp assets/img/* $img_dir_path
