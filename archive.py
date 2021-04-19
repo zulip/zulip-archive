@@ -35,6 +35,7 @@ if sys.version_info < (3,6):
     raise Exception(version_error)
 import argparse
 import configparser
+import os
 import zulip
 
 from lib.common import (
@@ -155,6 +156,9 @@ def run():
 
     json_root = get_json_directory(for_writing=results.t)
 
+    # The directory where this archive.py is located
+    repo_root = os.path.dirname(os.path.realpath(__file__))
+
     if results.b:
         md_root = get_html_directory()
 
@@ -186,6 +190,7 @@ def run():
             settings.title,
             zulip_url,
             settings.zulip_icon_url,
+            repo_root,
             )
 
 if __name__ == '__main__':
