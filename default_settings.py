@@ -92,6 +92,12 @@ else:
 
 
 '''
+This is where you modify the <head> section of every page.
+'''
+page_head_html = '<html>\n<head><meta charset="utf-8"><title>Zulip Chat Archive</title></head>\n'
+
+
+'''
 You may only want to include certain streams.  In `streams.yaml`
 file, mention the streams you want to include under `included` section.
 
