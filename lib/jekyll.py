@@ -15,6 +15,7 @@ language of choice, this is probably the best place to start.
 '''
 
 from pathlib import Path
+from distutils.dir_util import copy_tree
 from shutil import copyfile
 
 from .url import (
@@ -42,7 +43,7 @@ from .url import (
     archive_stream_url,
     )
 
-def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zulip_icon_url):
+def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zulip_icon_url, repo_root):
     stream_info = read_zulip_stream_info(json_root)
 
     streams = stream_info['streams']
@@ -79,6 +80,11 @@ def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zul
                 topic_name,
                 date_footer,
                 )
+
+    # Copy the entire content of <repo_root>/assets into md_root.
+    # We use copy_tree from distutils instead of shutil.copytree so that it
+    # doesn't raise an error when assets/ already exists inside the md_root.
+    copy_tree(str(Path(repo_root) / "assets"), str(Path(md_root) / "assets"))
 
 
 # writes the index page listing all streams.
