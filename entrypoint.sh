@@ -102,7 +102,7 @@ git commit -m "Update archive."
 
 git remote add origin2 https://${GITHUB_ACTOR}:${github_personal_access_token}@github.com/${GITHUB_REPOSITORY}
 
-git push origin2 $archive_branch -f
+git push origin2 HEAD:$archive_branch -f
 
 echo "pushed"
 
