@@ -89,6 +89,9 @@ def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zul
     # doesn't raise an error when assets/ already exists inside the md_root.
     copy_tree(str(Path(repo_root) / "assets"), str(Path(md_root) / "assets"))
 
+    # Copy .nojekyll into md_root as well.
+    copyfile(str(Path(repo_root) / ".nojekyll"), str(Path(md_root) / ".nojekyll"))
+
 
 # writes the index page listing all streams.
 # `streams`: a dict mapping stream names to stream json objects as described in the header.
