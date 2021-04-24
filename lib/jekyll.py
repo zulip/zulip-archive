@@ -45,12 +45,12 @@ from .url import (
     )
 
 
-def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zulip_icon_url, repo_root, page_head_html):
+def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zulip_icon_url, repo_root, page_head_html, page_footer_html):
     stream_info = read_zulip_stream_info(json_root)
 
     streams = stream_info['streams']
     date_footer = last_updated_footer_html(stream_info)
-    write_main_page(md_root, site_url, html_root, title, streams, date_footer, page_head_html)
+    write_main_page(md_root, site_url, html_root, title, streams, date_footer, page_head_html, page_footer_html)
     write_css(md_root)
 
     for stream_name in streams:
@@ -67,6 +67,7 @@ def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zul
             stream_data,
             date_footer,
             page_head_html,
+            page_footer_html
             )
 
         for topic_name in topic_data:
@@ -83,6 +84,7 @@ def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zul
                 topic_name,
                 date_footer,
                 page_head_html,
+                page_footer_html
                 )
 
     # Copy the entire content of <repo_root>/assets into md_root.
@@ -96,7 +98,7 @@ def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zul
 
 # writes the index page listing all streams.
 # `streams`: a dict mapping stream names to stream json objects as described in the header.
-def write_main_page(md_root, site_url, html_root, title, streams, date_footer, page_head_html):
+def write_main_page(md_root, site_url, html_root, title, streams, date_footer, page_head_html, page_footer_html):
     '''
     The main page in our website lists streams:
 
@@ -112,10 +114,10 @@ def write_main_page(md_root, site_url, html_root, title, streams, date_footer, p
     outfile.write(page_head_html)
     outfile.write(content)
     outfile.write(date_footer)
-    outfile.write('\n</html>')
+    outfile.write(page_footer_html)
     outfile.close()
 
-def write_stream_topics(md_root, site_url, html_root, title, stream_name, stream, date_footer, page_head_html):
+def write_stream_topics(md_root, site_url, html_root, title, stream_name, stream, date_footer, page_head_html, page_footer_html):
     '''
     A stream page lists all topics for the stream:
 
@@ -138,7 +140,7 @@ def write_stream_topics(md_root, site_url, html_root, title, stream_name, stream
     outfile.write(page_head_html)
     outfile.write(content)
     outfile.write(date_footer)
-    outfile.write('\n</html>')
+    outfile.write(page_footer_html)
     outfile.close()
 
 def write_topic_messages(
@@ -154,6 +156,7 @@ def write_topic_messages(
         topic_name,
         date_footer,
         page_head_html,
+        page_footer_html,
         ):
     '''
     Writes the topics page, which lists all messages
@@ -214,7 +217,7 @@ def write_topic_messages(
         outfile.write('\n\n')
 
     outfile.write(date_footer)
-    outfile.write('\n</html>')
+    outfile.write(page_footer_html)
     outfile.close()
 
 def write_css(md_root):

@@ -96,6 +96,11 @@ This is where you modify the <head> section of every page.
 '''
 page_head_html = '<html>\n<head><meta charset="utf-8"><title>Zulip Chat Archive</title></head>\n'
 
+'''
+This is where you modify the <footer> section of every page.
+'''
+page_footer_html = '\n</html>'
+
 
 '''
 You may only want to include certain streams.  In `streams.yaml`

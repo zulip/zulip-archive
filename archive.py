@@ -192,6 +192,7 @@ def run():
             settings.zulip_icon_url,
             repo_root,
             settings.page_head_html,
+            settings.page_footer_html,
             )
 
 if __name__ == '__main__':
