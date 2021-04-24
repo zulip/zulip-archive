@@ -11,6 +11,8 @@ strive for pure HTML in our output in the future.
 add helpers/converters as necessary.)
 '''
 
+import html
+
 from .date_helper import format_date1
 
 from .url import (
@@ -46,12 +48,12 @@ def topic_page_links(
     topic_url = archive_topic_url(site_url, html_root, sanitized_stream_name, sanitized_topic_name)
 
     return f'''\
-<h2>Stream: <a href="{stream_url}">{stream_name}</a></h2>
-<h3>Topic: <a href="{topic_url}">{topic_name}</a></h3>
+<h2>Stream: <a href="{html.escape(stream_url)}">{html.escape(stream_name)}</a></h2>
+<h3>Topic: <a href="{html.escape(topic_url)}">{html.escape(topic_name)}</a></h3>
 
 <hr>
 
-<base href="{zulip_url}">
+<base href="{html.escape(zulip_url)}">
 '''
 
 def format_message(
@@ -66,7 +68,7 @@ def format_message(
         ):
     msg_id = str(msg['id'])
 
-    zulip_link = link_to_zulip(
+    zulip_link_html = link_to_zulip_html(
         zulip_url,
         zulip_icon_url,
         stream_id,
@@ -77,7 +79,7 @@ def format_message(
 
     user_name = msg['sender_full_name']
     date = format_date1(msg['timestamp'])
-    msg_content = msg['content']
+    msg_content_html = msg['content']
     anchor_url = archive_message_url(
         site_url,
         html_root,
@@ -85,16 +87,16 @@ def format_message(
         sanitize_topic(topic_name),
         msg_id
         )
-    anchor = '<a name="{0}"></a>'.format(msg_id)
-    html = f'''
-{anchor}
-<h4>{zulip_link} {user_name} <a href="{anchor_url}">({date})</a>:</h4>
-{msg_content}
+    anchor_html = '<a name="{0}"></a>'.format(html.escape(msg_id))
+    out_html = f'''
+{anchor_html}
+<h4>{zulip_link_html} {html.escape(user_name)} <a href="{html.escape(anchor_url)}">({html.escape(date)})</a>:</h4>
+{msg_content_html}
 '''
-    return html
+    return out_html
 
 
-def link_to_zulip(
+def link_to_zulip_html(
         zulip_url,
         zulip_icon_url,
         stream_id,
@@ -106,27 +108,27 @@ def link_to_zulip(
     # (if it's available)
     post_link = zulip_post_url(zulip_url, stream_id, stream_name, topic_name, msg_id)
     if zulip_icon_url:
-        img_tag = f'<img src="{zulip_icon_url}" alt="view this post on Zulip" style="width:20px;height:20px;">'
+        img_tag_html = f'<img src="{html.escape(zulip_icon_url)}" alt="view this post on Zulip" style="width:20px;height:20px;">'
     else:
-        img_tag = ''
-    zulip_link = f'<a href="{post_link}" class="zl">{img_tag}</a>'
-    return zulip_link
+        img_tag_html = ''
+    zulip_link_html = f'<a href="{html.escape(post_link)}" class="zl">{img_tag_html}</a>'
+    return zulip_link_html
 
 def last_updated_footer(stream_info):
     last_updated = format_date1(stream_info['time'])
-    date_footer = f'\n<hr><p>Last updated: {last_updated} UTC</p>'
-    return date_footer
+    date_footer_html = f'\n<hr><p>Last updated: {html.escape(last_updated)} UTC</p>'
+    return date_footer_html
 
 
 def stream_list_page(streams):
-    content = f'''\
+    content_html = f'''\
 <hr>
 
 <h2>Streams:</h2>
 
 {stream_list(streams)}
 '''
-    return content
+    return content_html
 
 
 def stream_list(streams):
@@ -138,16 +140,16 @@ def stream_list(streams):
     * stream_name (n topics)
     '''
 
-    def item(stream_name, stream_data):
+    def item_html(stream_name, stream_data):
         stream_id = stream_data['id']
         sanitized_name = sanitize_stream(stream_name, stream_id)
         url = f'stream/{sanitized_name}/index.html'
         stream_topic_data = stream_data['topic_data']
         num_topics = num_topics_string(stream_topic_data)
-        return f'<li> <a href="{url}">{stream_name}</a> ({num_topics}) </li>'
+        return f'<li> <a href="{html.escape(url)}">{html.escape(stream_name)}</a> ({html.escape(str(num_topics))}) </li>'
 
     the_list = '\n\n'.join(
-        item(stream_name, streams[stream_name])
+        item_html(stream_name, streams[stream_name])
         for stream_name
         in sorted_streams(streams))
     return '<ul>\n' + the_list + '\n</ul>'
@@ -156,7 +158,7 @@ def stream_list(streams):
 def topic_list_page(stream_name, stream_url, topic_data):
 
     content = f'''\
-<h2> Stream: <a href="{stream_url}">{stream_name}</a></h2>
+<h2> Stream: <a href="{html.escape(stream_url)}">{html.escape(stream_name)}</a></h2>
 <hr>
 
 <h3>Topics:</h3>
@@ -174,13 +176,13 @@ def topic_list(topic_data):
     * topic name (n messages, latest: <date>)
     '''
 
-    def item(topic_name, message_data):
-        link = f'<a href="topic/{sanitize_topic(topic_name)}.html">{topic_name}</a>'
+    def item_html(topic_name, message_data):
+        link_html = f'<a href="topic/{html.escape(sanitize_topic(topic_name))}.html">{html.escape(topic_name)}</a>'
         topic_info = topic_info_string(message_data)
-        return f'<li> {link} ({topic_info}) </li>'
+        return f'<li> {link_html} ({html.escape(topic_info)}) </li>'
 
-    the_list = '\n'.join(
-        item(topic_name, topic_data[topic_name])
+    the_list_html = '\n'.join(
+        item_html(topic_name, topic_data[topic_name])
         for topic_name
         in sorted_topics(topic_data))
-    return '<ul>\n' + the_list + '\n</ul>'
+    return '<ul>\n' + the_list_html + '\n</ul>'
