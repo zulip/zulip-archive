@@ -5,11 +5,6 @@ _json
 archive
 zuliprc
 
-# Jekyll stuff
-_layouts/
-.jekyll-cache
-_site/
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

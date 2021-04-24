@@ -54,7 +54,7 @@ Set the HTML title of your Zulip archive here.
 title = 'Zulip Chat Archive'  # Modify me!
 
 '''
-Set the path prefix of your URLs for Jekyll.
+Set the path prefix of your URLs for your website.
 
 For example, you might want your main page to have
 the path of archive/index.html

@@ -41,31 +41,22 @@ To build your site with prod settings, do this:
 PROD_ARCHIVE=1 python archive.py -b
 ```
 
-You will also want to copy layouts and assets to your production
+You will also want to copy assets to your production
 directory.  These include:
 
-* layouts
 * zulip.svg
 
-### Jekyll
+### Static Server
 
-[Jekyll](https://jekyllrb.com/) is a popular tool for
-serving static content.
-
-The archive script generates index pages in markdown that are
-designed for a Jekyll build, so you can do something like this
-from within this directory (where you checked out code):
+You can use any web server of your choice to host the HTML files.
+One simple example is to use Python 3's `http.server`:
 
 ```
-gem install jekyll bundler
-jekyll serve
+python3 -m http.server 4000
 ```
 
 With the default configuration you should be able to see
-your archive at http://127.0.0.1:4000/archive/
-
-If you have a large archive that you update regularly,
-you may want to run `jekyll serve --incremental`.
+your archive at http://127.0.0.1:4000/.
 
 ### GitHub
 
