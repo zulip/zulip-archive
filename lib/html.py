@@ -175,7 +175,7 @@ def topic_list(topic_data):
     '''
 
     def item(topic_name, message_data):
-        link = f'<a href="topic/{sanitize_topic(topic_name)}.html">{escape_pipes(topic_name)}</a>'
+        link = f'<a href="topic/{sanitize_topic(topic_name)}.html">{topic_name}</a>'
         topic_info = topic_info_string(message_data)
         return f'<li> {link} ({topic_info}) </li>'
 
@@ -184,8 +184,3 @@ def topic_list(topic_data):
         for topic_name
         in sorted_topics(topic_data))
     return '<ul>\n' + the_list + '\n</ul>'
-
-# escape | character with \|
-def escape_pipes(s):
-    return s.replace('|','\|').replace(']','\]').replace('[','\[')
-

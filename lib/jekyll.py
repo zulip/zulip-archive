@@ -218,7 +218,3 @@ def write_topic_messages(
 
 def write_css(md_root):
     copyfile('style.css', md_root / 'style.css')
-
-# escape | character with \|
-def escape_pipes(s):
-    return s.replace('|','\|').replace(']','\]').replace('[','\[')
