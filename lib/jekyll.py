@@ -16,6 +16,7 @@ language of choice, this is probably the best place to start.
 
 from pathlib import Path
 from distutils.dir_util import copy_tree
+import html
 from shutil import copyfile
 
 from .url import (
@@ -196,7 +197,7 @@ def write_topic_messages(
 
     outfile.write(page_head_html)
     outfile.write(topic_links)
-    outfile.write(f'\n<head><link href="{site_url}/style.css" rel="stylesheet"></head>\n')
+    outfile.write(f'\n<head><link href="{html.escape(site_url)}/style.css" rel="stylesheet"></head>\n')
 
     for msg in messages:
         msg_html = format_message_html(
