@@ -35,7 +35,7 @@ from .zulip_data import (
     )
 
 
-def topic_page_links(
+def topic_page_links_html(
         site_url,
         html_root,
         zulip_url,
@@ -56,7 +56,7 @@ def topic_page_links(
 <base href="{html.escape(zulip_url)}">
 '''
 
-def format_message(
+def format_message_html(
         site_url,
         html_root,
         zulip_url,
@@ -114,24 +114,24 @@ def link_to_zulip_html(
     zulip_link_html = f'<a href="{html.escape(post_link)}" class="zl">{img_tag_html}</a>'
     return zulip_link_html
 
-def last_updated_footer(stream_info):
+def last_updated_footer_html(stream_info):
     last_updated = format_date1(stream_info['time'])
     date_footer_html = f'\n<hr><p>Last updated: {html.escape(last_updated)} UTC</p>'
     return date_footer_html
 
 
-def stream_list_page(streams):
+def stream_list_page_html(streams):
     content_html = f'''\
 <hr>
 
 <h2>Streams:</h2>
 
-{stream_list(streams)}
+{stream_list_html(streams)}
 '''
     return content_html
 
 
-def stream_list(streams):
+def stream_list_html(streams):
     '''
     produce a list like this:
 
@@ -155,7 +155,7 @@ def stream_list(streams):
     return '<ul>\n' + the_list + '\n</ul>'
 
 
-def topic_list_page(stream_name, stream_url, topic_data):
+def topic_list_page_html(stream_name, stream_url, topic_data):
 
     content = f'''\
 <h2> Stream: <a href="{html.escape(stream_url)}">{html.escape(stream_name)}</a></h2>
@@ -163,11 +163,11 @@ def topic_list_page(stream_name, stream_url, topic_data):
 
 <h3>Topics:</h3>
 
-{topic_list(topic_data)}
+{topic_list_html(topic_data)}
 '''
     return content
 
-def topic_list(topic_data):
+def topic_list_html(topic_data):
     '''
     produce a list like this:
 
