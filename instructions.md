@@ -53,12 +53,11 @@ You can use this command to serve your files:
 
 Typically you will then view your files at http://127.0.0.1:4000/archive/.
 
-## Add layouts and assets.
+## Add assets
 
-You may wish to copy the following assets into your Jekyll directory
+You may wish to copy the following assets into your site directory
 structure:
 
-- `layouts/archive.html` -> `_layouts`
 - `assets/img/zulip.svg`
 
 ## Go to production
