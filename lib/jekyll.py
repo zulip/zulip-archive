@@ -32,11 +32,11 @@ from .files import (
     )
 
 from .html import (
-    format_message,
-    last_updated_footer,
-    topic_page_links,
-    stream_list_page,
-    topic_list_page,
+    format_message_html,
+    last_updated_footer_html,
+    topic_page_links_html,
+    stream_list_page_html,
+    topic_list_page_html,
     )
 
 from .url import (
@@ -48,7 +48,7 @@ def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zul
     stream_info = read_zulip_stream_info(json_root)
 
     streams = stream_info['streams']
-    date_footer = last_updated_footer(stream_info)
+    date_footer = last_updated_footer_html(stream_info)
     write_main_page(md_root, site_url, html_root, title, streams, date_footer, page_head_html)
     write_css(md_root)
 
@@ -106,7 +106,7 @@ def write_main_page(md_root, site_url, html_root, title, streams, date_footer, p
     '''
     outfile = open_main_page(md_root)
 
-    content = stream_list_page(streams)
+    content = stream_list_page_html(streams)
 
     outfile.write(page_head_html)
     outfile.write(content)
@@ -132,7 +132,7 @@ def write_stream_topics(md_root, site_url, html_root, title, stream_name, stream
 
     topic_data = stream['topic_data']
 
-    content = topic_list_page(stream_name, stream_url, topic_data)
+    content = topic_list_page_html(stream_name, stream_url, topic_data)
 
     outfile.write(page_head_html)
     outfile.write(content)
@@ -184,7 +184,7 @@ def write_topic_messages(
         sanitized_topic_name,
         )
 
-    topic_links = topic_page_links(
+    topic_links = topic_page_links_html(
         site_url,
         html_root,
         zulip_url,
@@ -199,7 +199,7 @@ def write_topic_messages(
     outfile.write(f'\n<head><link href="{site_url}/style.css" rel="stylesheet"></head>\n')
 
     for msg in messages:
-        msg_html = format_message(
+        msg_html = format_message_html(
                 site_url,
                 html_root,
                 zulip_url,
