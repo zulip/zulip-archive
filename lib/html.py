@@ -38,8 +38,11 @@ def topic_page_links(
     topic_url = archive_topic_url(site_url, html_root, sanitized_stream_name, sanitized_topic_name)
 
     return f'''\
-<h2>Stream: <a href="{stream_url}">{stream_name}</a></h2>
-<h3>Topic: <a href="{topic_url}">{topic_name}</a></h3>
+<h2>
+    <a href="{stream_url}">{stream_name}</a>
+    >
+    <a href="{topic_url}">{topic_name}</a>
+</h2>
 
 <hr>
 
@@ -58,9 +61,8 @@ def format_message(
         ):
     msg_id = str(msg['id'])
 
-    zulip_link = link_to_zulip(
+    post_link = zulip_post_url(
         zulip_url,
-        zulip_icon_url,
         stream_id,
         stream_name,
         topic_name,
@@ -80,32 +82,24 @@ def format_message(
     anchor = '<a name="{0}"></a>'.format(msg_id)
     html = f'''
 {anchor}
-<h4>{zulip_link} {user_name} <a href="{anchor_url}">({date})</a>:</h4>
+<h4>
+    {user_name}
+    (<a href="{post_link}" target="_blank">{date}</a>
+    <a href="{anchor_url}" class="archive-link-color"> | Archive</a>):
+</h4>
 {msg_content}
 '''
     return html
-
-
-def link_to_zulip(
-        zulip_url,
-        zulip_icon_url,
-        stream_id,
-        stream_name,
-        topic_name,
-        msg_id,
-        ):
-    # format a link to the original post where you click on the Zulip icon
-    # (if it's available)
-    post_link = zulip_post_url(zulip_url, stream_id, stream_name, topic_name, msg_id)
-    if zulip_icon_url:
-        img_tag = f'<img src="{zulip_icon_url}" alt="view this post on Zulip" style="width:20px;height:20px;">'
-    else:
-        img_tag = ''
-    zulip_link = f'<a href="{post_link}" class="zl">{img_tag}</a>'
-    return zulip_link
 
 def last_updated_footer(stream_info):
     last_updated = format_date1(stream_info['time'])
     date_footer = f'\n<hr><p>Last updated: {last_updated} UTC</p>'
     return date_footer
 
+def homepage_link(site_url, zulip_icon_url):
+    if zulip_icon_url:
+        img_tag = f'<img src="{zulip_icon_url}" alt="homepage" style="height: 30px;max-width: 200px;">'
+    else:
+        img_tag = ''
+    homepage_url = f'<a href="{site_url}/archive/">{img_tag}</a>'
+    return homepage_url

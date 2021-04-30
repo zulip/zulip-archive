@@ -40,6 +40,7 @@ from .front_matter import (
 
 from .html import (
     format_message,
+    homepage_link,
     last_updated_footer,
     topic_page_links,
     )
@@ -58,7 +59,7 @@ def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zul
 
     streams = stream_info['streams']
     date_footer = last_updated_footer(stream_info)
-    write_main_page(md_root, site_url, html_root, title, streams, date_footer)
+    write_main_page(md_root, site_url, html_root, title, streams, date_footer, zulip_icon_url)
     write_css(md_root)
 
     for stream_name in streams:
@@ -74,6 +75,7 @@ def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zul
             stream_name,
             stream_data,
             date_footer,
+            zulip_icon_url
             )
 
         for topic_name in topic_data:
@@ -94,7 +96,7 @@ def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zul
 
 # writes the index page listing all streams.
 # `streams`: a dict mapping stream names to stream json objects as described in the header.
-def write_main_page(md_root, site_url, html_root, title, streams, date_footer):
+def write_main_page(md_root, site_url, html_root, title, streams, date_footer, zulip_icon_url):
     '''
     The main page in our website lists streams:
 
@@ -108,12 +110,12 @@ def write_main_page(md_root, site_url, html_root, title, streams, date_footer):
     write_main_page_header(outfile, html_root, title)
 
     content = stream_list_page(streams)
-
+    outfile.write(f'\n{homepage_link(site_url, zulip_icon_url)}\n')
     outfile.write(content)
     outfile.write(date_footer)
     outfile.close()
 
-def write_stream_topics(md_root, site_url, html_root, title, stream_name, stream, date_footer):
+def write_stream_topics(md_root, site_url, html_root, title, stream_name, stream, date_footer, zulip_icon_url):
     '''
     A stream page lists all topics for the stream:
 
@@ -135,6 +137,7 @@ def write_stream_topics(md_root, site_url, html_root, title, stream_name, stream
 
     content = topic_list_page(stream_name, stream_url, topic_data)
 
+    outfile.write(f'\n{homepage_link(site_url, zulip_icon_url)}\n')
     outfile.write(content)
     outfile.write(date_footer)
     outfile.close()
@@ -203,6 +206,7 @@ def write_topic_messages(
         topic_name,
         )
 
+    outfile.write(f'\n{homepage_link(site_url, zulip_icon_url)}\n')
     outfile.write(topic_links)
     outfile.write(f'\n<head><link href="{site_url}/style.css" rel="stylesheet"></head>\n')
 
