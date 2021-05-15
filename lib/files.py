@@ -73,7 +73,7 @@ def read_zulip_stream_info(json_root):
     to other files deeper in the directory structure.
     """
     f = (json_root / Path("stream_index.json")).open("r", encoding="utf-8")
-    stream_info = json.load(f, encoding="utf-8")
+    stream_info = json.load(f)
     f.close()
     return stream_info
 

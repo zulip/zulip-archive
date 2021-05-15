@@ -196,7 +196,7 @@ def populate_incremental(
         exit_immediately(error_msg)
 
     f = stream_index.open("r", encoding="utf-8")
-    js = json.load(f, encoding="utf-8")
+    js = json.load(f)
     f.close()
 
     for s in (s for s in streams if is_valid_stream_name(s["name"])):
