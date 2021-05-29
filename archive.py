@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-'''
+"""
 This is the main program for the Zulip archive system.  For help:
 
     python archive.py -h
@@ -15,7 +15,7 @@ The actual work is done in two main libraries:
 
     lib/html.py
     lib/populate.py
-'''
+"""
 
 
 # The workflow (timing for the leanprover Zulip chat, on my slow laptop):
@@ -54,7 +54,7 @@ try:
 except ModuleNotFoundError:
     # TODO: Add better instructions.
     exit_immediately(
-        '''
+        """
     We can't find settings.py.
 
     Please copy default_settings.py to settings.py
@@ -62,17 +62,17 @@ except ModuleNotFoundError:
 
     For testing, you can often leave the default settings,
     but you will still want to review them first.
-    '''
+    """
     )
 
-NO_JSON_DIR_ERROR_WRITE = '''
+NO_JSON_DIR_ERROR_WRITE = """
 We cannot find a place to write JSON files.
 
 Please run the below command:
 
-mkdir {}'''
+mkdir {}"""
 
-NO_JSON_DIR_ERROR_READ = '''
+NO_JSON_DIR_ERROR_READ = """
 We cannot find a place to read JSON files.
 
 Please run the below command:
@@ -81,14 +81,14 @@ mkdir {}
 
 And then fetch the JSON:
 
-python archive.py -t'''
+python archive.py -t"""
 
-NO_HTML_DIR_ERROR = '''
+NO_HTML_DIR_ERROR = """
 We cannot find a place to write HTML files.
 
 Please run the below command:
 
-mkdir {}'''
+mkdir {}"""
 
 
 def get_json_directory(for_writing):
@@ -105,7 +105,7 @@ def get_json_directory(for_writing):
         exit_immediately(error_msg)
 
     if not json_dir.is_dir():
-        exit_immediately(str(json_dir) + ' needs to be a directory')
+        exit_immediately(str(json_dir) + " needs to be a directory")
 
     return settings.json_directory
 
@@ -119,13 +119,13 @@ def get_html_directory():
         exit_immediately(error_msg)
 
     if not html_dir.is_dir():
-        exit_immediately(str(html_dir) + ' needs to be a directory')
+        exit_immediately(str(html_dir) + " needs to be a directory")
 
     return settings.html_directory
 
 
 def get_client_info():
-    config_file = './zuliprc'
+    config_file = "./zuliprc"
     client = zulip.Client(config_file=config_file)
 
     # It would be convenient if the Zulip client object
@@ -133,36 +133,36 @@ def get_client_info():
     # directly to get it.
     config = configparser.RawConfigParser()
     config.read(config_file)
-    zulip_url = config.get('api', 'site')
+    zulip_url = config.get("api", "site")
 
     return client, zulip_url
 
 
 def run():
     parser = argparse.ArgumentParser(
-        description='Build an html archive of the Zulip chat.'
+        description="Build an html archive of the Zulip chat."
     )
     parser.add_argument(
-        '-b', action='store_true', default=False, help='Build .md files'
+        "-b", action="store_true", default=False, help="Build .md files"
     )
     parser.add_argument(
-        '-t', action='store_true', default=False, help='Make a clean json archive'
+        "-t", action="store_true", default=False, help="Make a clean json archive"
     )
     parser.add_argument(
-        '-i',
-        action='store_true',
+        "-i",
+        action="store_true",
         default=False,
-        help='Incrementally update the json archive',
+        help="Incrementally update the json archive",
     )
 
     results = parser.parse_args()
 
     if results.t and results.i:
-        print('Cannot perform both a total and incremental update. Use -t or -i.')
+        print("Cannot perform both a total and incremental update. Use -t or -i.")
         exit(1)
 
     if not (results.t or results.i or results.b):
-        print('\nERROR!\n\nYou have not specified any work to do.\n')
+        print("\nERROR!\n\nYou have not specified any work to do.\n")
         parser.print_help()
         exit(1)
 
@@ -208,5 +208,5 @@ def run():
         )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()
