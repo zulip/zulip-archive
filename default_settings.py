@@ -83,18 +83,22 @@ else:
     try:
         html_directory = Path(os.getenv("HTML_DIRECTORY", None))
     except TypeError:
-        raise Exception('''
+        raise Exception(
+            '''
             You need to set html_directory for prod, and it
             should be a different location than DEBUG mode,
             since files will likely have different urls in
             anchor tags.
-            ''')
+            '''
+        )
 
 
 '''
 This is where you modify the <head> section of every page.
 '''
-page_head_html = '<html>\n<head><meta charset="utf-8"><title>Zulip Chat Archive</title></head>\n'
+page_head_html = (
+    '<html>\n<head><meta charset="utf-8"><title>Zulip Chat Archive</title></head>\n'
+)
 
 '''
 This is where you modify the <footer> section of every page.
@@ -143,7 +147,9 @@ try:
     with open("streams.yaml") as f:
         streams = yaml.load(f, Loader=yaml.BaseLoader)
         if "included" not in streams or not streams["included"]:
-            raise Exception("Please specify the streams to be included under `included` section in streams.yaml file")
+            raise Exception(
+                "Please specify the streams to be included under `included` section in streams.yaml file"
+            )
         included_streams = streams["included"]
 
         excluded_streams = []
