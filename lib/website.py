@@ -22,7 +22,7 @@ from shutil import copyfile
 from .url import (
     sanitize_stream,
     sanitize_topic,
-    )
+)
 
 from .files import (
     open_main_page,
@@ -30,7 +30,7 @@ from .files import (
     open_topic_messages_page,
     read_zulip_messages_for_topic,
     read_zulip_stream_info,
-    )
+)
 
 from .html import (
     format_message_html,
@@ -38,19 +38,39 @@ from .html import (
     topic_page_links_html,
     stream_list_page_html,
     topic_list_page_html,
-    )
+)
 
 from .url import (
     archive_stream_url,
-    )
+)
 
 
-def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zulip_icon_url, repo_root, page_head_html, page_footer_html):
+def build_website(
+    json_root,
+    md_root,
+    site_url,
+    html_root,
+    title,
+    zulip_url,
+    zulip_icon_url,
+    repo_root,
+    page_head_html,
+    page_footer_html,
+):
     stream_info = read_zulip_stream_info(json_root)
 
     streams = stream_info['streams']
     date_footer_html = last_updated_footer_html(stream_info)
-    write_main_page(md_root, site_url, html_root, title, streams, date_footer_html, page_head_html, page_footer_html)
+    write_main_page(
+        md_root,
+        site_url,
+        html_root,
+        title,
+        streams,
+        date_footer_html,
+        page_head_html,
+        page_footer_html,
+    )
     write_css(md_root)
 
     for stream_name in streams:
@@ -67,8 +87,8 @@ def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zul
             stream_data,
             date_footer_html,
             page_head_html,
-            page_footer_html
-            )
+            page_footer_html,
+        )
 
         for topic_name in topic_data:
             write_topic_messages(
@@ -84,8 +104,8 @@ def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zul
                 topic_name,
                 date_footer_html,
                 page_head_html,
-                page_footer_html
-                )
+                page_footer_html,
+            )
 
     # Copy the entire content of <repo_root>/assets into md_root.
     # We use copy_tree from distutils instead of shutil.copytree so that it
@@ -98,15 +118,24 @@ def build_website(json_root, md_root, site_url, html_root, title, zulip_url, zul
 
 # writes the index page listing all streams.
 # `streams`: a dict mapping stream names to stream json objects as described in the header.
-def write_main_page(md_root, site_url, html_root, title, streams, date_footer_html, page_head_html, page_footer_html):
-    '''
+def write_main_page(
+    md_root,
+    site_url,
+    html_root,
+    title,
+    streams,
+    date_footer_html,
+    page_head_html,
+    page_footer_html,
+):
+    """
     The main page in our website lists streams:
 
         Streams:
 
         general (70 topics)
         announce (42 topics)
-    '''
+    """
     outfile = open_main_page(md_root)
 
     content_html = stream_list_page_html(streams)
@@ -117,8 +146,19 @@ def write_main_page(md_root, site_url, html_root, title, streams, date_footer_ht
     outfile.write(page_footer_html)
     outfile.close()
 
-def write_stream_topics(md_root, site_url, html_root, title, stream_name, stream, date_footer_html, page_head_html, page_footer_html):
-    '''
+
+def write_stream_topics(
+    md_root,
+    site_url,
+    html_root,
+    title,
+    stream_name,
+    stream,
+    date_footer_html,
+    page_head_html,
+    page_footer_html,
+):
+    """
     A stream page lists all topics for the stream:
 
         Stream: social
@@ -126,7 +166,7 @@ def write_stream_topics(md_root, site_url, html_root, title, stream_name, stream
         Topics:
             lunch (4 messages)
             happy hour (1 message)
-    '''
+    """
 
     sanitized_stream_name = sanitize_stream(stream_name, stream['id'])
     outfile = open_stream_topics_page(md_root, sanitized_stream_name)
@@ -143,22 +183,23 @@ def write_stream_topics(md_root, site_url, html_root, title, stream_name, stream
     outfile.write(page_footer_html)
     outfile.close()
 
+
 def write_topic_messages(
-        json_root,
-        md_root,
-        site_url,
-        html_root,
-        title,
-        zulip_url,
-        zulip_icon_url,
-        stream_name,
-        stream,
-        topic_name,
-        date_footer_html,
-        page_head_html,
-        page_footer_html,
-        ):
-    '''
+    json_root,
+    md_root,
+    site_url,
+    html_root,
+    title,
+    zulip_url,
+    zulip_icon_url,
+    stream_name,
+    stream,
+    topic_name,
+    date_footer_html,
+    page_head_html,
+    page_footer_html,
+):
+    """
     Writes the topics page, which lists all messages
     for one particular topic within a stream:
 
@@ -170,23 +211,21 @@ def write_topic_messages(
 
     Bob:
         No, let's get tacos!
-    '''
+    """
     stream_id = stream['id']
 
     sanitized_stream_name = sanitize_stream(stream_name, stream_id)
     sanitized_topic_name = sanitize_topic(topic_name)
 
     messages = read_zulip_messages_for_topic(
-        json_root,
-        sanitized_stream_name,
-        sanitized_topic_name
-        )
+        json_root, sanitized_stream_name, sanitized_topic_name
+    )
 
     outfile = open_topic_messages_page(
         md_root,
         sanitized_stream_name,
         sanitized_topic_name,
-        )
+    )
 
     topic_links = topic_page_links_html(
         site_url,
@@ -196,29 +235,32 @@ def write_topic_messages(
         sanitized_topic_name,
         stream_name,
         topic_name,
-        )
+    )
 
     outfile.write(page_head_html)
     outfile.write(topic_links)
-    outfile.write(f'\n<head><link href="{html.escape(site_url)}/style.css" rel="stylesheet"></head>\n')
+    outfile.write(
+        f'\n<head><link href="{html.escape(site_url)}/style.css" rel="stylesheet"></head>\n'
+    )
 
     for msg in messages:
         msg_html = format_message_html(
-                site_url,
-                html_root,
-                zulip_url,
-                zulip_icon_url,
-                stream_name,
-                stream_id,
-                topic_name,
-                msg,
-                )
+            site_url,
+            html_root,
+            zulip_url,
+            zulip_icon_url,
+            stream_name,
+            stream_id,
+            topic_name,
+            msg,
+        )
         outfile.write(msg_html)
         outfile.write('\n\n')
 
     outfile.write(date_footer_html)
     outfile.write(page_footer_html)
     outfile.close()
+
 
 def write_css(md_root):
     copyfile('style.css', md_root / 'style.css')

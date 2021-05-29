@@ -28,37 +28,33 @@ The actual work is done in two main libraries:
 #
 
 import sys
-if sys.version_info < (3,6):
+
+if sys.version_info < (3, 6):
     version_error = " Python version must be 3.6 or higher\n\
             Your current version of python is {}.{}\n\
-            Please try again with python3.".format(sys.version_info.major,sys.version_info.minor)
+            Please try again with python3.".format(
+        sys.version_info.major, sys.version_info.minor
+    )
     raise Exception(version_error)
 import argparse
 import configparser
 import os
 import zulip
 
-from lib.common import (
-    stream_validator,
-    exit_immediately
-    )
+from lib.common import stream_validator, exit_immediately
 
 # Most of the heavy lifting is done by the following modules:
 
-from lib.populate import (
-    populate_all,
-    populate_incremental
-    )
+from lib.populate import populate_all, populate_incremental
 
-from lib.website import (
-    build_website
-    )
+from lib.website import build_website
 
 try:
     import settings
 except ModuleNotFoundError:
     # TODO: Add better instructions.
-    exit_immediately('''
+    exit_immediately(
+        '''
     We can't find settings.py.
 
     Please copy default_settings.py to settings.py
@@ -66,7 +62,8 @@ except ModuleNotFoundError:
 
     For testing, you can often leave the default settings,
     but you will still want to review them first.
-    ''')
+    '''
+    )
 
 NO_JSON_DIR_ERROR_WRITE = '''
 We cannot find a place to write JSON files.
@@ -93,6 +90,7 @@ Please run the below command:
 
 mkdir {}'''
 
+
 def get_json_directory(for_writing):
     json_dir = settings.json_directory
 
@@ -111,6 +109,7 @@ def get_json_directory(for_writing):
 
     return settings.json_directory
 
+
 def get_html_directory():
     html_dir = settings.html_directory
 
@@ -123,6 +122,7 @@ def get_html_directory():
         exit_immediately(str(html_dir) + ' needs to be a directory')
 
     return settings.html_directory
+
 
 def get_client_info():
     config_file = './zuliprc'
@@ -137,11 +137,23 @@ def get_client_info():
 
     return client, zulip_url
 
+
 def run():
-    parser = argparse.ArgumentParser(description='Build an html archive of the Zulip chat.')
-    parser.add_argument('-b', action='store_true', default=False, help='Build .md files')
-    parser.add_argument('-t', action='store_true', default=False, help='Make a clean json archive')
-    parser.add_argument('-i', action='store_true', default=False, help='Incrementally update the json archive')
+    parser = argparse.ArgumentParser(
+        description='Build an html archive of the Zulip chat.'
+    )
+    parser.add_argument(
+        '-b', action='store_true', default=False, help='Build .md files'
+    )
+    parser.add_argument(
+        '-t', action='store_true', default=False, help='Make a clean json archive'
+    )
+    parser.add_argument(
+        '-i',
+        action='store_true',
+        default=False,
+        help='Incrementally update the json archive',
+    )
 
     results = parser.parse_args()
 
@@ -172,14 +184,14 @@ def run():
             client,
             json_root,
             is_valid_stream_name,
-            )
+        )
 
     elif results.i:
         populate_incremental(
             client,
             json_root,
             is_valid_stream_name,
-            )
+        )
 
     if results.b:
         build_website(
@@ -193,7 +205,8 @@ def run():
             repo_root,
             settings.page_head_html,
             settings.page_footer_html,
-            )
+        )
+
 
 if __name__ == '__main__':
     run()
