@@ -1,4 +1,4 @@
-'''
+"""
 
 There are two major phases of this system:
 
@@ -54,7 +54,7 @@ with spaces (hence the number prefix).  FWIW the number prefix
 for streams corresponds to the Zulip stream id, whereas the topic
 prefix is a random hash.  All that really matters is that they are
 unique.
-'''
+"""
 
 import json
 
@@ -72,8 +72,8 @@ def read_zulip_stream_info(json_root):
     the stream.  To get actual messages within a topic, you go
     to other files deeper in the directory structure.
     """
-    f = (json_root / Path('stream_index.json')).open('r', encoding='utf-8')
-    stream_info = json.load(f, encoding='utf-8')
+    f = (json_root / Path("stream_index.json")).open("r", encoding="utf-8")
+    stream_info = json.load(f, encoding="utf-8")
     f.close()
     return stream_info
 
@@ -87,26 +87,26 @@ def read_zulip_messages_for_topic(
     This JSON has info for all the messags in a topic.
     """
     json_path = (
-        json_root / Path(sanitized_stream_name) / Path(sanitized_topic_name + '.json')
+        json_root / Path(sanitized_stream_name) / Path(sanitized_topic_name + ".json")
     )
-    f = json_path.open('r', encoding='utf-8')
+    f = json_path.open("r", encoding="utf-8")
     messages = json.load(f)
     f.close()
     return messages
 
 
 def open_main_page(md_root):
-    outfile = open_outfile(md_root, Path('index.html'), 'w+')
+    outfile = open_outfile(md_root, Path("index.html"), "w+")
     return outfile
 
 
 def open_stream_topics_page(md_root, sanitized_stream_name):
-    directory = md_root / Path('stream/' + sanitized_stream_name)
-    outfile = open_outfile(directory, Path('index.html'), 'w+')
+    directory = md_root / Path("stream/" + sanitized_stream_name)
+    outfile = open_outfile(directory, Path("index.html"), "w+")
     return outfile
 
 
 def open_topic_messages_page(md_root, sanitized_stream_name, sanitized_topic_name):
-    directory = md_root / Path('stream/' + sanitized_stream_name + '/topic')
-    outfile = open_outfile(directory, Path(sanitized_topic_name + '.html'), 'w+')
+    directory = md_root / Path("stream/" + sanitized_stream_name + "/topic")
+    outfile = open_outfile(directory, Path(sanitized_topic_name + ".html"), "w+")
     return outfile

@@ -1,4 +1,4 @@
-'''
+"""
 This module emits the content for your archive.
 
 It emits HTML, and YAML, mostly by calling
@@ -12,7 +12,7 @@ you have unique requirements for how your archive should look.
 
 If you are interested in porting this system away from Python to your
 language of choice, this is probably the best place to start.
-'''
+"""
 
 from pathlib import Path
 from distutils.dir_util import copy_tree
@@ -59,7 +59,7 @@ def build_website(
 ):
     stream_info = read_zulip_stream_info(json_root)
 
-    streams = stream_info['streams']
+    streams = stream_info["streams"]
     date_footer_html = last_updated_footer_html(stream_info)
     write_main_page(
         md_root,
@@ -74,9 +74,9 @@ def build_website(
     write_css(md_root)
 
     for stream_name in streams:
-        print('building: ', stream_name)
+        print("building: ", stream_name)
         stream_data = streams[stream_name]
-        topic_data = stream_data['topic_data']
+        topic_data = stream_data["topic_data"]
 
         write_stream_topics(
             md_root,
@@ -168,12 +168,12 @@ def write_stream_topics(
             happy hour (1 message)
     """
 
-    sanitized_stream_name = sanitize_stream(stream_name, stream['id'])
+    sanitized_stream_name = sanitize_stream(stream_name, stream["id"])
     outfile = open_stream_topics_page(md_root, sanitized_stream_name)
 
     stream_url = archive_stream_url(site_url, html_root, sanitized_stream_name)
 
-    topic_data = stream['topic_data']
+    topic_data = stream["topic_data"]
 
     content_html = topic_list_page_html(stream_name, stream_url, topic_data)
 
@@ -212,7 +212,7 @@ def write_topic_messages(
     Bob:
         No, let's get tacos!
     """
-    stream_id = stream['id']
+    stream_id = stream["id"]
 
     sanitized_stream_name = sanitize_stream(stream_name, stream_id)
     sanitized_topic_name = sanitize_topic(topic_name)
@@ -255,7 +255,7 @@ def write_topic_messages(
             msg,
         )
         outfile.write(msg_html)
-        outfile.write('\n\n')
+        outfile.write("\n\n")
 
     outfile.write(date_footer_html)
     outfile.write(page_footer_html)
@@ -263,4 +263,4 @@ def write_topic_messages(
 
 
 def write_css(md_root):
-    copyfile('style.css', md_root / 'style.css')
+    copyfile("style.css", md_root / "style.css")
