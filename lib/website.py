@@ -45,6 +45,10 @@ from .url import (
 )
 
 
+def to_topic_page_head_html(title):
+    return f'<html>\n<head><meta charset="utf-8"><title>{title}</title></head>\n'
+
+
 def build_website(
     json_root,
     md_root,
@@ -237,7 +241,13 @@ def write_topic_messages(
         topic_name,
     )
 
-    outfile.write(page_head_html)
+    # We use a topic-specific title instead of `page_head_html` to improve
+    # search engine indexing.
+    outfile.write(
+        to_topic_page_head_html(
+            html.escape(topic_name) + " · " + html.escape(stream_name) + " · " + title
+        )
+    )
     outfile.write(topic_links)
     outfile.write(
         f'\n<head><link href="{html.escape(site_url)}/style.css" rel="stylesheet"></head>\n'
