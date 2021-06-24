@@ -14,6 +14,10 @@ inputs:
   github_personal_access_token:
     description: 'GitHub personal access token'
     required: true
+  delete_history:
+    description: 'If enabled, will delete the archive history while keeping the most recent version'
+    required: false
+    default: false
   archive_branch:
     description: 'Branch where to commit archive files (should coincide with GH Pages branch)'
     # legacy
