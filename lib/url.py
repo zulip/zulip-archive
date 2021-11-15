@@ -83,7 +83,7 @@ def sanitize(s):
 # create a unique sanitized identifier for a topic
 def sanitize_topic(topic_name):
     return (
-        urllib.parse.quote(topic_name, safe="~()*!.'")
+        urllib.parse.quote(topic_name, safe="~()!.'")
         .replace(".", "%2E")
         .replace("%", ".")
     )
