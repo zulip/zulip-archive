@@ -30,6 +30,8 @@ virtualenv -p python3 .
 source bin/activate
 pip3 install zulip==0.6.3
 pip3 install pyyaml==5.2
+# crudini is not available as an Alpine pkg, so we install via pip.
+pip3 install crudini
 
 # GitHub pages API is in Preview mode. This might break in future.
 auth_header="Authorization: Bearer ${github_personal_access_token}"
