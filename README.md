@@ -97,7 +97,7 @@ jobs:
     name: A job to publish zulip-archive in GitHub pages
     steps:
     - name: Checkout
-      uses: actions/checkout@v1
+      uses: actions/checkout@v3
     - name: Run archive
       id: archive
       uses: zulip/zulip-archive@master
