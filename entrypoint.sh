@@ -8,6 +8,10 @@ github_personal_access_token=$4
 delete_history=$5
 archive_branch=$6
 
+# This is a temporary workaround.
+# See https://github.com/actions/checkout/issues/766
+git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
 checked_out_repo_path="$(pwd)"
 html_dir_path=$checked_out_repo_path
 json_dir_path="${checked_out_repo_path}/zulip_json"
