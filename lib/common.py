@@ -27,11 +27,11 @@ def stream_validator(settings):
 
     included_streams = set(settings.included_streams)
 
-    def validator(stream):
+    def validator(stream, is_web_public):
         if stream in excluded_streams:
             return False
 
-        if "*" in included_streams:
+        if "*" in included_streams or is_web_public:
             return True
 
         return stream in included_streams

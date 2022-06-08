@@ -35,25 +35,30 @@ def test_sanitize():
 def test_validator():
     validator = common.stream_validator(Settings(included_streams=["*"]))
 
-    assert_equal(validator("foo"), True)
+    assert_equal(validator("foo", False), True)
 
     validator = common.stream_validator(Settings(included_streams=["foo", "bar"]))
-    assert_equal(validator("foo"), True)
-    assert_equal(validator("bar"), True)
-    assert_equal(validator("baz"), False)
+    assert_equal(validator("foo", False), True)
+    assert_equal(validator("bar", False), True)
+    assert_equal(validator("baz", False), False)
 
     validator = common.stream_validator(
         Settings(included_streams=["*"], excluded_streams=["bad", "worse"])
     )
-    assert_equal(validator("good"), True)
-    assert_equal(validator("bad"), False)
-    assert_equal(validator("worse"), False)
+    assert_equal(validator("good", False), True)
+    assert_equal(validator("bad", False), False)
+    assert_equal(validator("worse", False), False)
 
     # edge case: excluded takes precedence over included
     validator = common.stream_validator(
         Settings(included_streams=["foo"], excluded_streams=["foo"])
     )
-    assert_equal(validator("foo"), False)
+    assert_equal(validator("foo", False), False)
+
+    validator = common.stream_validator(
+        Settings(included_streams=["baz"], excluded_streams=['bar']))
+    assert_equal(validator("foo", True), True)
+    assert_equal(validator("bar", True), False)
 
 
 if __name__ == "__main__":
