@@ -28,12 +28,20 @@ def stream_validator(settings):
     included_streams = set(settings.included_streams)
 
     def validator(stream):
-        if stream in excluded_streams:
+        stream_name = stream["name"]
+        is_web_public = stream["is_web_public"]
+        is_public = not stream["invite_only"]
+
+        if stream_name in excluded_streams:
             return False
 
-        if "*" in included_streams:
+        if "web-public:*" in included_streams and is_web_public:
             return True
 
-        return stream in included_streams
+        # The bare * case is for backwards-compatibility.
+        if ("*" in included_streams or "public:*" in included_streams) and is_public:
+            return True
+
+        return stream_name in included_streams
 
     return validator

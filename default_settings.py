@@ -119,20 +119,22 @@ included:
   - data structures
 
 
-If you want to include all the streams you can use '*'
+A few wildcard operators are supported.
 
 Example
 ---
 
 included:
-  - '*'
+  - 'web-public:*'
 
-Using '*' includes all the **public streams** in Zulip archive.  You
-can make the settings more restrictive than that, but not the opposite
-direction.
+Using 'web-public:*' includes all the **web-public streams** in the
+Zulip organization. Using 'public:*' includes all the **public
+streams** in Zulip archive (`*` will do the same thing, for
+backwards-compatibility).  You can make the settings more restrictive
+than that, but not the opposite direction.
 
-If you want to exclude some public streams, mention them under `excluded`
-category in `streams.yaml`
+If you want to exclude some public streams, mention them in the
+`excluded` category in `streams.yaml`.
 
 Example:
 ---

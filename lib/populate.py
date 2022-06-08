@@ -100,12 +100,13 @@ def safe_request(cmd, *args, **kwargs):
 
 
 def get_streams(client):
-    # In the future, we may want to change this to
-    # include_web_public=True, for organizations that might want to
-    # use the upcoming web_public flag; but at the very least we
-    # should only include public streams.
+    # Fetch metadata on all streams the current user has access to.
+    # We will filter these for processing via is_valid_stream_name.
     response = safe_request(
-        client.get_streams, include_public=True, include_subscribed=False
+        client.get_streams,
+        include_public=True,
+        include_subscribed=True,
+        include_web_public=True,
     )
     return response["streams"]
 
@@ -117,8 +118,7 @@ def populate_all(
     is_valid_stream_name,
 ):
     all_streams = get_streams(client)
-
-    streams = [s for s in all_streams if is_valid_stream_name(s["name"])]
+    streams = [s for s in all_streams if is_valid_stream_name(s)]
 
     streams_data = {}
 
@@ -199,7 +199,7 @@ def populate_incremental(
     js = json.load(f)
     f.close()
 
-    for s in (s for s in streams if is_valid_stream_name(s["name"])):
+    for s in (s for s in streams if is_valid_stream_name(s)):
         print(s["name"])
         if s["name"] not in js["streams"]:
             js["streams"][s["name"]] = {

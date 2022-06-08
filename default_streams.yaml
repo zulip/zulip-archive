@@ -1,8 +1,9 @@
 included:
-- '*'
+- 'web-public:*'
 # - general
 # - javascript
 # - data structures
+# - 'public:*'
 
 excluded:
 # - checkins

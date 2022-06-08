@@ -1,9 +1,7 @@
-# For convenience, just run the tests from its own directory
-import os
+# For convenience, just run the tests in the repo root directory.
 import sys
 
-os.chdir(os.path.dirname(sys.argv[0]))
-sys.path.append("../lib")
+sys.path.append("lib")
 
 import common
 import url
@@ -48,27 +46,49 @@ def test_sanitize():
 
 
 def test_validator():
-    validator = common.stream_validator(Settings(included_streams=["*"]))
+    def stream(name, public, web_public):
+        # Returns a minimalist stream dictionary.
+        return {"name": name, "invite_only": not public, "is_web_public": web_public}
 
-    assert_equal(validator("foo"), True)
+    # Test wildcard operator for public streams.
+    for k in ["*", "public:*"]:
+        validator = common.stream_validator(Settings(included_streams=[k]))
+        assert_equal(validator(stream("foo", True, False)), True)
+        assert_equal(validator(stream("foo", True, True)), True)
+        assert_equal(validator(stream("bar", False, False)), False)
+        assert_equal(validator(stream("bar", False, True)), False)
+
+    # Test web-public
+    validator = common.stream_validator(Settings(included_streams=["web-public:*"]))
+    assert_equal(validator(stream("foo", True, False)), False)
+    assert_equal(validator(stream("foo", True, True)), True)
+    assert_equal(validator(stream("bar", False, False)), False)
+    assert_equal(validator(stream("bar", False, True)), True)
 
     validator = common.stream_validator(Settings(included_streams=["foo", "bar"]))
-    assert_equal(validator("foo"), True)
-    assert_equal(validator("bar"), True)
-    assert_equal(validator("baz"), False)
+    assert_equal(validator(stream("foo", True, True)), True)
+    assert_equal(validator(stream("bar", True, True)), True)
+    assert_equal(validator(stream("baz", True, True)), False)
 
+    # Test exclude.
     validator = common.stream_validator(
         Settings(included_streams=["*"], excluded_streams=["bad", "worse"])
     )
-    assert_equal(validator("good"), True)
-    assert_equal(validator("bad"), False)
-    assert_equal(validator("worse"), False)
+    assert_equal(validator(stream("good", True, True)), True)
+    assert_equal(validator(stream("bad", True, True)), False)
+    assert_equal(validator(stream("worse", True, True)), False)
 
     # edge case: excluded takes precedence over included
     validator = common.stream_validator(
         Settings(included_streams=["foo"], excluded_streams=["foo"])
     )
-    assert_equal(validator("foo"), False)
+    assert_equal(validator(stream("foo", False, False)), False)
+
+    validator = common.stream_validator(
+        Settings(included_streams=["baz"], excluded_streams=["bar"])
+    )
+    assert_equal(validator(stream("foo", True, True)), False)
+    assert_equal(validator(stream("bar", False, False)), False)
 
 
 if __name__ == "__main__":
