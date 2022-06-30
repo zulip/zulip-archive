@@ -32,7 +32,7 @@ python3 get-pip.py
 pip install virtualenv
 virtualenv -p python3 .
 source bin/activate
-pip3 install zulip==0.6.3
+pip3 install zulip==0.8.2
 pip3 install pyyaml==5.2
 # crudini is not available as an Alpine pkg, so we install via pip.
 pip3 install crudini
