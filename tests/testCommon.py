@@ -24,11 +24,26 @@ def assert_equal(v1, v2):
 
 
 def test_sanitize():
-    assert_equal(url.sanitize_stream(stream_name="foo bar", stream_id=7), "7-foo-bar")
+    assert_equal(
+        url.sanitize_stream(stream_name="foo bar", stream_id=7),
+        "7-foo-bar",
+    )
+    assert_equal(
+        url.sanitize_stream(stream_name="foo/bar/turtle[🐢]", stream_id=7),
+        "7-foo.2Fbar.2Fturtle.5B.F0.9F.90.A2.5D",
+    )
 
     assert_equal(
-        url.sanitize_topic(topic_name="pick a place for lunch"),
-        "pick.20a.20place.20for.20lunch",
+        url.sanitize("pick a place for lunch *"),
+        "pick.20a.20place.20for.20lunch.20.2A",
+    )
+    assert_equal(
+        url.sanitize("!!cute-turlte/tortoise (🐢)?"),
+        ".21.21cute-turlte.2Ftortoise.20.28.F0.9F.90.A2.29.3F",
+    )
+    assert_equal(
+        url.sanitize('"the mighty turtle 🐢"'),
+        ".22the.20mighty.20turtle.20.F0.9F.90.A2.22",
     )
 
 

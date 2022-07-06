@@ -50,7 +50,7 @@ from .common import (
 )
 from .url import (
     sanitize_stream,
-    sanitize_topic,
+    sanitize,
 )
 
 
@@ -222,7 +222,7 @@ def populate_incremental(
             p = (
                 json_root
                 / Path(sanitize_stream(s["name"], s["stream_id"]))
-                / Path(sanitize_topic(topic_name) + ".json")
+                / Path(sanitize(topic_name) + ".json")
             )
             topic_exists = p.exists()
             old = []
@@ -257,7 +257,7 @@ def dump_topic_messages(json_root, stream_data, topic_name, message_data):
     sanitized_stream_name = sanitize_stream(stream_name, stream_id)
     stream_dir = json_root / Path(sanitized_stream_name)
 
-    sanitized_topic_name = sanitize_topic(topic_name)
+    sanitized_topic_name = sanitize(topic_name)
     topic_fn = sanitized_topic_name + ".json"
 
     out = open_outfile(stream_dir, topic_fn, "w")
