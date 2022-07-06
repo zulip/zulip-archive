@@ -66,29 +66,25 @@ def archive_message_url(
 
 ## String cleaning functions
 
-# remove non-alnum ascii symbols from string
+
 def sanitize(s):
-    return (
-        "".join(
-            filter(
-                lambda x: x.isalnum or x == " ",
-                s.encode("ascii", "ignore").decode("utf-8"),
-            )
-        )
-        .replace(" ", "-")
-        .replace("?", "%3F")
-    )
+    """
+    Sanitize the string to a safe string that can be used in URLs
 
-
-# create a unique sanitized identifier for a topic
-def sanitize_topic(topic_name):
-    return (
-        urllib.parse.quote(topic_name, safe="~()*!.'")
-        .replace(".", "%2E")
-        .replace("%", ".")
-    )
+    This is copied from Zulip's core code:
+    https://github.com/zulip/zulip/blob/de31114d700561f32139a63a0e5f33d5c30039b3/zerver/lib/url_encoding.py#L8
+    """
+    return urllib.parse.quote(s, safe=b"").replace(".", "%2E").replace("%", ".")
 
 
 # create a unique sanitized identifier for a stream
 def sanitize_stream(stream_name, stream_id):
+    """
+    Encode streams for urls as something like 99-Foo-bar.
+
+    This is copied from Zulip's core code:
+    https://github.com/zulip/zulip/blob/de31114d700561f32139a63a0e5f33d5c30039b3/zerver/lib/url_encoding.py#L15
+    """
+
+    stream_name = stream_name.replace(" ", "-")
     return str(stream_id) + "-" + sanitize(stream_name)

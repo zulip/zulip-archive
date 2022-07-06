@@ -17,7 +17,7 @@ from .date_helper import format_date1
 
 from .url import (
     sanitize_stream,
-    sanitize_topic,
+    sanitize,
 )
 
 from .url import (
@@ -87,7 +87,7 @@ def format_message_html(
         site_url,
         html_root,
         sanitize_stream(stream_name, stream_id),
-        sanitize_topic(topic_name),
+        sanitize(topic_name),
         msg_id,
     )
     anchor_html = '<a name="{0}"></a>'.format(html.escape(msg_id))
@@ -184,7 +184,7 @@ def topic_list_html(topic_data):
     """
 
     def item_html(topic_name, message_data):
-        link_html = f'<a href="topic/{html.escape(sanitize_topic(topic_name))}.html">{html.escape(topic_name)}</a>'
+        link_html = f'<a href="topic/{html.escape(sanitize(topic_name))}.html">{html.escape(topic_name)}</a>'
         topic_info = topic_info_string(message_data)
         return f"<li> {link_html} ({html.escape(topic_info)}) </li>"
 

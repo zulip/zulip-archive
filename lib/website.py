@@ -21,7 +21,7 @@ from shutil import copyfile
 
 from .url import (
     sanitize_stream,
-    sanitize_topic,
+    sanitize,
 )
 
 from .files import (
@@ -219,7 +219,7 @@ def write_topic_messages(
     stream_id = stream["id"]
 
     sanitized_stream_name = sanitize_stream(stream_name, stream_id)
-    sanitized_topic_name = sanitize_topic(topic_name)
+    sanitized_topic_name = sanitize(topic_name)
 
     messages = read_zulip_messages_for_topic(
         json_root, sanitized_stream_name, sanitized_topic_name
