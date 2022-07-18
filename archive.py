@@ -49,6 +49,8 @@ from lib.populate import populate_all, populate_incremental
 
 from lib.website import build_website
 
+from lib.sitemap import build_sitemap
+
 try:
     import settings
 except ModuleNotFoundError:
@@ -146,6 +148,12 @@ def run():
         "-b", action="store_true", default=False, help="Build .md files"
     )
     parser.add_argument(
+        "--no-sitemap",
+        action="store_true",
+        default=False,
+        help="Don't build sitemap files",
+    )
+    parser.add_argument(
         "-t", action="store_true", default=False, help="Make a clean json archive"
     )
     parser.add_argument(
@@ -206,6 +214,8 @@ def run():
             settings.page_head_html,
             settings.page_footer_html,
         )
+        if not results.no_sitemap:
+            build_sitemap(settings.site_url, md_root.as_posix(), md_root.as_posix())
 
 
 if __name__ == "__main__":
