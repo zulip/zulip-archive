@@ -12,7 +12,11 @@ inputs:
     description: 'API key of the Zulip bot'
     required: true
   github_personal_access_token:
-    description: 'GitHub personal access token'
+    description: 'GitHub personal access token (deprecated)'
+    required: false
+    deprecationMessage: 'Please use `gh_token` instead'
+  gh_token:
+    description: 'GitHub Token/GitHub Personal Access Token'
     required: true
   delete_history:
     description: 'If enabled, will delete the archive history while keeping the most recent version'
@@ -30,6 +34,7 @@ runs:
     - ${{ inputs.zulip_organization_url }}
     - ${{ inputs.zulip_bot_email }}
     - ${{ inputs.zulip_bot_key }}
-    - ${{ inputs.github_personal_access_token }}
+    - ${{ inputs.gh_token }}
     - ${{ inputs.delete_history }}
     - ${{ inputs.archive_branch }}
+    - ${{ inputs.github_personal_access_token }}

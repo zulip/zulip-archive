@@ -36,23 +36,22 @@ GitHub action needs the following credentials for running.
 
 Zulip API key is used for fetching the messages of public streams from the Zulip organization. We recommend creating a bot and using it's API key instead of using your own API key. See https://zulip.com/help/add-a-bot-or-integration for more details.
 
-#### GitHub Personal Access Token
+#### GitHub Token
 
-The token is used by the GitHub action for pushing to the repo and running GitHub page builds. You can generate the token by going to https://github.com/settings/tokens. Make sure to enable `repo` and `workflow` while generating the token.
+The token is used by the GitHub Actions for pushing to the repo and running GitHub page builds.
+It is generated automatically by GitHub Actions itself at `secrets.GITHUB_TOKEN` and can be used right away.
 
 ### Step 3 - Store credentials as secrets in the repository
 
 Now that we have generated the credentials, we need to store them in the repository as secrets so that action can access them during run time. For that goto `https://github.com/<username>/<repo-name>/settings/secrets`. `<username>` is your GitHub username and `<repo-name>` is the name of the repo you just created.
 
-Now create the following 4 secrets. Use the credentials generated in the above step as the value of each secret.
+Now create the following 3 secrets. Use the credentials generated in the above step as the value of each secret.
 
 |Secret name                  | Value                        |
 |-----------------------------|----------------------------------------------|
 |zulip_organization_url       | URL of your Zulip organization.              |
 |zulip_bot_email              | The email of the Zulip bot you created       |
 |zulip_bot_key                | API key of the Zulip bot you created         |
-|gh_personal_access_token     | The GitHub personal access token you created |
-
 
 ### Step 4 - Configure the streams you want to index
 `zulip-archive` by default don't know which all public streams to be indexed. You can tell `zulip-archive` which all streams to be indexed by creating a file called `streams.yaml` in the newly created repository. You can make a copy of a default file to start with: `cp default_streams.yaml streams.yaml`
@@ -107,7 +106,8 @@ jobs:
         zulip_organization_url: ${{ secrets.zulip_organization_url }}
         zulip_bot_email: ${{ secrets.zulip_bot_email }}
         zulip_bot_key: ${{ secrets.zulip_bot_key }}
-        github_personal_access_token: ${{ secrets.gh_personal_access_token }}
+        # Using GitHub Token that is provided automatically by GitHub Actions
+        gh_token: ${{ secrets.GITHUB_TOKEN }}
         delete_history: true
 ```
 
