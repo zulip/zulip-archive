@@ -126,6 +126,25 @@ warned that the repository size may explode.
 Final step is to verify that everything is working as it is supposed to be. You would have to wait for some time since the action is scheduled to run every 20 minutes (or the time you have configured it to be in above step.) You can track the status of the action by visiting `https://github.com/<github-username>/<repo-name>/actions`. Once the action completes running, you would be able to visit the archive by opening the link mentioned in the action run log at the end. The link would be usually be of the form `<github-username>.github.io/<repo-name>` or `<your-personal-domain>/<repo-name>` if you have configured your own personal domain to point to GitHub pages.
 
 
+### (Optional) Step 7 - Add sitemap.xml to robots.txt
+
+If you'd like your archive to be indexed properly by search engines like Google, you need to add the generated sitemap.xml path to the `Sitemap` field of your `robots.txt` that is located at the root path of your site. 
+
+
+Example:
+- The generated sitemap is located in `https://example.github.io/zulip-archive/sitemap.xml`
+- Add the sitemap path to `Sitemap` field of the `robots.txt` of the site that is located at `https://example.github.io/robots.txt`
+
+```
+# robots.txt content
+Sitemap: https://example.github.io/zulip-archive/sitemap.xml
+
+# In case you have another `sitemap.xml` in your site, you can also add it here
+Sitemap: https://example.github.io/sitemap.xml
+```
+
+For more reference regarding to `robots.txt` you can visit [the official documentation of it by Google](https://developers.google.com/search/docs/advanced/robots/create-robots-txt).
+
 ## Running zulip-archive by yourselves
 
 For most users, running `zulip-archive` as GitHub actions should be good enough. If you want to run `zulip-archive` in your own server or do something else, see the [instructions](instructions.md) docs. The [hosting docs](hosting.md) also offer a few suggestions for good ways to host the output of this tool.
