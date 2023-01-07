@@ -14,7 +14,7 @@ github_personal_access_token=${github_personal_access_token:-NOT_SET}
 if [ $github_personal_access_token != "NOT_SET" ]; then
     echo "'github_personal_access_token' input has been deprecated."
     echo "To migrate to the new setup, you have to replace it with"
-    echo "gh_token. For more info, see"
+    echo "github_token. For more info, see"
     echo 'https://github.com/zulip/zulip-archive#step-5---enable-zulip-archive-action'
     exit 1
 fi

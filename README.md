@@ -107,7 +107,7 @@ jobs:
         zulip_bot_email: ${{ secrets.zulip_bot_email }}
         zulip_bot_key: ${{ secrets.zulip_bot_key }}
         # Using GitHub Token that is provided automatically by GitHub Actions
-        gh_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
         delete_history: true
 ```
 
