@@ -4,9 +4,20 @@ set -e
 zulip_organization_url=$1
 zulip_bot_email=$2
 zulip_bot_api_key=$3
-github_personal_access_token=$4
+github_token=$4
 delete_history=$5
 archive_branch=$6
+github_personal_access_token=$7
+
+github_personal_access_token=${github_personal_access_token:-NOT_SET}
+
+if [ $github_personal_access_token != "NOT_SET" ]; then
+    echo "'github_personal_access_token' input has been deprecated."
+    echo "To migrate to the new setup, you have to replace it with"
+    echo "github_token. For more info, see"
+    echo 'https://github.com/zulip/zulip-archive#step-5---enable-zulip-archive-action'
+    exit 1
+fi
 
 # This is a temporary workaround.
 # See https://github.com/actions/checkout/issues/766
@@ -38,7 +49,7 @@ pip3 install crudini
 
 # Uses GitHub pages API
 # https://docs.github.com/en/rest/pages
-auth_header="Authorization: Bearer ${github_personal_access_token}"
+auth_header="Authorization: Bearer ${github_token}"
 accept_header="Accept: application/vnd.github.switcheroo-preview+json"
 page_api_url="https://api.github.com/repos/${GITHUB_REPOSITORY}/pages"
 # Enable GitHub pages
@@ -106,7 +117,7 @@ git config --global user.name "Archive Bot"
 git add -A
 git commit -m "Update archive."
 
-git remote add origin2 https://${GITHUB_ACTOR}:${github_personal_access_token}@github.com/${GITHUB_REPOSITORY}
+git remote add origin2 https://${GITHUB_ACTOR}:${github_token}@github.com/${GITHUB_REPOSITORY}
 
 git push origin2 HEAD:$archive_branch -f
 
