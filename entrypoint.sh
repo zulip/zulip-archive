@@ -43,7 +43,7 @@ python3 get-pip.py
 pip install virtualenv
 virtualenv -p python3 .
 source bin/activate
-pip3 install install -r requirements.txt
+pip3 install -r requirements.txt
 # crudini is not available as an Alpine pkg, so we install via pip.
 pip3 install crudini
 
