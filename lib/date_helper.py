@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 # I don't love this format, feel free to change (I just
 # extracted it from prior code).
 def format_date1(ts):

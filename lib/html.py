@@ -162,7 +162,6 @@ def stream_list_html(streams):
 
 
 def topic_list_page_html(stream_name, stream_url, topic_data):
-
     content = f"""\
 <h2> Stream: <a href="{html.escape(stream_url)}">{html.escape(stream_name)}</a></h2>
 <hr>
