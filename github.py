@@ -15,6 +15,7 @@ import time, argparse, subprocess
 
 parser = argparse.ArgumentParser(description="Push/pull repo.")
 
+
 # resets the current repository to match origin/master
 def github_pull():
     print(subprocess.check_output(["git", "fetch", "origin", "master"]))
