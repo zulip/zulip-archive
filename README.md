@@ -26,20 +26,15 @@ Running `zulip-archive` as a GitHub action is easiest way to get up and running.
 
 ### Step 1 - Create a new repository for running action
 
-We recommend using a new repository for running action. If you have not yet created one, goto https://github.com/new/ and create a new repository. 
+We recommend using a new repository for running action. If you have not yet created one, goto https://github.com/new/ and create a new repository.
 
 ### Step 2 - Generate credentials
 
-GitHub action needs the following credentials for running.
+GitHub action needs the following credential for running.
 
 #### Zulip API Key
 
 Zulip API key is used for fetching the messages of public streams from the Zulip organization. We recommend creating a bot and using it's API key instead of using your own API key. See https://zulip.com/help/add-a-bot-or-integration for more details.
-
-#### GitHub Token
-
-The token is used by the GitHub Actions for pushing to the repo and running GitHub page builds.
-It is generated automatically by GitHub Actions itself as `secrets.GITHUB_TOKEN` and can be used right away.
 
 ### Step 3 - Store credentials as secrets in the repository
 
@@ -47,13 +42,18 @@ Now that we have generated the credentials, we need to store them in the reposit
 
 Now create the following 3 secrets. Use the credentials generated in the above step as the value of each secret.
 
-|Secret name                  | Value                        |
-|-----------------------------|----------------------------------------------|
-|zulip_organization_url       | URL of your Zulip organization.              |
-|zulip_bot_email              | The email of the Zulip bot you created       |
-|zulip_bot_key                | API key of the Zulip bot you created         |
+|Secret name                  | Value                                                         |
+|-----------------------------|---------------------------------------------------------------|
+|zulip_organization_url       | URL of your Zulip organization (e.g. https://chat.zulip.org). |
+|zulip_bot_email              | The email of the Zulip bot you created                        |
+|zulip_bot_key                | API key of the Zulip bot you created                          |
 
-### Step 4 - Configure the streams you want to index
+### Step 4 - Enable GitHub Pages
+
+Go to `https://github.com/<username>/<repo-name>/settings/pages`, select `main` (or a branch of your choosing), `/` as the folder, then save the changes.
+
+### Step 5 - Configure the streams you want to index
+
 `zulip-archive` by default don't know which all public streams to be indexed. You can tell `zulip-archive` which all streams to be indexed by creating a file called `streams.yaml` in the newly created repository. You can make a copy of a default file to start with: `cp default_streams.yaml streams.yaml`
 
 If you want to index all the public streams, set the following as the content of `streams.yaml` file.
@@ -83,9 +83,9 @@ included:
   - javascript
 ```
 
-### Step 5 - Enable zulip-archive action
+### Step 6 - Enable zulip-archive action
 
-Final step is to enable the action. For that create a file called `.github/workflows/main.yaml` in your repository and pase the following as content.
+Final step is to enable the action. For that create a file called `.github/workflows/main.yaml` in your repository and paste the following as content.
 
 ```yaml
 on:
@@ -107,8 +107,10 @@ jobs:
         zulip_bot_email: ${{ secrets.zulip_bot_email }}
         zulip_bot_key: ${{ secrets.zulip_bot_key }}
         # Using GitHub Token that is provided automatically by GitHub Actions
+        # (no setup needed).
         github_token: ${{ secrets.GITHUB_TOKEN }}
         delete_history: true
+        archive_branch: main
 ```
 
 The above file tells GitHub to run the `zulip-archive` action every 20 minutes. You can adjust the `cron` key to modify the schedule as you feel appropriate. If you Zulip organization history is very large (not the case for most users) we recommend to increase the cron period from running every 30 minutes to maybe run every 1 hour (eg `'0 * * * *'`). This is is because the initial archive run that fetches the messages for the first time takes a lot of time and we don't want the second cron job to start before finishing the first run is over. After the initial run is over you can shorten the cron job period if necessary.
@@ -121,7 +123,7 @@ keep all the content). If you are using the repository for more than
 just the Zulip archive, you may want to set this to `false`, but be
 warned that the repository size may explode.
 
-### Step 6 - Verify everything works
+### Step 7 - Verify everything works
 
 Final step is to verify that everything is working as it is supposed to be. You would have to wait for some time since the action is scheduled to run every 20 minutes (or the time you have configured it to be in above step.) You can track the status of the action by visiting `https://github.com/<github-username>/<repo-name>/actions`. Once the action completes running, you would be able to visit the archive by opening the link mentioned in the action run log at the end. The link would be usually be of the form `<github-username>.github.io/<repo-name>` or `<your-personal-domain>/<repo-name>` if you have configured your own personal domain to point to GitHub pages.
 
