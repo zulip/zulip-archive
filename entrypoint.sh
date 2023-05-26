@@ -4,7 +4,7 @@ set -e
 zulip_organization_url=$1
 zulip_bot_email=$2
 zulip_bot_api_key=$3
-github_token=$4
+github_token=$INPUT_GITHUB_TOKEN
 delete_history=$5
 archive_branch=$6
 github_personal_access_token=$7
@@ -50,13 +50,13 @@ pip3 install crudini
 # Uses GitHub pages API
 # https://docs.github.com/en/rest/pages
 auth_header="Authorization: Bearer ${github_token}"
-accept_header="Accept: application/vnd.github.switcheroo-preview+json"
+accept_header="Accept: application/vnd.github+json"
+version_header="X-GitHub-Api-Version: 2022-11-28"
 page_api_url="https://api.github.com/repos/${GITHUB_REPOSITORY}/pages"
-# Enable GitHub pages
-curl -H "$auth_header" -H "$accept_header" --data "{\"source\":{\"branch\":\"${archive_branch}\"}}" "$page_api_url"
 
 print_site_url_code="import sys, json; print(json.load(sys.stdin)['html_url'])"
-github_pages_url_with_trailing_slash=$(curl -H "${auth_header}" $page_api_url | python3 -c "${print_site_url_code}")
+# Get the GitHub pages URL
+github_pages_url_with_trailing_slash=$(curl -L -H "$accept_header" -H "$auth_header" -H "$version_header" "$page_api_url" | python3 -c "${print_site_url_code}")
 github_pages_url=${github_pages_url_with_trailing_slash%/}
 
 cp default_settings.py settings.py
