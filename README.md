@@ -63,6 +63,14 @@ included:
   - '*'
 ```
 
+If you want to index all the web-public streams, which are a subset of all the
+public streams, you can instead use the `web-public:*` syntax.
+
+```yaml
+included:
+  - 'web-public:*'
+```
+
 You can exclude some of the public streams by placing them under `excluded` key.
 
 ```yaml
