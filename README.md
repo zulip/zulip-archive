@@ -3,8 +3,7 @@
 [![code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 Generates an HTML archive of a configured set of streams within a
-[Zulip](https://zulip.com) organization (usually all public
-streams).
+[Zulip](https://zulip.com) organization. It is common to archive all [public](https://zulip.com/help/stream-permissions) or [web-public](https://zulip.com/help/public-access-option) streams.
 
 Example: [Lean Prover
 archive](https://leanprover-community.github.io/archive/).
@@ -14,64 +13,61 @@ API, storing it in JSON files, maintaining its local archive with
 incremental updates, and turning those JSON files into the HTML
 archive.
 
+This archive tool is often used in addition to enabling the [public access option](https://zulip.com/help/public-access-option) for your organization, which lets administrators configure selected streams to be web-public. Web-public streams can be viewed by anyone on the Internet without creating an account in your organization. The public access option does not yet support search engine indexing, which makes this archive tool a good option if it's important for your organization's chat history to appear in search results. It is easy to configure `zulip-archive` to automatically archive all web-public streams in your organization.
+
 ### Contents
 * [Running zulip-archive as a GitHub action](#running-zulip-archive-as-a-github-action)
-* [Running zulip-archive by yourselves](#running-zulip-archive-by-yourselves)
+* [Running zulip-archive without GitHub actions](#running-zulip-archive-without-github-actions)
 * [Why archive](#why-archive)
 * [Contributing and future plans](#contributing-and-future-plans)
 
 ## Running zulip-archive as a GitHub action
 
-Running `zulip-archive` as a GitHub action is easiest way to get up and running. The action would run periodically, sync the repo with latest messages and publish archive website using GitHub pages. Follow the steps below to setup `zulip-archive` Github action in a few minutes.
+Running `zulip-archive` as a GitHub action is easiest way to get up and running. The action will periodically sync a GitHub repository with the latest messages, and publish the archive website using GitHub pages. Follow the steps below to set up a `zulip-archive` GitHub action in a few minutes.
 
-### Step 1 - Create a new repository for running action
+### Step 1 - Create a repository for running the action
 
-We recommend using a new repository for running action. If you have not yet created one, goto https://github.com/new/ and create a new repository.
+It's best to use a dedicated repository for running the action. You can create a new repository at https://github.com/new/.
 
 ### Step 2 - Generate credentials
 
-GitHub action needs the following credential for running.
-
-#### Zulip API Key
-
-Zulip API key is used for fetching the messages of public streams from the Zulip organization. We recommend creating a bot and using it's API key instead of using your own API key. See https://zulip.com/help/add-a-bot-or-integration for more details.
+The GitHub action requires a Zulip API key in order to run. The key is used for fetching messages in public streams in your Zulip organization. It is strongly recommended that you [create a bot](https://zulip.com/help/add-a-bot-or-integration) and use its API key, rather than using your personal API key.
 
 ### Step 3 - Store credentials as secrets in the repository
 
-Now that we have generated the credentials, we need to store them in the repository as secrets so that action can access them during run time. For that goto `https://github.com/<username>/<repo-name>/settings/secrets`. `<username>` is your GitHub username and `<repo-name>` is the name of the repo you just created.
+The credentials for your bot need to be stored in the repository as secrets, so that the action can access them during run time. You can create secrets in your repository at `https://github.com/<username>/<repo-name>/settings/secrets`, where `<username>` is your GitHub username, and `<repo-name>` is the name of the repository you are using.
 
-Now create the following 3 secrets. Use the credentials generated in the above step as the value of each secret.
+You will need to create the following 3 secrets. Use the credentials generated in the above step as the value of each secret.
 
 |Secret name                  | Value                                                         |
 |-----------------------------|---------------------------------------------------------------|
-|zulip_organization_url       | URL of your Zulip organization (e.g. https://chat.zulip.org). |
-|zulip_bot_email              | The email of the Zulip bot you created                        |
+|zulip_organization_url       | URL of your Zulip organization (e.g., https://chat.zulip.org) |
+|zulip_bot_email              | Email of the Zulip bot you created                            |
 |zulip_bot_key                | API key of the Zulip bot you created                          |
 
 ### Step 4 - Enable GitHub Pages
 
-Go to `https://github.com/<username>/<repo-name>/settings/pages`, select `main` (or a branch of your choosing), `/` as the folder, then save the changes.
+Go to `https://github.com/<username>/<repo-name>/settings/pages`, select `main` (or a branch of your choosing), and `/` as the folder. Save the changes.
 
 ### Step 5 - Configure the streams you want to index
 
-`zulip-archive` by default don't know which all public streams to be indexed. You can tell `zulip-archive` which all streams to be indexed by creating a file called `streams.yaml` in the newly created repository. You can make a copy of a default file to start with: `cp default_streams.yaml streams.yaml`
+You will need to configure which streams will be indexed by `zulip-archive` by creating a `streams.yaml` file in the repository you are using for the GitHub action. As a starting point, you can make a copy of the default configuration file: `cp default_streams.yaml streams.yaml`
 
-If you want to index all the public streams, set the following as the content of `streams.yaml` file.
-
-```yaml
-included:
-  - '*'
-```
-
-If you want to index all the web-public streams, which are a subset of all the
-public streams, you can instead use the `web-public:*` syntax.
+To index all the [web-public streams](https://zulip.com/help/public-access-option) in your organization, set the following as the content of your `streams.yaml` file.
 
 ```yaml
 included:
   - 'web-public:*'
 ```
 
-You can exclude some of the public streams by placing them under `excluded` key.
+To index all the [public streams](https://zulip.com/help/stream-permissions), set the following as the content of your `streams.yaml` file. Note that public streams include all web-public streams.
+
+```yaml
+included:
+  - '*'
+```
+
+You can exclude specific public streams by placing them under the `excluded` key.
 
 ```yaml
 included:
@@ -82,7 +78,7 @@ excluded:
   - development help
 ```
 
-Alternatively you can specify only the streams that you want to index.
+Alternatively, you can specify only the streams that you want to index.
 
 ```yaml
 included:
@@ -91,9 +87,11 @@ included:
   - javascript
 ```
 
-### Step 6 - Enable zulip-archive action
+### Step 6 - Enable the zulip-archive action
 
-Final step is to enable the action. For that create a file called `.github/workflows/main.yaml` in your repository and paste the following as content.
+Enable the action by creating a file called `.github/workflows/main.yaml`:
+
+#### Sample `main.yaml` file
 
 ```yaml
 on:
@@ -114,29 +112,35 @@ jobs:
         zulip_organization_url: ${{ secrets.zulip_organization_url }}
         zulip_bot_email: ${{ secrets.zulip_bot_email }}
         zulip_bot_key: ${{ secrets.zulip_bot_key }}
-        # Using GitHub Token that is provided automatically by GitHub Actions
+        # Using the GitHub Token that is provided automatically by GitHub Actions
         # (no setup needed).
         github_token: ${{ secrets.GITHUB_TOKEN }}
         delete_history: true
         archive_branch: main
 ```
 
-The above file tells GitHub to run the `zulip-archive` action every 20 minutes. You can adjust the `cron` key to modify the schedule as you feel appropriate. If you Zulip organization history is very large (not the case for most users) we recommend to increase the cron period from running every 30 minutes to maybe run every 1 hour (eg `'0 * * * *'`). This is is because the initial archive run that fetches the messages for the first time takes a lot of time and we don't want the second cron job to start before finishing the first run is over. After the initial run is over you can shorten the cron job period if necessary.
+#### Configure run frequency
+
+The above file tells GitHub to run the `zulip-archive` action every 20 minutes. You can [adjust](https://en.wikipedia.org/wiki/Cron) the `cron` key to modify the schedule as you feel appropriate.
+
+If you Zulip organization history is very large (not the case for most users), it is recommended that you initially increase the time between runs to an hour or longer (e.g., `'0 * * * *'`). This is is because the initial archive run that fetches the messages for the first time will take a long time, and you don't want the second cron job to start before the first run is completed. After the initial run, you can shorten the cron job period as desired.
+
+#### Configure `delete_history` option
 
 If you are running frequent updates with a busy Zulip organization,
 the Git repository that you use to run the action will grow very
-quickly. We recommend setting the `delete_history` option to
-`true`. This will overwrite the git history in the repository (but
-keep all the content). If you are using the repository for more than
-just the Zulip archive, you may want to set this to `false`, but be
+quickly. In this situation, it is recommended that you set the `delete_history` option to
+`true`. This will overwrite the Git _history_ in the repository, but
+keep all the _content_. If you are using the repository for more than
+just the Zulip archive (not recommended), you may want to set the `delete_history` flag to `false`, but be
 warned that the repository size may explode.
 
-### Step 7 - Verify everything works
+### Step 7 - Verify that everything works
 
-Final step is to verify that everything is working as it is supposed to be. You would have to wait for some time since the action is scheduled to run every 20 minutes (or the time you have configured it to be in above step.) You can track the status of the action by visiting `https://github.com/<github-username>/<repo-name>/actions`. Once the action completes running, you would be able to visit the archive by opening the link mentioned in the action run log at the end. The link would be usually be of the form `<github-username>.github.io/<repo-name>` or `<your-personal-domain>/<repo-name>` if you have configured your own personal domain to point to GitHub pages.
+Finally, verify that everything is working as expected. You can track the status of the action by visiting `https://github.com/<github-username>/<repo-name>/actions`. Once the initial run is completed, you should be able to visit the archive by opening the link provided at the end of the action run log. The link will generally be of the form `<github-username>.github.io/<repo-name>`, or `<your-personal-domain>/<repo-name>` if you have configured your own personal domain to point to GitHub pages.
 
 
-## Running zulip-archive by yourselves
+## Running zulip-archive without GitHub actions
 
 For most users, running `zulip-archive` as GitHub actions should be good enough. If you want to run `zulip-archive` in your own server or do something else, see the [instructions](instructions.md) docs. The [hosting docs](hosting.md) also offer a few suggestions for good ways to host the output of this tool.
 
@@ -180,28 +184,9 @@ Feedback, issues, and pull requests are encouraged!  Our goal is for
 this project to support the needs of any community looking for an HTML
 archive of their Zulip organization's history, through just
 configuration changes.  So please report even minor inconveniences,
-either via a GitHub issue or by posting in
-[#integrations](https://chat.zulip.org/#narrow/stream/127-integrations/)
-in the [Zulip development community](https://chat.zulip.org).
-
-Once `zulip-archive` is more stable and polished, we expect to merge
-it into the
-[python-zulip-api](https://github.com/zulip/python-zulip-api) project
-and moves its documentation to live [with other
-integrations](https://zulip.com/integrations/) for a more
-convenient installation experience.  But at the moment, it's
-convenient for it to have a dedicated repository for greater
-visibility.
-
-There are also [plans](https://github.com/zulip/zulip/issues/13172) to
-allow organizations to configure "web public" streams that people can
-access without signing up for a Zulip account, while still using
-in-app features like full-text search and real-time update.
-
-Ideally the "web public" feature will be a better solution for the
-most common use case of this tool.  But we expect `zulip-archive` to
-be maintained for the foreseeable future, as it supports a broader set
-of use cases.
+either via a GitHub issue or by posting in the
+[#integrations](https://chat.zulip.org/#narrow/stream/127-integrations/) stream
+in the [Zulip development community](https://zulip.com/development-community/).
 
 This project is licensed under the MIT license.
 
