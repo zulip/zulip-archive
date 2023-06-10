@@ -31,19 +31,17 @@ It's best to use a dedicated repository for running the action. You can create a
 
 ### Step 2 - Generate credentials
 
-The GitHub action requires a Zulip API key in order to run. The key is used for fetching messages in public streams in your Zulip organization. It is strongly recommended that you [create a bot](https://zulip.com/help/add-a-bot-or-integration) and use its API key, rather than using your personal API key.
+The GitHub action requires a Zulip API key in order to run. The key is used for fetching messages in public streams in your Zulip organization. It is strongly recommended that you [create a bot](https://zulip.com/help/add-a-bot-or-integration) and use its zuliprc, rather than using your personal zuliprc.
 
 ### Step 3 - Store credentials as secrets in the repository
 
 The credentials for your bot need to be stored in the repository as secrets, so that the action can access them during run time. You can create secrets in your repository at `https://github.com/<username>/<repo-name>/settings/secrets`, where `<username>` is your GitHub username, and `<repo-name>` is the name of the repository you are using.
 
-You will need to create the following 3 secrets. Use the credentials generated in the above step as the value of each secret.
+You will need to create the following secret. Use the credentials generated in the above step as the value of each secret.
 
-|Secret name                  | Value                                                         |
-|-----------------------------|---------------------------------------------------------------|
-|zulip_organization_url       | URL of your Zulip organization (e.g., https://chat.zulip.org) |
-|zulip_bot_email              | Email of the Zulip bot you created                            |
-|zulip_bot_key                | API key of the Zulip bot you created                          |
+|Secret name   | Value                                                |
+|--------------|------------------------------------------------------|
+|zuliprc       | The file content of the zuliprc obtained from step 2 |
 
 ### Step 4 - Enable GitHub Pages
 
