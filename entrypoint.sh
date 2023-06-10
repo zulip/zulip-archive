@@ -8,6 +8,7 @@ github_token=$INPUT_GITHUB_TOKEN
 delete_history=$5
 archive_branch=$6
 github_personal_access_token=$7
+zuliprc=$INPUT_ZULIPRC
 
 github_personal_access_token=${github_personal_access_token:-NOT_SET}
 
@@ -62,9 +63,15 @@ github_pages_url=${github_pages_url_with_trailing_slash%/}
 cp default_settings.py settings.py
 cp $streams_config_file_path .
 
-crudini --set zuliprc api site $zulip_organization_url
-crudini --set zuliprc api key $zulip_bot_api_key
-crudini --set zuliprc api email $zulip_bot_email
+if [ -z "$zuliprc" ]; then
+	echo "Setting up Zulip details via 3 variables (zulip_organization_url, zulip_bot_key, zulip_bot_email)"
+	echo "is deprecated. The current simpler method is to just set the zuliprc content in the GH secrets."
+	crudini --set zuliprc api site "$zulip_organization_url"
+	crudini --set zuliprc api key "$zulip_bot_api_key"
+	crudini --set zuliprc api email "$zulip_bot_email"
+else
+	echo "$zuliprc" > zuliprc
+fi
 
 export PROD_ARCHIVE=true
 export SITE_URL=$github_pages_url

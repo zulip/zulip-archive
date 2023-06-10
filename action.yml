@@ -27,6 +27,9 @@ inputs:
     # legacy
     required: false
     default: 'master'
+  zuliprc:
+    description: 'zuliprc of the Zulip bot'
+    required: true
 runs:
   using: 'docker'
   image: 'Dockerfile'
