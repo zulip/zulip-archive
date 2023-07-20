@@ -33,7 +33,7 @@ if DEBUG:
     site_url = "http://127.0.0.1:4000"
 else:
     site_url = os.getenv("SITE_URL")
-    if not site_url:
+    if site_url is None:
         raise Exception("You need to configure site_url for prod")
 
 """

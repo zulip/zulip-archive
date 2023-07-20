@@ -9,6 +9,7 @@ delete_history=$5
 archive_branch=$6
 github_personal_access_token=$7
 zuliprc=$INPUT_ZULIPRC
+site_url=$INPUT_SITE_URL
 
 github_personal_access_token=${github_personal_access_token:-NOT_SET}
 
@@ -48,17 +49,22 @@ pip3 install -r requirements.txt
 # crudini is not available as an Alpine pkg, so we install via pip.
 pip3 install crudini
 
-# Uses GitHub pages API
-# https://docs.github.com/en/rest/pages
-auth_header="Authorization: Bearer ${github_token}"
-accept_header="Accept: application/vnd.github+json"
-version_header="X-GitHub-Api-Version: 2022-11-28"
-page_api_url="https://api.github.com/repos/${GITHUB_REPOSITORY}/pages"
+if [ -z "$site_url" ]; then
+    echo "Setting up site URL from GitHub pages API"
+    # Uses GitHub pages API
+    # https://docs.github.com/en/rest/pages
+    auth_header="Authorization: Bearer ${github_token}"
+    accept_header="Accept: application/vnd.github+json"
+    version_header="X-GitHub-Api-Version: 2022-11-28"
+    page_api_url="https://api.github.com/repos/${GITHUB_REPOSITORY}/pages"
 
-print_site_url_code="import sys, json; print(json.load(sys.stdin)['html_url'])"
-# Get the GitHub pages URL
-github_pages_url_with_trailing_slash=$(curl -L -H "$accept_header" -H "$auth_header" -H "$version_header" "$page_api_url" | python3 -c "${print_site_url_code}")
-github_pages_url=${github_pages_url_with_trailing_slash%/}
+    print_site_url_code="import sys, json; print(json.load(sys.stdin)['html_url'])"
+    # Get the GitHub pages URL
+    github_pages_url_with_trailing_slash=$(curl -L -H "$accept_header" -H "$auth_header" -H "$version_header" "$page_api_url" | python3 -c "${print_site_url_code}")
+    site_url=${github_pages_url_with_trailing_slash%/}
+else
+    site_url=${site_url%/}
+fi
 
 cp default_settings.py settings.py
 cp $streams_config_file_path .
@@ -74,11 +80,11 @@ else
 fi
 
 export PROD_ARCHIVE=true
-export SITE_URL=$github_pages_url
+export SITE_URL=$site_url
 export HTML_DIRECTORY=$html_dir_path
 export JSON_DIRECTORY=$json_dir_path
 export HTML_ROOT=""
-export ZULIP_ICON_URL="${github_pages_url}/assets/img/zulip.svg"
+export ZULIP_ICON_URL="${site_url}/assets/img/zulip.svg"
 
 if [ ! -d $json_dir_path ]; then
     mkdir -p $json_dir_path
