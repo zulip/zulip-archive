@@ -54,8 +54,6 @@ def topic_page_links_html(
 <h3>Topic: <a href="{html.escape(topic_url)}">{html.escape(topic_name)}</a></h3>
 
 <hr>
-
-<base href="{html.escape(zulip_url)}">
 """
 
 
