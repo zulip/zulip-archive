@@ -116,7 +116,7 @@ git config --global user.name "Archive Bot"
 git add -A
 if [[ "$delete_history" == "true" ]]
 then
-	git commit --amend -m "Update archive."
+	git commit --amend --reset-author -m "Update archive."
 	# Cleanup loose objects
 	git gc
 else
