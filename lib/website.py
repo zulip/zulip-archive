@@ -15,9 +15,8 @@ language of choice, this is probably the best place to start.
 """
 
 from pathlib import Path
-from distutils.dir_util import copy_tree
 import html
-from shutil import copyfile
+from shutil import copyfile, copytree
 
 from .url import (
     sanitize_stream,
@@ -114,7 +113,7 @@ def build_website(
     # Copy the entire content of <repo_root>/assets into md_root.
     # We use copy_tree from distutils instead of shutil.copytree so that it
     # doesn't raise an error when assets/ already exists inside the md_root.
-    copy_tree(str(Path(repo_root) / "assets"), str(Path(md_root) / "assets"))
+    copytree(str(Path(repo_root) / "assets"), str(Path(md_root) / "assets"))
 
     # Copy .nojekyll into md_root as well.
     copyfile(str(Path(repo_root) / ".nojekyll"), str(Path(md_root) / ".nojekyll"))
