@@ -110,10 +110,11 @@ def build_website(
                 page_footer_html,
             )
 
-    # Copy the entire content of <repo_root>/assets into md_root.
-    # We use copy_tree from distutils instead of shutil.copytree so that it
-    # doesn't raise an error when assets/ already exists inside the md_root.
-    copytree(str(Path(repo_root) / "assets"), str(Path(md_root) / "assets"))
+    copytree(
+        str(Path(repo_root) / "assets"),
+        str(Path(md_root) / "assets"),
+        dirs_exist_ok=True,
+    )
 
     # Copy .nojekyll into md_root as well.
     copyfile(str(Path(repo_root) / ".nojekyll"), str(Path(md_root) / ".nojekyll"))
