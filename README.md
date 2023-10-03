@@ -47,7 +47,7 @@ You will need to create the following secret. Use the credentials generated in t
 
 Go to `https://github.com/<username>/<repo-name>/settings/pages`, select `main` (or a branch of your choosing), and `/` as the folder. Save the changes. The base URL of the generated site will be resolved to GitHub Pages, i.e., `https://<username>.github.io/<repo-name>` or the configured custom domain name.
 
-Alternatively, you can configure the `base_url` option to populate the base URL without enabling GitHub Pages.
+Alternatively, you can configure the `base_url` option to populate the base URL. This option could be useful in situation when you are not using GitHub Pages.
 
 ### Step 5 - Configure the streams you want to index
 
