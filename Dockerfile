@@ -1,4 +1,4 @@
-FROM python:3-alpine
+FROM python:3.11-alpine
 
 RUN mkdir -p /zulip-archive && apk update && apk add git curl
 
