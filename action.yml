@@ -30,6 +30,9 @@ inputs:
   zuliprc:
     description: 'zuliprc of the Zulip bot'
     required: true
+  site_url:
+    description: 'Base URL for the site. If not configured, this action will try to resolve the base URL as GH pages.'
+    required: false
 runs:
   using: 'docker'
   image: 'Dockerfile'

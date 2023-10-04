@@ -43,9 +43,11 @@ You will need to create the following secret. Use the credentials generated in t
 |--------------|------------------------------------------------------|
 |zuliprc       | The file content of the zuliprc obtained from step 2 |
 
-### Step 4 - Enable GitHub Pages
+### Step 4 - Enable GitHub Pages or set up base URL
 
-Go to `https://github.com/<username>/<repo-name>/settings/pages`, select `main` (or a branch of your choosing), and `/` as the folder. Save the changes.
+Go to `https://github.com/<username>/<repo-name>/settings/pages`, select `main` (or a branch of your choosing), and `/` as the folder. Save the changes. The base URL of the generated site will be resolved to GitHub Pages, i.e., `https://<username>.github.io/<repo-name>` or the configured custom domain name.
+
+Alternatively, you can configure the `base_url` option to populate the base URL. This option could be useful in situation when you are not using GitHub Pages.
 
 ### Step 5 - Configure the streams you want to index
 
@@ -137,6 +139,7 @@ warned that the repository size may explode.
 
 Finally, verify that everything is working as expected. You can track the status of the action by visiting `https://github.com/<github-username>/<repo-name>/actions`. Once the initial run is completed, you should be able to visit the archive by opening the link provided at the end of the action run log. The link will generally be of the form `<github-username>.github.io/<repo-name>`, or `<your-personal-domain>/<repo-name>` if you have configured your own personal domain to point to GitHub pages.
 
+If you configure `base_url` option, you can track the status of the action by visiting the URL instead.
 
 ## Running zulip-archive without GitHub actions
 
