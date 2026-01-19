@@ -148,13 +148,16 @@ def populate_all(
 
             messages = request_all(client, request)
 
-            topic_count = len(messages)
-            last_message = messages[-1]
-            latest_date = last_message["timestamp"]
+            if messages:
+                # Dump empty topics but don't try to get the latest message or
+                # date from them
+                topic_count = len(messages)
+                last_message = messages[-1]
+                latest_date = last_message["timestamp"]
 
-            topic_data[topic_name] = dict(size=topic_count, latest_date=latest_date)
+                topic_data[topic_name] = dict(size=topic_count, latest_date=latest_date)
 
-            latest_id = max(latest_id, last_message["id"])
+                latest_id = max(latest_id, last_message["id"])
 
             dump_topic_messages(json_root, s, topic_name, messages)
 
